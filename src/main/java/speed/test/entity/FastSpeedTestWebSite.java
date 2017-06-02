@@ -3,20 +3,20 @@ package speed.test.entity;
 /**
  * Created by dango on 6/2/17.
  */
-public class HotSpeedTestWebSite implements SpeedTestWebSite {
+public class FastSpeedTestWebSite implements SpeedTestWebSite {
 
     @Override
     public String webSiteUrl() {
-        return "http://www.hot.net.il/heb/Internet/speed/";
+        return "https://www.fast.com/";
     }
 
     @Override
     public String startTestButton() {
-        return "startTestButtonHot.jpg";
+        return null;
     }
 
     @Override
     public String getIdentifier() {
-        return "hot";
+        return "fast";
     }
 }
