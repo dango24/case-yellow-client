@@ -1,22 +1,22 @@
-package speed.test.entity;
+package speed.test.web.site;
 
 /**
  * Created by dango on 6/2/17.
  */
-public class OoklaSpeedTestWebSite implements SpeedTestWebSite {
+public class FastSpeedTestWebSite implements SpeedTestWebSite {
 
     @Override
     public String webSiteUrl() {
-        return "http://www.speedtest.net/";
+        return "https://www.fast.com/";
     }
 
     @Override
     public String startTestButton() {
-        return "startTestButtonOokla.PNG";
+        return null;
     }
 
     @Override
     public String getIdentifier() {
-        return "ookla";
+        return "fast";
     }
 }

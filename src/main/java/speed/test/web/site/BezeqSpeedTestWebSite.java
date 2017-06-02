@@ -1,4 +1,4 @@
-package speed.test.entity;
+package speed.test.web.site;
 
 /**
  * Created by dango on 6/2/17.
