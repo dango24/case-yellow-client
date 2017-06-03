@@ -37,7 +37,6 @@ public class UtilsTest {
     @Test
     public void getConnectionNotEmpty() throws Exception {
         String connectionType = Utils.getConnection();
-        System.out.println(connectionType);
         assertFalse(connectionType.isEmpty());
     }
 

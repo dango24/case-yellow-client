@@ -1,6 +1,6 @@
 import org.apache.log4j.Logger;
-import utils.Utils;
 
+import static utils.AppBootUtils.bootAppWithArgs;
 import static utils.Messages.churchillSpeech;
 
 /**
@@ -11,9 +11,10 @@ public class App {
     // Logger
     final static Logger logger = Logger.getLogger(App.class);
 
+    // Functions
 
     public static void main(String[] args) {
-        Utils.bootAppWithArgs(args);
+        bootAppWithArgs(args);
         logger.info(churchillSpeech());
     }
 

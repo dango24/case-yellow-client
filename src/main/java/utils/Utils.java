@@ -1,21 +1,16 @@
 package utils;
 
 import exceptions.ConnectionTypeException;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by dango on 6/2/17.
@@ -28,58 +23,13 @@ public class Utils {
     // Constants Variables
     public final static SimpleDateFormat formatter;
 
+    // Init
     static {
         formatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
         log = Logger.getLogger(Utils.class);
     }
 
     // Utilities functions
-
-    public static void bootAppWithArgs(String[] bootArgs) {
-        Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
-        updateLog4jConfiguration(argsMap.get("logFilePath"));
-    }
-
-    private static Map<String, String> buildArgsKeyValueParis(String[] bootArgs) {
-
-        return Stream.of(bootArgs)
-                     .filter(arg -> arg.startsWith("-D"))
-                     .map(arg -> arg.replace("-D", ""))
-                     .filter(arg -> !arg.isEmpty())
-                     .map(arg -> arg.split("="))
-                     .filter(argKeyValuePair -> argKeyValuePair.length == 2)
-                     .collect(toMap(argKeyValuePair -> argKeyValuePair[0],
-                                    argKeyValuePair -> argKeyValuePair[1]));
-    }
-
-    private static void updateLog4jConfiguration(String logFile) {
-        Properties props = new Properties();
-
-        if (logFile == null || logFile.isEmpty()) {
-            logFile = createDefaultLoggingFile();
-        }
-
-        try (InputStream configStream = Utils.class.getResourceAsStream( "/log4j.properties")){
-            props.load(configStream);
-
-        } catch (IOException e) {
-            System.out.println("Error not load configuration file ");
-        }
-
-        props.setProperty("log4j.appender.file.File", logFile);
-        LogManager.resetConfiguration();
-        PropertyConfigurator.configure(props);
-    }
-
-    private static String createDefaultLoggingFile() {
-        File logDir = new File(System.getProperty("user.dir"), "logs");
-
-        if (!logDir.exists()) {
-            logDir.mkdir();
-        }
-
-        return new File(logDir, "logging.log").toString();
-    }
 
     public static String generateUniqueID() {
         return UUID.randomUUID().toString();
@@ -93,7 +43,7 @@ public class Utils {
             return isEthernetConnection(networkInterface) ? "LAN" : "Wifi";
 
         } catch (Exception e) {
-            log.error("Failed to find client connection type" + e.getMessage());
+            log.error("Failed to find client connection type" + e.getMessage(), e);
             return "Unknown";
         }
     }
