@@ -4,6 +4,8 @@ package speed.test.entities;
 /**
  * Created by Dan on 12/10/2016.
  */
+
+ // TODO dango add system info to test
 public class SystemInfo {
 
     private String operatingSystem;

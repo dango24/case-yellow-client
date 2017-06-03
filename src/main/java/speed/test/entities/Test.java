@@ -1,6 +1,6 @@
 package speed.test.entities;
 
-import speed.test.web.site.SpeedTestWebSite;
+import speed.test.web.site.entities.SpeedTestWebSite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +14,20 @@ import static utils.Utils.getConnection;
 public class Test {
 
     // Fields
-    private int                  numOfUrlForTest;
     private String               testID;
     private SystemInfo           systemInfo;
     private SpeedTestWebSite     speedTestWebsite;
-    private List<String>         completedUrls;
-    private List<String>         failedUrls;
     private List<ComparisonInfo> comparisonInfoTests;
 
     // Constructor
-    public Test(int numOfUrlForTest, SpeedTestWebSite SpeedTestWebsite) {
-        this.numOfUrlForTest = numOfUrlForTest;
-        this.testID = generateUniqueID();
-        this.speedTestWebsite = SpeedTestWebsite;
-        this.comparisonInfoTests = new ArrayList<>(numOfUrlForTest);
-        this.completedUrls = new ArrayList<>(numOfUrlForTest);
-        this.failedUrls = new ArrayList<>();
-        this.systemInfo = new SystemInfo(getConnection());
+
+    private Test(TestBuilder testBuilder) {
+        this.testID = testBuilder.testID;
+        this.systemInfo = testBuilder.systemInfo;
+        this.speedTestWebsite = testBuilder.speedTestWebsite;
+        this.comparisonInfoTests = testBuilder.comparisonInfoTests;
     }
+
 
     // Methods
 
@@ -49,14 +45,6 @@ public class Test {
 
     public void setSpeedTestWebsite(SpeedTestWebSite speedTestWebsite) {
         this.speedTestWebsite = speedTestWebsite;
-    }
-
-    public List<String> getCompletedUrls() {
-        return completedUrls;
-    }
-
-    public void setCompletedUrls(List<String> completedUrls) {
-        this.completedUrls = completedUrls;
     }
 
     public SystemInfo getSystemInfo() {
@@ -79,19 +67,36 @@ public class Test {
         comparisonInfoTests.add(comparisonInfo);
     }
 
-    public void addCompletedUrl(String url) {
-        completedUrls.add(url);
-    }
+    // TestBuilder Helper
+    public static class TestBuilder {
 
-    public void addFailedUrl(String url) {
-        failedUrls.add(url);
-    }
+        // Fields
+        private String               testID;
+        private SystemInfo           systemInfo;
+        private SpeedTestWebSite     speedTestWebsite;
+        private List<ComparisonInfo> comparisonInfoTests;
 
-    public boolean doneTest() {
-        return completedUrls.size() == numOfUrlForTest;
-    }
+        public TestBuilder(String testID) {
+            this.testID = testID;
+        }
 
-    public List<String> getFailedUrls() {
-        return failedUrls;
+        public TestBuilder addSystemInfo(SystemInfo systemInfo) {
+            this.systemInfo = systemInfo;
+            return this;
+        }
+
+        public TestBuilder addSpeedTestWebsite(SpeedTestWebSite speedTestWebsite) {
+            this.speedTestWebsite = speedTestWebsite;
+            return this;
+        }
+
+        public TestBuilder addComparisonInfoTests(List<ComparisonInfo> comparisonInfoTests) {
+            this.comparisonInfoTests = comparisonInfoTests;
+            return this;
+        }
+
+        public Test build() {
+            return new Test(this);
+        }
     }
 }

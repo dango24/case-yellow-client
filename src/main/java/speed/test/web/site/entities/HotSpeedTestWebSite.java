@@ -1,4 +1,4 @@
-package speed.test.web.site;
+package speed.test.web.site.entities;
 
 /**
  * Created by dango on 6/2/17.
@@ -18,5 +18,10 @@ public class HotSpeedTestWebSite implements SpeedTestWebSite {
     @Override
     public String getIdentifier() {
         return "hot";
+    }
+
+    @Override
+    public int waitForTestToFinish() {
+        return 60_000;
     }
 }

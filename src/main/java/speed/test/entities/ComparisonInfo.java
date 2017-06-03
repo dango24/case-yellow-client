@@ -6,19 +6,19 @@ package speed.test.entities;
 public class ComparisonInfo {
 
     // Fields
-    private ISPDownloadInfo  ispDownloadInfo;
+    private SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo;
     private FileDownloadInfo fileDownloadInfo;
 
     // Constructor
-    public ComparisonInfo(ISPDownloadInfo ispDownloadInfo, FileDownloadInfo fileDownloadInfo) {
-        this.ispDownloadInfo = ispDownloadInfo;
+    public ComparisonInfo(SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo, FileDownloadInfo fileDownloadInfo) {
+        this.speedTestWebSiteDownloadInfo = speedTestWebSiteDownloadInfo;
         this.fileDownloadInfo = fileDownloadInfo;
     }
 
     // Methods
 
-    public ISPDownloadInfo getIspDownloadInfo() {
-        return ispDownloadInfo;
+    public SpeedTestWebSiteDownloadInfo getSpeedTestWebSiteDownloadInfo() {
+        return speedTestWebSiteDownloadInfo;
     }
 
     public FileDownloadInfo getFileDownloadInfo() {

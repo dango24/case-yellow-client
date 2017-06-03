@@ -1,4 +1,4 @@
-package speed.test.web.site;
+package speed.test.web.site.entities;
 
 /**
  * Created by dango on 6/2/17.
@@ -18,5 +18,10 @@ public class ATNTSpeedTestWebSite implements SpeedTestWebSite {
     @Override
     public String getIdentifier() {
         return "atnt";
+    }
+
+    @Override
+    public int waitForTestToFinish() {
+        return 50_000;
     }
 }
