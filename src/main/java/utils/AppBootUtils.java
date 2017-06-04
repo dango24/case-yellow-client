@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -63,5 +64,12 @@ public class AppBootUtils {
         }
 
         return new File(logDir, "logging.log").toString();
+    }
+
+    // ForkJoinCommonPool is lazy initialized, there for at app boot make a dummy
+    // request for ForkJoinCommonPool initialization
+    public static void initForkJoinCommonPool() {
+        CompletableFuture.supplyAsync(() -> "Init ForkJoinCommonPool at start-up")
+                         .thenAccept(System.out::println);
     }
 }

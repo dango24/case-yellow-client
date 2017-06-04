@@ -7,8 +7,6 @@ import speed.test.entities.*;
 import speed.test.web.site.services.DownloadFileService;
 import speed.test.web.site.services.WebSiteService;
 import speed.test.web.site.entities.SpeedTestWebSite;
-import utils.SystemUtils;
-import utils.Utils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -38,7 +36,7 @@ public class TestGenerator {
 
     // Constructor
     public TestGenerator() {
-
+        toProduceTests = new AtomicBoolean(false);
     }
 
     // Methods
@@ -81,8 +79,8 @@ public class TestGenerator {
 
     private void saveTest(Test test) {
         CompletableFuture.supplyAsync(() -> test)
-                .exceptionally(this::saveTestExceptionHandler)
-                .thenAccept(dataAccessService::saveTest);
+                         .exceptionally(this::saveTestExceptionHandler)
+                         .thenAccept(dataAccessService::saveTest);
     }
 
     private Test saveTestExceptionHandler(Throwable e) {
