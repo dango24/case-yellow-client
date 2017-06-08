@@ -59,6 +59,12 @@ public class TestGenerator {
         this.downloadFileService = downloadFileService;
     }
 
+    public void doooo() {
+        webSiteService.produceSpeedTestWebSiteDownloadInfo(null);
+        dataAccessService.getNextSpeedTestWebSite();
+        downloadFileService.generateFileDownloadInfo(null);
+    }
+
 
     // Methods
 

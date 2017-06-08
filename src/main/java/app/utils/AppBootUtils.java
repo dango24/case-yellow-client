@@ -1,5 +1,6 @@
 package app.utils;
 
+import app.App;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -28,13 +29,13 @@ public class AppBootUtils {
     private static Map<String, String> buildArgsKeyValueParis(String[] bootArgs) {
 
         return Stream.of(bootArgs)
-                .filter(arg -> arg.startsWith("-D")) // argument identifier
-                .map(arg -> arg.substring(2)) // remove '-D' from the argument
-                .filter(arg -> !arg.isEmpty())
-                .map(arg -> arg.split("=")) // separate to key value
-                .filter(argKeyValuePair -> argKeyValuePair.length == 2)
-                .collect(toMap(argKeyValuePair -> argKeyValuePair[0],
-                               argKeyValuePair -> argKeyValuePair[1]));
+                     .filter(arg -> arg.startsWith("-D")) // argument identifier
+                     .map(arg -> arg.substring(2)) // remove '-D' from the argument
+                     .filter(arg -> !arg.isEmpty())
+                     .map(arg -> arg.split("=")) // separate to key value
+                     .filter(argKeyValuePair -> argKeyValuePair.length == 2) // validate schema
+                     .collect(toMap(argKeyValuePair -> argKeyValuePair[0],
+                                    argKeyValuePair -> argKeyValuePair[1]));
     }
 
     private static void updateLog4jConfiguration(String logFile) {
@@ -70,6 +71,6 @@ public class AppBootUtils {
     // request for ForkJoinCommonPool initialization
     public static void initForkJoinCommonPool() {
         CompletableFuture.supplyAsync(() -> "Init ForkJoinCommonPool at start-up")
-                         .thenAccept(System.out::println);
+                         .thenAccept(output -> App.logger.info(output));
     }
 }

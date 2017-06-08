@@ -1,5 +1,7 @@
-package app.utils;
+package utils;
 
+import app.utils.AppBootUtils;
+import app.utils.Utils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
@@ -65,5 +67,4 @@ public class AppBootUtilsTest {
         createDefaultLoggingFileMethod.setAccessible(true);
         createDefaultLoggingFileMethod.invoke(null);
     }
-
 }

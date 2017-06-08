@@ -4,9 +4,6 @@ import app.test.web.site.entities.SpeedTestWebSite;
 
 import java.util.List;
 
-import static app.utils.Utils.generateUniqueID;
-import static app.utils.Utils.getConnection;
-
 /**
  * Created by Dan on 24/10/2016.
  */

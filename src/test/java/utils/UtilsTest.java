@@ -1,5 +1,7 @@
-package app.utils;
+package utils;
 
+import app.utils.SystemUtils;
+import app.utils.Utils;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -34,8 +36,13 @@ public class UtilsTest {
     }
 
     @Test
+    public void generateUniqueIdWithNoDots() {
+        assertFalse(Utils.generateUniqueID().contains("."));
+    }
+
+    @Test
     public void getConnectionNotEmpty() throws Exception {
-        String connectionType = Utils.getConnection();
+        String connectionType = SystemUtils.getConnection();
         assertFalse(connectionType.isEmpty());
     }
 
@@ -43,7 +50,7 @@ public class UtilsTest {
     public void getConnectionIsConsist() throws Exception {
 
         List<String> uniqueIdsList = IntStream.range(0, 10)
-                                              .mapToObj(newId -> Utils.getConnection())
+                                              .mapToObj(newId -> SystemUtils.getConnection())
                                               .distinct()
                                               .collect(toList());
 

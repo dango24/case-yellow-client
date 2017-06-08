@@ -1,16 +1,14 @@
 package app.utils;
 
-import app.exceptions.ConnectionTypeException;
 import org.apache.log4j.Logger;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 /**
  * Created by dango on 6/2/17.
@@ -35,56 +33,6 @@ public class Utils {
         return UUID.randomUUID().toString();
     }
 
-    public static String getConnection() {
-        NetworkInterface networkInterface;
-
-        try {
-            networkInterface = getInternetConnection();
-            return isEthernetConnection(networkInterface) ? "LAN" : "Wifi";
-
-        } catch (Exception e) {
-            log.error("Failed to find client connection type" + e.getMessage(), e);
-            return "Unknown";
-        }
-    }
-
-    private static NetworkInterface getInternetConnection() throws SocketException {
-
-        return Collections.list(NetworkInterface.getNetworkInterfaces())
-                          .stream()
-                          .filter(Utils::isUp)
-                          .filter(Utils::isHardwareAddress)
-                          .findFirst()
-                          .orElseThrow(() -> new ConnectionTypeException("Unknown connection"));
-    }
-
-    private static boolean isUp(NetworkInterface networkInterface) {
-        try {
-            return networkInterface.isUp();
-        } catch (SocketException e) {
-            throw new ConnectionTypeException(e.getMessage());
-        }
-    }
-
-    private static boolean isHardwareAddress(NetworkInterface networkInterface) {
-        try {
-            return networkInterface.getHardwareAddress() != null;
-        } catch (SocketException e) {
-            throw new ConnectionTypeException(e.getMessage());
-        }
-    }
-
-    private static boolean isEthernetConnection(NetworkInterface networkInterface) {
-
-        return Stream.of(networkInterface)
-                     .filter(Objects::nonNull)
-                     .map(NetworkInterface::getName)
-                     .filter(Objects::nonNull)
-                     .map(connectionName -> connectionName.contains("eth"))
-                     .findFirst()
-                     .orElse(false);
-    }
-
     public static double round(double value, int places) {
 
         if (places < 0) {
@@ -100,6 +48,32 @@ public class Utils {
 
     public static String format(Date date) {
         return formatter.format(date);
+    }
+
+    public List<String> readFile(String path) {
+        return utils.Utils.readFile(Utils.class.getResourceAsStream(path).toString());
+    }
+
+    public static String getProperty(String key) {
+        Properties props = getApplicationProperties();
+        return props.getProperty(key);
+    }
+
+    public static void changeProperty(String key, String value) {
+        Properties props = getApplicationProperties();
+        props.setProperty(key, value);
+    }
+
+    private static Properties getApplicationProperties() {
+        Properties props = new Properties();
+
+        try (InputStream configStream = Utils.class.getResourceAsStream( "/application.properties")) {
+            props.load(configStream);
+
+        } catch (IOException e) {
+            System.out.println("Error: failed to load log4j configuration file");
+        }
+        return props;
     }
 
 }

@@ -1,4 +1,4 @@
-package app.test.web.site.engine;
+package app.test.web.site.services;
 
 import org.springframework.stereotype.Service;
 import app.test.entities.SpeedTestWebSiteDownloadInfo;

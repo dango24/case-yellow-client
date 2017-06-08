@@ -1,0 +1,8 @@
+msg: Lets go hang out on cloud
+
+config:
+  app-name: Gateway
+  app-description: ${app-name} is the the handler from user requests
+  first-name: Dan
+  last-name: Golan
+  email: caseyellow22@gmail.com
