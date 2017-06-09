@@ -1,6 +1,8 @@
 package app.engine;
 
 import app.access.DataAccessService;
+import app.exceptions.FileDownloadInfoException;
+import app.utils.Utils;
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static app.utils.SystemUtils.getSystemInfo;
 import static app.utils.Validator.validateTest;
 import static java.util.stream.Collectors.toList;
-import static app.utils.Utils.generateUniqueID;
 
 /**
  * Created by dango on 6/3/17.
@@ -32,6 +33,7 @@ public class TestGenerator {
     private final int NUM_OF_COMPARISON_PER_TEST = 3;
 
     // Fields
+    private Utils utils;
     private AtomicBoolean toProduceTests;
     private WebSiteService webSiteService;
     private DataAccessService dataAccessService;
@@ -59,31 +61,33 @@ public class TestGenerator {
         this.downloadFileService = downloadFileService;
     }
 
-    public void doooo() {
-        webSiteService.produceSpeedTestWebSiteDownloadInfo(null);
-        dataAccessService.getNextSpeedTestWebSite();
-        downloadFileService.generateFileDownloadInfo(null);
+    @Autowired
+    public void setUtils(Utils utils) {
+        this.utils = utils;
     }
-
 
     // Methods
 
     public void produceTests() {
         Test test;
 
-        while (toProduceTests.get()) {
-            test = generateNewTest();
+        try {
 
-            if (validateTest(test)) {
-                saveTest(test);
+            while (toProduceTests.get()) {
+                test = generateNewTest();
+
+                if (validateTest(test)) {
+                    saveTest(test);
+                }
             }
-        }
+
+        } catch (RuntimeException e) {}
     }
 
     private Test generateNewTest() {
         Test test;
-        SpeedTestWebSite speedTestWebSite;
         SystemInfo systemInfo;
+        SpeedTestWebSite speedTestWebSite;
         List<String> urls;
         List<ComparisonInfo> comparisonInfoList;
 
@@ -95,7 +99,7 @@ public class TestGenerator {
                                  .map(url -> generateComparisonInfo(speedTestWebSite, url))
                                  .collect(toList());
 
-        test = new Test.TestBuilder(generateUniqueID())
+        test = new Test.TestBuilder(utils.generateUniqueID())
                        .addSpeedTestWebsite(speedTestWebSite)
                        .addComparisonInfoTests(comparisonInfoList)
                        .addSystemInfo(systemInfo)
@@ -111,11 +115,11 @@ public class TestGenerator {
     }
 
     private Test saveTestExceptionHandler(Throwable e) {
-        logger.error("Failed to save test, " + e.getMessage(), e);
+        logger.error("Failed to save urls, " + e.getMessage(), e);
         return null;
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) {
+    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException {
         SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
         FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
 

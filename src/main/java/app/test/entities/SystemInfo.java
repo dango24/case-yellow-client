@@ -5,7 +5,7 @@ package app.test.entities;
  * Created by Dan on 12/10/2016.
  */
 
- // TODO dango add system info to test
+ // TODO dango add system info to urls
 public class SystemInfo {
 
     private String operatingSystem;
@@ -13,11 +13,11 @@ public class SystemInfo {
     private String publicIP;
     private String connection; // LAN / Wifi connection
 
-    public SystemInfo(String connection) {
-//        this.connection = connection;
-//        operatingSystem = DriverBase.getOperatingSystem();
-//        browser = DriverBase.getSelectedDriverType().name();
-//        publicIP = DriverBase.getPublicIPAddress();
+    public SystemInfo(String operatingSystem, String browser, String publicIP, String connection) {
+        this.operatingSystem = operatingSystem;
+        this.browser = browser;
+        this.publicIP = publicIP;
+        this.connection = connection;
     }
 
     public String getOperatingSystem() {

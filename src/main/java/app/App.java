@@ -1,7 +1,7 @@
 package app;
 
 import app.engine.TestGenerator;
-import app.user.User;
+import app.utils.Utils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,8 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import static app.utils.AppBootUtils.bootAppWithArgs;
 import static app.utils.AppBootUtils.initForkJoinCommonPool;
@@ -39,7 +39,9 @@ public class App {
 
         ApplicationContext ctx = SpringApplication.run(App.class, args);
         TestGenerator testGenerator = (TestGenerator)ctx.getBean("testGenerator");
-        testGenerator.doooo();
+        Map<String, String> map = ((Utils.UrlName)ctx.getBean("urls")).getUrlsInfo();
+        System.out.println(map);
+        testGenerator.produceTests();
     }
 
 }

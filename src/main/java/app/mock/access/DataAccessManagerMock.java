@@ -3,8 +3,9 @@ package app.mock.access;
 import app.access.DataAccessService;
 import app.test.entities.Test;
 import app.test.web.site.entities.SpeedTestWebSite;
+import app.utils.Utils;
 import org.apache.log4j.Logger;
-import utils.Utils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Constructor;
 import java.util.Collections;
@@ -19,6 +20,7 @@ public class DataAccessManagerMock implements DataAccessService {
     private Logger logger = Logger.getLogger(DataAccessManagerMock.class);
 
     // Fields
+    private Utils utils;
     private String speedTestWebSiteClassName;
 
     // Constructor
@@ -27,6 +29,11 @@ public class DataAccessManagerMock implements DataAccessService {
     }
 
     // Methods
+
+    @Autowired
+    public void setUtils(Utils utils) {
+        this.utils = utils;
+    }
 
     @Override
     public void saveTest(Test test) {
@@ -49,7 +56,7 @@ public class DataAccessManagerMock implements DataAccessService {
 
     @Override
     public List<String> getNextUrls(int numOfComparisonPerTest) {
-        List<String> urls = Utils.readFile("/urls.txt");
+        List<String> urls = utils.getUrls();
         Collections.shuffle(urls);
 
         return urls.subList(0, numOfComparisonPerTest);

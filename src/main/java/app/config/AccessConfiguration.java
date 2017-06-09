@@ -3,6 +3,7 @@ package app.config;
 import app.access.DataAccessManager;
 import app.access.DataAccessService;
 import app.mock.access.DataAccessManagerMock;
+import app.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,5 +29,10 @@ public class AccessConfiguration {
     @Profile("!integration")
     public DataAccessService dataAccessServiceTest() {
         return new DataAccessManagerMock(packageNamePrefix + "HotSpeedTestWebSite");
+    }
+
+    @Bean
+    public Utils.UrlName urls() {
+        return new Utils.UrlName();
     }
 }

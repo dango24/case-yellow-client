@@ -1,22 +1,17 @@
 package app.test.entities;
 
-import java.util.Date;
-
-import static app.utils.Utils.format;
-import static app.utils.Utils.round;
-
 /**
  * Created by Dan on 04/10/2016.
  */
 public class FileDownloadInfo {
 
     // Fields
-    private String fileURL;
     private String fileName;
+    private String fileURL;
     private long   fileSizeInBytes;
     private double fileDownloadRateKBPerSec;
     private long   fileDownloadedTimeInMs;
-    private Date   startDownloadingTime;
+    private String startDownloadingTime;
 
     //Constructors
     public FileDownloadInfo() {}
@@ -25,15 +20,16 @@ public class FileDownloadInfo {
         fileURL = url;
     }
 
-    // Methods
-
-    public double downloadRateKBperSec() {
-
-        double fileDownloadTimeElapsedInSec = fileDownloadedTimeInMs /1000;
-        double bytesPerSec = fileSizeInBytes /fileDownloadTimeElapsedInSec;
-
-        return bytesPerSec / Math.pow(2, 10); // Transform to KB
+    public FileDownloadInfo(FileDownloadInfoBuilder fileDownloadInfoBuilder) {
+        fileName = fileDownloadInfoBuilder.fileName;
+        fileURL = fileDownloadInfoBuilder.fileURL;
+        fileSizeInBytes = fileDownloadInfoBuilder.fileSizeInBytes;
+        fileDownloadRateKBPerSec = fileDownloadInfoBuilder.fileDownloadRateKBPerSec;
+        fileDownloadedTimeInMs = fileDownloadInfoBuilder.fileDownloadedTimeInMs;
+        startDownloadingTime = fileDownloadInfoBuilder.startDownloadingTime;
     }
+
+    // Methods
 
     public String getFileURL() {
         return fileURL;
@@ -49,10 +45,6 @@ public class FileDownloadInfo {
 
     public long getFileDownloadedTimeInMs() { return fileDownloadedTimeInMs; }
 
-    public double getFileDownloadedTimeInSec() {
-        return round( (double) fileDownloadedTimeInMs / 1000, 2);
-    }
-
     public void setFileDownloadedTimeInMs(long fileDownloadedTimeInMs) {
         this.fileDownloadedTimeInMs = fileDownloadedTimeInMs;
     }
@@ -65,11 +57,11 @@ public class FileDownloadInfo {
         this.fileName = fileName;
     }
 
-    public Date getStartDownloadingTime() {
+    public String getStartDownloadingTime() {
         return startDownloadingTime;
     }
 
-    public void setStartDownloadingTime(Date startDownloadingTime) {
+    public void setStartDownloadingTime(String startDownloadingTime) {
         this.startDownloadingTime = startDownloadingTime;
     }
 
@@ -88,7 +80,56 @@ public class FileDownloadInfo {
                 ", fileName='" + fileName + '\'' +
                 ", fileSizeInBytes=" + fileSizeInBytes +
                 ", fileDownloadedTimeInMs=" + fileDownloadedTimeInMs +
-                ", startDownloadingTime=" + format(startDownloadingTime) +
+                ", startDownloadingTime=" + startDownloadingTime +
                 '}';
+    }
+
+    public static class FileDownloadInfoBuilder {
+
+        // Fields
+        private String fileURL;
+        private String fileName;
+        private long   fileSizeInBytes;
+        private double fileDownloadRateKBPerSec;
+        private long   fileDownloadedTimeInMs;
+        private String startDownloadingTime;
+
+        public FileDownloadInfoBuilder(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public FileDownloadInfoBuilder addFileURL(String fileURL) {
+            this.fileURL = fileURL;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addFileName(String fileName) {
+            this.fileName = fileName;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addFileSizeInBytes(long fileSizeInBytes) {
+            this.fileSizeInBytes = fileSizeInBytes;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addFileDownloadRateKBPerSec(double fileDownloadRateKBPerSec) {
+            this.fileDownloadRateKBPerSec = fileDownloadRateKBPerSec;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addFileDownloadedTimeInMs(long fileDownloadedTimeInMs) {
+            this.fileDownloadedTimeInMs = fileDownloadedTimeInMs;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addStartDownloadingTime(String startDownloadingTime) {
+            this.startDownloadingTime = startDownloadingTime;
+            return this;
+        }
+
+        public FileDownloadInfo build() {
+            return new FileDownloadInfo(this);
+        }
     }
 }

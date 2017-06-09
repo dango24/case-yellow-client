@@ -4,6 +4,7 @@ import app.utils.AppBootUtils;
 import app.utils.Utils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +18,9 @@ import static org.junit.Assert.*;
  * Created by dango on 6/3/17.
  */
 public class AppBootUtilsTest {
+
+    @Autowired
+    private Utils utils;
 
     @Test
     public void bootAppWithArgs() throws Exception {
@@ -45,7 +49,7 @@ public class AppBootUtilsTest {
         try {
 
             if (logDir.exists()) {
-                tmpLogFile = new File(System.getProperty("java.io.tmpdir"), Utils.generateUniqueID());
+                tmpLogFile = new File(System.getProperty("java.io.tmpdir"), utils.generateUniqueID());
                 FileUtils.copyDirectory(logDir, tmpLogFile);
                 FileUtils.deleteDirectory(logDir);
             }

@@ -3,6 +3,7 @@ package utils;
 import app.utils.SystemUtils;
 import app.utils.Utils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,9 +18,12 @@ import static org.junit.Assert.*;
  */
 public class UtilsTest {
 
+    @Autowired
+    private Utils utils;
+
     @Test
     public void uniqueIdNotEmpty() throws Exception {
-        String uniqueId = Utils.generateUniqueID();
+        String uniqueId = utils.generateUniqueID();
         assertFalse(uniqueId.isEmpty());
     }
 
@@ -27,7 +31,7 @@ public class UtilsTest {
     public void generateUniqueIdIsUnique() throws Exception {
         Set<String> uniqueIdsSet;
         List<String> uniqueIdsList = IntStream.range(0, 1_000_000)
-                                              .mapToObj(newId -> Utils.generateUniqueID())
+                                              .mapToObj(newId -> utils.generateUniqueID())
                                               .collect(toList());
 
         uniqueIdsSet = new HashSet<>(uniqueIdsList);
@@ -37,7 +41,7 @@ public class UtilsTest {
 
     @Test
     public void generateUniqueIdWithNoDots() {
-        assertFalse(Utils.generateUniqueID().contains("."));
+        assertFalse(utils.generateUniqueID().contains("."));
     }
 
     @Test

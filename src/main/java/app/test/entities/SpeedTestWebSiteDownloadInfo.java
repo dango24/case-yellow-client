@@ -1,9 +1,9 @@
 package app.test.entities;
 
-import app.utils.Utils;
-
 import java.io.File;
 import java.util.Date;
+
+import static utils.Helper.format;
 
 /**
  * Created by Dan on 12/10/2016.
@@ -40,7 +40,7 @@ public class SpeedTestWebSiteDownloadInfo {
     public String toString() {
         return "SpeedTestWebSiteDownloadInfo{" +
                 "speedTestIdentifier=" + speedTestIdentifier +
-                ", startMeasuringTime=" + Utils.format(startMeasuringTime) +
+                ", startMeasuringTime=" + format(startMeasuringTime) +
                 '}';
     }
 }

@@ -1,79 +1,72 @@
 package app.utils;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by dango on 6/2/17.
  */
+@Component
 public class Utils {
 
     // Logger
-    private static Logger log;
+    private Logger log = Logger.getLogger(Utils.class);
 
-    // Constants Variables
-    public final static SimpleDateFormat formatter;
+    // Fields
 
-    // Init
-    static {
-        formatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-        log = Logger.getLogger(Utils.class);
+    @Autowired
+    private ApplicationContext appContext;
+    private Map<String, String> urlsMap;
+
+    // Constructor
+    public Utils() {
+        urlsMap = ((Utils.UrlName)appContext.getBean("urls")).getUrlsInfo();
     }
 
-    // Utilities functions
+    // Methods
 
-    public static String generateUniqueID() {
+    public String generateUniqueID() {
         return UUID.randomUUID().toString();
     }
 
-    public static double round(double value, int places) {
+    public List<String> getUrls() {
+        return new ArrayList<>(urlsMap.keySet());
+    }
 
-        if (places < 0) {
-            throw new IllegalArgumentException();
+    public String getFileNameFromUrl(String urlStr) {
+        return urlsMap.get(urlStr);
+    }
+
+    @Component
+    @ConfigurationProperties
+    public static class UrlName {
+
+        private Map<String, String> urlInfo = new HashMap<>();
+
+        public UrlName() {
         }
 
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-
-        return (double) tmp / factor;
-    }
-
-    public static String format(Date date) {
-        return formatter.format(date);
-    }
-
-    public List<String> readFile(String path) {
-        return utils.Utils.readFile(Utils.class.getResourceAsStream(path).toString());
-    }
-
-    public static String getProperty(String key) {
-        Properties props = getApplicationProperties();
-        return props.getProperty(key);
-    }
-
-    public static void changeProperty(String key, String value) {
-        Properties props = getApplicationProperties();
-        props.setProperty(key, value);
-    }
-
-    private static Properties getApplicationProperties() {
-        Properties props = new Properties();
-
-        try (InputStream configStream = Utils.class.getResourceAsStream( "/application.properties")) {
-            props.load(configStream);
-
-        } catch (IOException e) {
-            System.out.println("Error: failed to load log4j configuration file");
+        public UrlName(Map<String, String> urlInfo) {
+            this.urlInfo = urlInfo;
         }
-        return props;
-    }
 
+        public Map<String, String> getUrlsInfo() {
+            return this.urlInfo;
+        }
+
+        public Map<String, String> getUrlInfo() {
+            return urlInfo;
+        }
+
+        public void setUrlInfo(Map<String, String> urlInfo) {
+            this.urlInfo = urlInfo;
+        }
+    }
 }
+
+
