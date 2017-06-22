@@ -32,12 +32,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.icarusrises</groupId>
-            <artifactId>case-yellow-common-objects</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <!--Log4j - Apache Logging Services-->
         <dependency>
             <groupId>log4j</groupId>

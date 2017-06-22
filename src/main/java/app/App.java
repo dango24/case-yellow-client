@@ -1,7 +1,7 @@
 package app;
 
-import app.engine.TestGenerator;
-import app.utils.Utils;
+import app.caseyellow.client.domain.TestGenerator;
+import app.caseyellow.client.infrastructre.UrlMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,9 +12,9 @@ import org.springframework.context.ApplicationContext;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import static app.utils.AppBootUtils.bootAppWithArgs;
-import static app.utils.AppBootUtils.initForkJoinCommonPool;
-import static app.utils.Messages.churchillSpeech;
+import static app.caseyellow.client.common.Messages.churchillSpeech;
+import static app.caseyellow.client.infrastructre.AppBootHelper.bootAppWithArgs;
+import static app.caseyellow.client.infrastructre.AppBootHelper.initForkJoinCommonPool;
 
 /**
  * Created by dango on 6/2/17.
@@ -39,7 +39,7 @@ public class App {
 
         ApplicationContext ctx = SpringApplication.run(App.class, args);
         TestGenerator testGenerator = (TestGenerator)ctx.getBean("testGenerator");
-        Map<String, String> map = ((Utils.UrlName)ctx.getBean("urls")).getUrlsInfo();
+        Map<String, String> map = ((UrlMapper.UrlName)ctx.getBean("urls")).getUrlsInfo();
         System.out.println(map);
         testGenerator.produceTests();
     }

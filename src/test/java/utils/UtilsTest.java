@@ -1,15 +1,17 @@
 package utils;
 
-import app.utils.SystemUtils;
-import app.utils.Utils;
+import app.caseyellow.client.domain.services.interfaces.SystemService;
+import app.caseyellow.client.infrastructre.SystemServiceImp;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import static app.caseyellow.client.common.Utils.generateUniqueID;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
@@ -18,12 +20,9 @@ import static org.junit.Assert.*;
  */
 public class UtilsTest {
 
-    @Autowired
-    private Utils utils;
-
     @Test
     public void uniqueIdNotEmpty() throws Exception {
-        String uniqueId = utils.generateUniqueID();
+        String uniqueId = generateUniqueID();
         assertFalse(uniqueId.isEmpty());
     }
 
@@ -31,7 +30,7 @@ public class UtilsTest {
     public void generateUniqueIdIsUnique() throws Exception {
         Set<String> uniqueIdsSet;
         List<String> uniqueIdsList = IntStream.range(0, 1_000_000)
-                                              .mapToObj(newId -> utils.generateUniqueID())
+                                              .mapToObj(newId -> generateUniqueID())
                                               .collect(toList());
 
         uniqueIdsSet = new HashSet<>(uniqueIdsList);
@@ -41,12 +40,12 @@ public class UtilsTest {
 
     @Test
     public void generateUniqueIdWithNoDots() {
-        assertFalse(utils.generateUniqueID().contains("."));
+        assertFalse(generateUniqueID().contains("."));
     }
 
     @Test
     public void getConnectionNotEmpty() throws Exception {
-        String connectionType = SystemUtils.getConnection();
+        String connectionType = getConnection();
         assertFalse(connectionType.isEmpty());
     }
 
@@ -54,11 +53,27 @@ public class UtilsTest {
     public void getConnectionIsConsist() throws Exception {
 
         List<String> uniqueIdsList = IntStream.range(0, 10)
-                                              .mapToObj(newId -> SystemUtils.getConnection())
+                                              .mapToObj(newId -> getConnection())
                                               .distinct()
                                               .collect(toList());
 
         assertTrue(uniqueIdsList.size() == 1);
+    }
+
+
+    private String getConnection() {
+        SystemService systemService;
+        Method getConnectionMethod;
+
+        try {
+            systemService = new SystemServiceImp();
+            getConnectionMethod = SystemServiceImp.class.getDeclaredMethod("getConnection");
+            getConnectionMethod.setAccessible(true);
+            return (String)getConnectionMethod.invoke(systemService, null);
+
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return SystemService.UNKNOWN_CONNECTION;
+        }
     }
 
 }
