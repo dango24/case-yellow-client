@@ -1,7 +1,7 @@
 package app.caseyellow.client.infrastructre;
 
 import app.caseyellow.client.domain.model.SystemInfo;
-import app.caseyellow.client.domain.services.interfaces.SystemService;
+import app.caseyellow.client.domain.services.SystemService;
 import app.caseyellow.client.exceptions.ConnectionTypeException;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;

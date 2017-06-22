@@ -2,7 +2,7 @@ package app.caseyellow.client.presistance;
 
 import app.caseyellow.client.domain.model.test_entites.Test;
 import app.caseyellow.client.domain.model.web_site_entites.SpeedTestWebSite;
-import app.caseyellow.client.domain.services.interfaces.DataAccessService;
+import app.caseyellow.client.domain.services.DataAccessService;
 import org.apache.log4j.Logger;
 
 import java.util.List;

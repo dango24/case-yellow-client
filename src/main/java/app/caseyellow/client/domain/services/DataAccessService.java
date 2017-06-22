@@ -1,4 +1,4 @@
-package app.caseyellow.client.domain.services.interfaces;
+package app.caseyellow.client.domain.services;
 
 import app.caseyellow.client.domain.model.test_entites.Test;
 import app.caseyellow.client.domain.model.web_site_entites.SpeedTestWebSite;

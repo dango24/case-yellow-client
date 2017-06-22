@@ -1,6 +1,6 @@
 package utils;
 
-import app.caseyellow.client.domain.services.interfaces.SystemService;
+import app.caseyellow.client.domain.services.SystemService;
 import app.caseyellow.client.infrastructre.AppBootHelper;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;

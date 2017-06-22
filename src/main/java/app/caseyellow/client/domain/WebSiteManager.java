@@ -2,7 +2,7 @@ package app.caseyellow.client.domain;
 
 import app.caseyellow.client.domain.model.test_entites.SpeedTestWebSiteDownloadInfo;
 import app.caseyellow.client.domain.model.web_site_entites.SpeedTestWebSite;
-import app.caseyellow.client.domain.services.interfaces.WebSiteService;
+import app.caseyellow.client.domain.services.WebSiteService;
 import org.springframework.stereotype.Service;
 
 /**

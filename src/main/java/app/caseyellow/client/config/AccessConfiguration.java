@@ -2,7 +2,7 @@ package app.caseyellow.client.config;
 
 import app.caseyellow.client.common.UrlMapper;
 import app.caseyellow.client.presistance.DataAccessManager;
-import app.caseyellow.client.domain.services.interfaces.DataAccessService;
+import app.caseyellow.client.domain.services.DataAccessService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

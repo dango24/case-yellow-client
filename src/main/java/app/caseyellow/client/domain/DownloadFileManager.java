@@ -2,7 +2,7 @@ package app.caseyellow.client.domain;
 
 import app.caseyellow.client.common.Utils;
 import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;
-import app.caseyellow.client.domain.services.interfaces.DownloadFileService;
+import app.caseyellow.client.domain.services.DownloadFileService;
 import app.caseyellow.client.exceptions.FileDownloadInfoException;
 import app.caseyellow.client.common.UrlMapper;
 import org.apache.commons.io.FileUtils;
