@@ -6,7 +6,7 @@ import app.caseyellow.client.domain.model.SystemInfo;
 import app.caseyellow.client.domain.model.test_entites.ComparisonInfo;
 import app.caseyellow.client.domain.model.test_entites.SpeedTestWebSiteDownloadInfo;
 import app.caseyellow.client.domain.model.web_site_entites.SpeedTestWebSite;
-import app.caseyellow.client.domain.services.*;
+import app.caseyellow.client.domain.services.interfaces.*;
 import app.caseyellow.client.exceptions.FileDownloadInfoException;
 import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;
 import app.caseyellow.client.domain.model.test_entites.Test;

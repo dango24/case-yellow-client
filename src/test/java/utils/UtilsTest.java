@@ -1,6 +1,6 @@
 package utils;
 
-import app.caseyellow.client.domain.services.SystemService;
+import app.caseyellow.client.domain.services.interfaces.SystemService;
 import app.caseyellow.client.infrastructre.SystemServiceImp;
 import org.junit.Test;
 
