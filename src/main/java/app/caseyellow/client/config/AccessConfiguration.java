@@ -1,7 +1,6 @@
 package app.caseyellow.client.config;
 
-import app.caseyellow.client.common.UrlMapper;
-import app.caseyellow.client.presistance.DataAccessManager;
+import app.caseyellow.client.presistance.DataAccessServiceImpl;
 import app.caseyellow.client.domain.services.interfaces.DataAccessService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,18 +19,13 @@ public class AccessConfiguration {
 
     @Bean
     @Profile("integration")
-    public DataAccessService dataAccessServiceDevelopment() {
-        return new DataAccessManager();
+    public DataAccessService dataAccessService() {
+        return new DataAccessServiceImpl();
     }
 
     @Bean
     @Profile("!integration")
     public DataAccessService dataAccessServiceTest() {
-        return null; //return new DataAccessManagerMock(packageNamePrefix + "HotSpeedTestWebSite");
-    }
-
-    @Bean
-    public UrlMapper.UrlName urls() {
-        return new UrlMapper.UrlName();
+        return new DataAccessServiceImpl();
     }
 }

@@ -18,7 +18,7 @@ import java.util.Date;
  * Created by dango on 6/3/17.
  */
 @Service
-public class DownloadFileManager implements DownloadFileService {
+public class DownloadFileServiceImpl implements DownloadFileService {
 
     @Autowired
     private UrlMapper urlMapper;

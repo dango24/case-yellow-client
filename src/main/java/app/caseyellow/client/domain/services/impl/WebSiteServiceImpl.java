@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * Created by dango on 6/3/17.
  */
 @Service
-public class WebSiteManager implements WebSiteService {
+public class WebSiteServiceImpl implements WebSiteService {
 
     @Override
     public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) {
