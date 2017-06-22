@@ -64,7 +64,7 @@ public class SystemServiceImp implements SystemService {
 
         } catch (Exception e) {
             log.error("Failed to find client connection type" + e.getMessage(), e);
-            return "Unknown";
+            return UNKNOWN_CONNECTION;
         }
     }
 

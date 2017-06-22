@@ -4,7 +4,7 @@ import app.caseyellow.client.common.Utils;
 import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;
 import app.caseyellow.client.domain.services.interfaces.DownloadFileService;
 import app.caseyellow.client.exceptions.FileDownloadInfoException;
-import app.caseyellow.client.infrastructre.UrlMapper;
+import app.caseyellow.client.common.UrlMapper;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
