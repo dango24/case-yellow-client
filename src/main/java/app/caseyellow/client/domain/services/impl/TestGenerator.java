@@ -1,4 +1,4 @@
-package app.caseyellow.client.domain;
+package app.caseyellow.client.domain.services.impl;
 
 import app.caseyellow.client.common.Utils;
 import app.caseyellow.client.common.Validator;
@@ -6,16 +6,13 @@ import app.caseyellow.client.domain.model.SystemInfo;
 import app.caseyellow.client.domain.model.test_entites.ComparisonInfo;
 import app.caseyellow.client.domain.model.test_entites.SpeedTestWebSiteDownloadInfo;
 import app.caseyellow.client.domain.model.web_site_entites.SpeedTestWebSite;
-import app.caseyellow.client.domain.services.WebSiteService;
+import app.caseyellow.client.domain.services.*;
 import app.caseyellow.client.exceptions.FileDownloadInfoException;
 import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;
 import app.caseyellow.client.domain.model.test_entites.Test;
-import app.caseyellow.client.domain.services.DataAccessService;
-import app.caseyellow.client.domain.services.DownloadFileService;
-import app.caseyellow.client.domain.services.SystemService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,8 +23,8 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by dango on 6/3/17.
  */
-@Component
-public class TestGenerator {
+@Service
+public class TestGenerator implements TestService {
 
     // Logger
     private Logger logger = Logger.getLogger(TestGenerator.class);
@@ -71,6 +68,7 @@ public class TestGenerator {
 
     // Methods
 
+    @Override
     public void produceTests() {
         Test test;
 

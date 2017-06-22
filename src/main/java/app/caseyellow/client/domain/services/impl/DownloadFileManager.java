@@ -1,4 +1,4 @@
-package app.caseyellow.client.domain;
+package app.caseyellow.client.domain.services.impl;
 
 import app.caseyellow.client.common.Utils;
 import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;

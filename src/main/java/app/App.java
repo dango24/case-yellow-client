@@ -1,6 +1,6 @@
 package app;
 
-import app.caseyellow.client.domain.TestGenerator;
+import app.caseyellow.client.domain.services.impl.TestGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
