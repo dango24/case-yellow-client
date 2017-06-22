@@ -1,10 +1,10 @@
 package app.caseyellow.client.domain;
 
-import app.caseyellow.client.infrastructre.UrlMapper;
 import app.caseyellow.client.common.Utils;
 import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;
 import app.caseyellow.client.domain.services.interfaces.DownloadFileService;
 import app.caseyellow.client.exceptions.FileDownloadInfoException;
+import app.caseyellow.client.infrastructre.UrlMapper;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
-
-import static app.caseyellow.client.common.Utils.generateUniqueID;
 
 /**
  * Created by dango on 6/3/17.
@@ -44,7 +42,7 @@ public class DownloadFileManager implements DownloadFileService {
 
             fileName = urlMapper.getFileNameFromUrl(urlStr);
             url = new URL(urlStr);
-            tmpFile = new File(tmpDirPath, generateUniqueID());
+            tmpFile = new File(tmpDirPath, Utils.generateUniqueID());
 
             startDownloadingTime = System.currentTimeMillis();
             FileUtils.copyURLToFile(url, tmpFile);

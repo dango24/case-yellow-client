@@ -1,7 +1,6 @@
 package app.caseyellow.client.infrastructre;
 
 import app.App;
-import app.caseyellow.client.infrastructre.UrlMapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 

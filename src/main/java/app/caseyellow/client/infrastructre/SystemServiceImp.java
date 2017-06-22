@@ -13,12 +13,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Stream;
-
-import static app.caseyellow.client.domain.services.interfaces.SystemService.LAN_CONNECTION;
-import static app.caseyellow.client.domain.services.interfaces.SystemService.UNKNOWN_CONNECTION;
-import static app.caseyellow.client.domain.services.interfaces.SystemService.WIFI_CONNECTION;
 
 /**
  * Created by dango on 6/3/17.

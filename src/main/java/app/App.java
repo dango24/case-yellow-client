@@ -1,7 +1,6 @@
 package app;
 
 import app.caseyellow.client.domain.TestGenerator;
-import app.caseyellow.client.infrastructre.UrlMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import java.net.UnknownHostException;
-import java.util.Map;
 
 import static app.caseyellow.client.common.Messages.churchillSpeech;
 import static app.caseyellow.client.infrastructre.AppBootHelper.bootAppWithArgs;
@@ -36,13 +34,9 @@ public class App {
     }
 
     private static void startTestGenerator(String[] args) {
-
         ApplicationContext ctx = SpringApplication.run(App.class, args);
         TestGenerator testGenerator = (TestGenerator)ctx.getBean("testGenerator");
-        Map<String, String> map = ((UrlMapper.UrlName)ctx.getBean("urls")).getUrlsInfo();
-        System.out.println(map);
         testGenerator.produceTests();
     }
-
 }
 

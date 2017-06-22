@@ -1,16 +1,18 @@
 package app.caseyellow.client.domain;
 
+import app.caseyellow.client.common.Utils;
+import app.caseyellow.client.common.Validator;
 import app.caseyellow.client.domain.model.SystemInfo;
 import app.caseyellow.client.domain.model.test_entites.ComparisonInfo;
-import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;
 import app.caseyellow.client.domain.model.test_entites.SpeedTestWebSiteDownloadInfo;
-import app.caseyellow.client.domain.model.test_entites.Test;
 import app.caseyellow.client.domain.model.web_site_entites.SpeedTestWebSite;
+import app.caseyellow.client.domain.services.interfaces.WebSiteService;
+import app.caseyellow.client.exceptions.FileDownloadInfoException;
+import app.caseyellow.client.domain.model.test_entites.FileDownloadInfo;
+import app.caseyellow.client.domain.model.test_entites.Test;
 import app.caseyellow.client.domain.services.interfaces.DataAccessService;
 import app.caseyellow.client.domain.services.interfaces.DownloadFileService;
 import app.caseyellow.client.domain.services.interfaces.SystemService;
-import app.caseyellow.client.domain.services.interfaces.WebSiteService;
-import app.caseyellow.client.exceptions.FileDownloadInfoException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,8 +21,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static app.caseyellow.client.common.Utils.generateUniqueID;
-import static app.caseyellow.client.common.Validator.validateTest;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -79,7 +79,7 @@ public class TestGenerator {
             while (toProduceTests.get()) {
                 test = generateNewTest();
 
-                if (validateTest(test)) {
+                if (Validator.validateTest(test)) {
                     saveTest(test);
                 }
             }
@@ -102,7 +102,7 @@ public class TestGenerator {
                                  .map(url -> generateComparisonInfo(speedTestWebSite, url))
                                  .collect(toList());
 
-        test = new Test.TestBuilder(generateUniqueID())
+        test = new Test.TestBuilder(Utils.generateUniqueID())
                        .addSpeedTestWebsite(speedTestWebSite)
                        .addComparisonInfoTests(comparisonInfoList)
                        .addSystemInfo(systemInfo)
