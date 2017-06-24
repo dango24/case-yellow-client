@@ -1,7 +1,7 @@
 package utils;
 
-import app.caseyellow.client.domain.services.interfaces.SystemService;
-import app.caseyellow.client.infrastructre.SystemServiceImp;
+import caseyellow.client.domain.services.interfaces.SystemService;
+import caseyellow.client.infrastructre.SystemServiceImp;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import static app.caseyellow.client.common.Utils.generateUniqueID;
+import static caseyellow.client.common.Utils.generateUniqueID;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 

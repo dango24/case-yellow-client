@@ -1,6 +1,6 @@
 package app.test.web.site.services;
 
-import app.caseyellow.client.domain.services.interfaces.DownloadFileService;
+import caseyellow.client.domain.services.interfaces.DownloadFileService;
 import org.junit.Test;
 
 /**

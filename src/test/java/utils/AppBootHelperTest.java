@@ -1,7 +1,7 @@
 package utils;
 
-import app.caseyellow.client.domain.services.interfaces.SystemService;
-import app.caseyellow.client.infrastructre.AppBootHelper;
+import caseyellow.client.domain.services.interfaces.SystemService;
+import caseyellow.client.infrastructre.AppBootHelper;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import static app.caseyellow.client.common.Utils.generateUniqueID;
+import static caseyellow.client.common.Utils.generateUniqueID;
 import static org.junit.Assert.*;
 
 /**
