@@ -1,6 +1,5 @@
 package caseyellow.client.domain.services.impl;
 
-import caseyellow.client.common.Utils;
 import caseyellow.client.common.Validator;
 import caseyellow.client.domain.model.SystemInfo;
 import caseyellow.client.domain.model.test.ComparisonInfo;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static caseyellow.client.common.Utils.generateUniqueID;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -100,13 +100,20 @@ public class TestGenerator implements TestService {
                                  .map(url -> generateComparisonInfo(speedTestWebSite, url))
                                  .collect(toList());
 
-        test = new Test.TestBuilder(Utils.generateUniqueID())
+        test = new Test.TestBuilder(generateUniqueID())
                        .addSpeedTestWebsite(speedTestWebSite)
                        .addComparisonInfoTests(comparisonInfoList)
                        .addSystemInfo(systemInfo)
                        .build();
 
         return test;
+    }
+
+    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException {
+        SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
+        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
+
+        return new ComparisonInfo(speedTestWebSiteDownloadInfo, fileDownloadInfo);
     }
 
     private void saveTest(Test test) {
@@ -118,12 +125,5 @@ public class TestGenerator implements TestService {
     private Test saveTestExceptionHandler(Throwable e) {
         logger.error("Failed to save urls, " + e.getMessage(), e);
         return null;
-    }
-
-    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException {
-        SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
-        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
-
-        return new ComparisonInfo(speedTestWebSiteDownloadInfo, fileDownloadInfo);
     }
 }

@@ -3,10 +3,12 @@ package caseyellow.client.infrastructre;
 import caseyellow.client.domain.model.SystemInfo;
 import caseyellow.client.domain.services.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -19,13 +21,13 @@ import java.util.stream.Stream;
  * Created by dango on 6/3/17.
  */
 @Service
-public class SystemServiceImp implements SystemService {
+public class SystemServiceImpl implements SystemService {
 
     // Constants
     private static final String ETHERNET_IDENTIFIER = "eth";
 
     // Logger
-    private Logger log = Logger.getLogger(SystemServiceImp.class);
+    private Logger log = Logger.getLogger(SystemServiceImpl.class);
 
     // Methods
 
@@ -37,6 +39,11 @@ public class SystemServiceImp implements SystemService {
         String browser = getBrowser();
 
         return new SystemInfo(os, browser, ipAddress, connection);
+    }
+
+    @Override
+    public void deleteDirectory(File directory) throws IOException {
+        FileUtils.deleteDirectory(directory);
     }
 
     private String getOperationSystem() {

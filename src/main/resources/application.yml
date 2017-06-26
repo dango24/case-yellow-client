@@ -8,10 +8,10 @@ config:
   email: caseyellow22@gmail.com
 
 urlInfo :
-    http://mirrors.kodi.tv/releases/osx/x86_64/kodi-16.1-Jarvis-x86_64.dmg : kodi
+    http://mirrors.kodi.tv/releases/osx/x86_64/kodi-17.3-Krypton-x86_64.dmg : kodi
     https://ftp.mozilla.org/pub/firefox/releases/37.0b1/win32/en-US/Firefox%20Setup%2037.0b1.exe : firefox
     https://storage.googleapis.com/golang/go1.7.1.windows-amd64.msi : go
     https://sdk-for-java.amazonwebservices.com/latest/aws-java-sdk.zip : java-sdk
     http://get.enterprisedb.com/postgresql/postgresql-9.6.0-1-windows-x64.exe : postgres
     https://download.microsoft.com/download/F/2/D/F2D1012E-3BC6-49C5-B8B3-5ACFF58AF7B8/KinectSDK-v2.0_1409-Setup.exe : kinect
-    https://secure-appldnld.apple.com/iTFunes11/031-07683.20140923.rewr3/iTunes11.4.dmg : itunes
+    https://secure-appldnld.apple.com/itunes12/031-69284-20160802-7E7B2D20-552B-11E6-B2B9-696CECD541CE/iTunes64Setup.exe : itunes

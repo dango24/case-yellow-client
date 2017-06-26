@@ -20,7 +20,6 @@ import static java.util.stream.Collectors.toMap;
  */
 public class AppBootHelper {
 
-    // caseyellow.client.App boot utilities functions
 
     public static void bootAppWithArgs(String[] bootArgs) {
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);

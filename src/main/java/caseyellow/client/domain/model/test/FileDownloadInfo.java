@@ -1,5 +1,7 @@
 package caseyellow.client.domain.model.test;
 
+import java.util.Date;
+
 /**
  * Created by Dan on 04/10/2016.
  */
@@ -11,7 +13,7 @@ public class FileDownloadInfo {
     private long   fileSizeInBytes;
     private double fileDownloadRateKBPerSec;
     private long   fileDownloadedTimeInMs;
-    private String startDownloadingTime;
+    private Date startDownloadingTime;
 
     //Constructors
     public FileDownloadInfo() {}
@@ -57,11 +59,11 @@ public class FileDownloadInfo {
         this.fileName = fileName;
     }
 
-    public String getStartDownloadingTime() {
+    public Date getStartDownloadingTime() {
         return startDownloadingTime;
     }
 
-    public void setStartDownloadingTime(String startDownloadingTime) {
+    public void setStartDownloadingTime(Date startDownloadingTime) {
         this.startDownloadingTime = startDownloadingTime;
     }
 
@@ -92,7 +94,7 @@ public class FileDownloadInfo {
         private long   fileSizeInBytes;
         private double fileDownloadRateKBPerSec;
         private long   fileDownloadedTimeInMs;
-        private String startDownloadingTime;
+        private Date startDownloadingTime;
 
         public FileDownloadInfoBuilder(String fileName) {
             this.fileName = fileName;
@@ -123,7 +125,7 @@ public class FileDownloadInfo {
             return this;
         }
 
-        public FileDownloadInfoBuilder addStartDownloadingTime(String startDownloadingTime) {
+        public FileDownloadInfoBuilder addStartDownloadingTime(Date startDownloadingTime) {
             this.startDownloadingTime = startDownloadingTime;
             return this;
         }

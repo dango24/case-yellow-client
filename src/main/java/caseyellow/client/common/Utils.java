@@ -10,7 +10,7 @@ import java.util.UUID;
 public class Utils {
 
     // Constants Variables
-    public static final SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
     // Helper functions
 
@@ -18,20 +18,11 @@ public class Utils {
         return UUID.randomUUID().toString();
     }
 
-    public static double round(double value, int places) {
-
-        if (places < 0) {
-            throw new IllegalArgumentException();
-        }
-
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-
-        return (double) tmp / factor;
+    public static String formatDecimal(double value) {
+        return String.format("%.2f", value);
     }
 
-    public static String format(Date date) {
-        return formatter.format(date);
+    public static String formatDate(Date date) {
+        return dateFormatter.format(date);
     }
 }

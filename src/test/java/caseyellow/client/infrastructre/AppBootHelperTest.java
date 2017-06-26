@@ -1,4 +1,4 @@
-package utils;
+package caseyellow.client.infrastructre;
 
 import caseyellow.client.domain.services.interfaces.SystemService;
 import caseyellow.client.infrastructre.AppBootHelper;
