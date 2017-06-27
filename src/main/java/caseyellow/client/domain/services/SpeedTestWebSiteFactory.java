@@ -5,11 +5,13 @@ import caseyellow.client.domain.model.website.HotSpeedTestWebSite;
 import caseyellow.client.domain.model.website.SpeedTestWebSite;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 
 /**
  * Created by dango on 6/27/17.
  */
+@Component
 public class SpeedTestWebSiteFactory {
 
     private final Logger logger = Logger.getLogger(SpeedTestWebSiteFactory.class);

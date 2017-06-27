@@ -82,7 +82,9 @@ public class TestGenerator implements TestService {
                 }
             }
 
-        } catch (RuntimeException e) {}
+        } catch (RuntimeException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     private Test generateNewTest() {

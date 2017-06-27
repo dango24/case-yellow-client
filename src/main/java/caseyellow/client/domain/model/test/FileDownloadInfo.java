@@ -13,7 +13,7 @@ public class FileDownloadInfo {
     private long   fileSizeInBytes;
     private double fileDownloadRateKBPerSec;
     private long   fileDownloadedTimeInMs;
-    private Date startDownloadingTime;
+    private Date   startDownloadingTime;
 
     //Constructors
     public FileDownloadInfo() {}
