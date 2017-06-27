@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 import org.apache.log4j.Logger;
+import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 
 import java.net.UnknownHostException;
@@ -17,7 +19,8 @@ import static caseyellow.client.infrastructre.AppBootHelper.initForkJoinCommonPo
 /**
  * Created by dango on 6/2/17.
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class,
+                                  WebMvcAutoConfiguration.class})
 public class App {
 
     public final static Logger logger = Logger.getLogger(App.class);

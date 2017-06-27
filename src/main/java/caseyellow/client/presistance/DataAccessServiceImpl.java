@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,8 +86,9 @@ public class DataAccessServiceImpl implements DataAccessService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setAcceptCharset(Arrays.asList(Charset.forName("UTF-8")));
 
-        return new HttpEntity<>("parameters", httpHeaders);
+        return new HttpEntity<>(httpHeaders);
     }
 
     private String buildURIFromConfig(String urlRequest) {
