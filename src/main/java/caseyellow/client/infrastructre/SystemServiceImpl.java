@@ -54,7 +54,7 @@ public class SystemServiceImpl implements SystemService {
 
         try {
             URL amazonAwsCheckIP = new URL("http://checkip.amazonaws.com");
-            return IOUtils.toString(amazonAwsCheckIP, "UTF-8");
+            return IOUtils.toString(amazonAwsCheckIP, "UTF-8").replace("\n", "");
 
         } catch (IOException e) {
             log.error("Failed to retrieve public IP address " + e.getMessage());

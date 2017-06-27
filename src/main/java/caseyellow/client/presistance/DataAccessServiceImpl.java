@@ -65,8 +65,7 @@ public class DataAccessServiceImpl implements DataAccessService {
         return response;
     }
 
-
-    public <T extends Object> T exchange(String uri, Class<T> type) {
+    private <T extends Object> T exchange(String uri, Class<T> type) {
 
         ResponseEntity<?> responseEntity;
         RestTemplate restTemplate = new RestTemplate();
