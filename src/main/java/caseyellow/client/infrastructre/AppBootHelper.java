@@ -1,7 +1,7 @@
 package caseyellow.client.infrastructre;
 
 import caseyellow.client.App;
-import caseyellow.client.common.UrlMapper;
+import caseyellow.client.common.Mapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -45,7 +45,7 @@ public class AppBootHelper {
             logFile = createDefaultLoggingFile();
         }
 
-        try (InputStream configStream = UrlMapper.class.getResourceAsStream( "/log4j.properties")) {
+        try (InputStream configStream = Mapper.class.getResourceAsStream( "/log4j.properties")) {
             props.load(configStream);
 
         } catch (IOException e) {

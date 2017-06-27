@@ -1,4 +1,4 @@
-package caseyellow.client.domain.services.impl;
+package caseyellow.client.domain.services;
 
 import caseyellow.client.common.Validator;
 import caseyellow.client.domain.model.SystemInfo;

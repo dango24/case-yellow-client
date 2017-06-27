@@ -1,11 +1,11 @@
-package caseyellow.client.domain.services.impl;
+package caseyellow.client.domain.services;
 
+import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.model.test.FileDownloadInfo;
 import caseyellow.client.domain.services.interfaces.DownloadFileService;
 import caseyellow.client.domain.services.interfaces.SystemService;
 import caseyellow.client.domain.services.interfaces.URLToFileService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
-import caseyellow.client.common.UrlMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,15 +30,15 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     private final static String tmpDirPath = System.getProperty("java.io.tmpdir");
 
     // Fields
-    private UrlMapper urlMapper;
+    private Mapper mapper;
     private SystemService systemService;
     private URLToFileService urlToFileService;
 
     // Setters
 
     @Autowired
-    public void setUrlMapper(UrlMapper urlMapper) {
-        this.urlMapper = urlMapper;
+    public void setMapper(Mapper mapper) {
+        this.mapper = mapper;
     }
 
     @Autowired
@@ -66,7 +66,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         String fileName;
 
         try {
-            fileName = urlMapper.getFileNameFromUrl(urlStr);
+            fileName = mapper.getFileNameFromUrl(urlStr);
             url = new URL(urlStr);
             tmpFile = new File(createTmpDir(), fileName);
 

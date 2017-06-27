@@ -2,6 +2,7 @@ package caseyellow.client.infrastructre;
 
 import caseyellow.client.domain.services.interfaces.URLToFileService;
 import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.net.URL;
 /**
  * Created by Dan on 6/24/2017.
  */
+@Service
 public class URLToFileServiceImpl implements URLToFileService {
 
     @Override

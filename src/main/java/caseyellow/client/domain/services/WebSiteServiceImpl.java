@@ -1,4 +1,4 @@
-package caseyellow.client.domain.services.impl;
+package caseyellow.client.domain.services;
 
 import caseyellow.client.domain.model.test.SpeedTestWebSiteDownloadInfo;
 import caseyellow.client.domain.model.website.SpeedTestWebSite;

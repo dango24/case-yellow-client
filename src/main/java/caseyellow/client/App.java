@@ -1,6 +1,6 @@
 package caseyellow.client;
 
-import caseyellow.client.domain.services.impl.TestGenerator;
+import caseyellow.client.domain.services.TestGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -20,7 +20,6 @@ import static caseyellow.client.infrastructre.AppBootHelper.initForkJoinCommonPo
 @SpringBootApplication
 public class App {
 
-    // Logger
     public final static Logger logger = Logger.getLogger(App.class);
 
     // Functions

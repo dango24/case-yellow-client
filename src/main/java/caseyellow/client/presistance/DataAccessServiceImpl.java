@@ -12,7 +12,6 @@ import java.util.List;
  */
 public class DataAccessServiceImpl implements DataAccessService {
 
-    // Logger
     private Logger logger = Logger.getLogger(DataAccessServiceImpl.class);
 
     @Override

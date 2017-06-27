@@ -1,16 +1,14 @@
 package caseyellow.client.domain.services.impl;
 
-import caseyellow.client.common.UrlMapper;
+import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.model.test.FileDownloadInfo;
+import caseyellow.client.domain.services.DownloadFileServiceImpl;
 import caseyellow.client.domain.services.interfaces.SystemService;
 import caseyellow.client.domain.services.interfaces.URLToFileService;
 import caseyellow.client.infrastructre.SystemServiceImpl;
 import caseyellow.client.infrastructre.URLToFileServiceImpl;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.Date;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -29,11 +27,11 @@ public class DownloadFileServiceImplTest {
     @Before
     public void setUp() throws Exception {
         SystemService systemService = new SystemServiceImpl();
-        UrlMapper urlMapper = mock(UrlMapper.class);
-        when(urlMapper.getFileNameFromUrl(KODI_URL)).thenReturn("kodi");
+        Mapper mapper = mock(Mapper.class);
+        when(mapper.getFileNameFromUrl(KODI_URL)).thenReturn("kodi");
         downloadFileService = new DownloadFileServiceImpl();
         downloadFileService.setSystemService(systemService);
-        downloadFileService.setUrlMapper(urlMapper);
+        downloadFileService.setMapper(mapper);
     }
 
     @Test
