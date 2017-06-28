@@ -55,6 +55,10 @@ public class Mapper {
         return new ArrayList<>(urlInfo.keySet());
     }
 
+    public List<String> getWebsiteIdentifiers() {
+        return new ArrayList<>(websiteInfo.keySet());
+    }
+
     public String getWebSiteClassFromIdentifier(String identifier) {
         return speedTestWebSitePackage + websiteInfo.get(identifier);
     }
