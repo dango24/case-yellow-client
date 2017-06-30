@@ -31,17 +31,17 @@ public class DataAccessServiceImpl implements DataAccessService {
     private final String REQUEST_URI_SCHEMA = "%s://%s:%s/%s";
 
     private ConnectionConfig connectionConfig;
-    private UrlRequestSchema urlRequestSchema;
+    private URIRequests URIRequests;
     private SpeedTestWebSiteFactory speedTestWebSiteFactory;
 
     @Autowired
     public DataAccessServiceImpl(SpeedTestWebSiteFactory speedTestWebSiteFactory,
-                                 UrlRequestSchema urlRequestSchema,
+                                 URIRequests URIRequests,
                                  ConnectionConfig connectionConfig) {
 
         this.speedTestWebSiteFactory = speedTestWebSiteFactory;
         this.connectionConfig = connectionConfig;
-        this.urlRequestSchema = urlRequestSchema;
+        this.URIRequests = URIRequests;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     public SpeedTestWebSite getNextSpeedTestWebSite() {
-        String uri = buildURIFromConfig(urlRequestSchema.getNextSpeedTestWebSite());
+        String uri = buildURI(URIRequests.getNextSpeedTestWebSiteRequest());
         String response = exchange(uri, String.class);
 
         return speedTestWebSiteFactory.createSpeedTestWebSiteFromIdentifier(response);
@@ -59,7 +59,7 @@ public class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     public List<String> getNextUrls(int numOfComparisonPerTest) {
-        String uri = buildURIFromConfig(urlRequestSchema.getNextUrls()) + numOfComparisonPerTest;
+        String uri = buildURI(URIRequests.getNextUrlsRequest()) + numOfComparisonPerTest;
         List<String> response = exchange(uri, List.class);
 
         return response;
@@ -69,10 +69,10 @@ public class DataAccessServiceImpl implements DataAccessService {
 
         ResponseEntity<?> responseEntity;
         RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> entity = buildHttpEntity();
+        HttpEntity<String> httpHeaders = buildHttpHeaders();
 
         try {
-            responseEntity = restTemplate.exchange(uri, HttpMethod.GET, entity, type);
+            responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpHeaders, type);
 
         } catch (RestClientException e) {
            throw new DataAccessException(e.getMessage());
@@ -81,7 +81,7 @@ public class DataAccessServiceImpl implements DataAccessService {
         return (T)responseEntity.getBody();
     }
 
-    private HttpEntity<String> buildHttpEntity() {
+    private HttpEntity<String> buildHttpHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -90,13 +90,13 @@ public class DataAccessServiceImpl implements DataAccessService {
         return new HttpEntity<>(httpHeaders);
     }
 
-    private String buildURIFromConfig(String urlRequest) {
+    private String buildURI(String urlQuery) {
         String httpProtocol = connectionConfig.isSecure() ? "https" : "http";
 
         return String.format(REQUEST_URI_SCHEMA,
                              httpProtocol,
                              connectionConfig.getHost(),
                              connectionConfig.getPort(),
-                             urlRequest);
+                             urlQuery);
     }
 }
