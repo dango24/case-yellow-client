@@ -4,6 +4,7 @@ import caseyellow.client.App;
 import caseyellow.client.common.Mapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
+import org.sikuli.script.Screen;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +22,8 @@ import static java.util.stream.Collectors.toMap;
 public class AppBootHelper {
 
 
-    public static void bootAppWithArgs(String[] bootArgs) {
+    public static void bootApp(String[] bootArgs) {
+        Screen screen = new Screen(); // Start Sikuli engine
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
         updateLog4jConfiguration(argsMap.get("logFilePath"));
     }

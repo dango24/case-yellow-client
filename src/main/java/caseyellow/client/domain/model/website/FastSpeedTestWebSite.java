@@ -21,7 +21,12 @@ public class FastSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public int waitForTestToFinish() {
-        return 35_000;
+    public String testFinishIdentifier() {
+        return null;
+    }
+
+    @Override
+    public int waitForTestToFinishInSec() {
+        return 50;
     }
 }

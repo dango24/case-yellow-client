@@ -1,5 +1,8 @@
 package caseyellow.client.common;
 
+import caseyellow.client.infrastructre.SystemServiceImpl;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -24,5 +27,11 @@ public class Utils {
 
     public static String formatDate(Date date) {
         return dateFormatter.format(date);
+    }
+
+    public static File getFileFromResources(String relativePath) {
+        ClassLoader classLoader = Utils.class.getClassLoader();
+
+        return new File(classLoader.getResource(relativePath).getFile());
     }
 }

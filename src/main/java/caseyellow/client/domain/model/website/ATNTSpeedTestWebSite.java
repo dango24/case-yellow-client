@@ -21,7 +21,12 @@ public class ATNTSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public int waitForTestToFinish() {
-        return 50_000;
+    public String testFinishIdentifier() {
+        return null;
+    }
+
+    @Override
+    public int waitForTestToFinishInSec() {
+        return 50;
     }
 }

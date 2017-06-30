@@ -1,6 +1,8 @@
 msg: Lets go hang out on cloud
 speedTestWebSitePackage : caseyellow.client.domain.model.website.
 numOfComparisonPerTest : 1
+buttons-dir : speed_test_start_buttons/semeak/
+identifier-dir : speed_test_done_identifiers/
 
 config:
   app-name: Gateway

@@ -21,7 +21,12 @@ public class BezeqSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public int waitForTestToFinish() {
-        return 45_000;
+    public String testFinishIdentifier() {
+        return null;
+    }
+
+    @Override
+    public int waitForTestToFinishInSec() {
+        return 60;
     }
 }

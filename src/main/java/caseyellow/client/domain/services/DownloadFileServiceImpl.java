@@ -88,6 +88,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
         } catch (IOException e) {
+            logger.error("Failed to download file, " + e.getMessage(), e);
             throw new FileDownloadInfoException(e.getMessage());
         }
     }

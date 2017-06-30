@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContext;
 import java.net.UnknownHostException;
 
 import static caseyellow.client.common.Messages.churchillSpeech;
-import static caseyellow.client.infrastructre.AppBootHelper.bootAppWithArgs;
+import static caseyellow.client.infrastructre.AppBootHelper.bootApp;
 import static caseyellow.client.infrastructre.AppBootHelper.initForkJoinCommonPool;
 
 /**
@@ -29,8 +29,7 @@ public class App {
 
     public static void main(String[] args) throws UnknownHostException {
         logger.info(churchillSpeech());
-
-        bootAppWithArgs(args);
+        bootApp(args);
         initForkJoinCommonPool();
         startTestGenerator(args);
     }

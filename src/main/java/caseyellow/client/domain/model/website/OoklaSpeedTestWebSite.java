@@ -21,7 +21,12 @@ public class OoklaSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public int waitForTestToFinish() {
-        return 30_000;
+    public String testFinishIdentifier() {
+        return "finishTestIdentifier_ookla.PNG";
+    }
+
+    @Override
+    public int waitForTestToFinishInSec() {
+        return 60;
     }
 }

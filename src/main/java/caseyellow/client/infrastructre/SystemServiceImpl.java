@@ -1,11 +1,13 @@
 package caseyellow.client.infrastructre;
 
 import caseyellow.client.domain.model.SystemInfo;
+import caseyellow.client.domain.services.interfaces.BrowserService;
 import caseyellow.client.domain.services.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -29,7 +31,16 @@ public class SystemServiceImpl implements SystemService {
     // Logger
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
 
-    // Methods
+    private BrowserService browserService;
+
+    public SystemServiceImpl() {
+        this(null);
+    }
+
+    @Autowired
+    public SystemServiceImpl(BrowserService browserService) {
+        this.browserService = browserService;
+    }
 
     @Override
     public SystemInfo getSystemInfo() {
@@ -113,6 +124,6 @@ public class SystemServiceImpl implements SystemService {
     }
 
     private String getBrowser() {
-        return ""; // todo dango create getBrowser method
+        return browserService.getBrowserName();
     }
 }

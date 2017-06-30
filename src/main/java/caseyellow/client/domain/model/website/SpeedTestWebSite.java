@@ -7,5 +7,6 @@ public interface SpeedTestWebSite {
     String webSiteUrl();
     String startTestButton();
     String getIdentifier();
-    int waitForTestToFinish();
+    String testFinishIdentifier();
+    int waitForTestToFinishInSec();
 }
