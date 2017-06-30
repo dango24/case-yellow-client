@@ -9,6 +9,6 @@ import caseyellow.client.domain.model.test.Test;
 public class Validator {
 
     public static boolean validateTest(Test test) {
-        return false; // TODO dango
+        return true; // TODO dango
     }
 }

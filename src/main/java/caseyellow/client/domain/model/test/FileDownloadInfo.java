@@ -1,7 +1,5 @@
 package caseyellow.client.domain.model.test;
 
-import java.util.Date;
-
 /**
  * Created by Dan on 04/10/2016.
  */
@@ -13,7 +11,7 @@ public class FileDownloadInfo {
     private long   fileSizeInBytes;
     private double fileDownloadRateKBPerSec;
     private long   fileDownloadedTimeInMs;
-    private Date   startDownloadingTime;
+    private long   startDownloadingTimestamp;
 
     //Constructors
     public FileDownloadInfo() {}
@@ -28,7 +26,7 @@ public class FileDownloadInfo {
         fileSizeInBytes = fileDownloadInfoBuilder.fileSizeInBytes;
         fileDownloadRateKBPerSec = fileDownloadInfoBuilder.fileDownloadRateKBPerSec;
         fileDownloadedTimeInMs = fileDownloadInfoBuilder.fileDownloadedTimeInMs;
-        startDownloadingTime = fileDownloadInfoBuilder.startDownloadingTime;
+        startDownloadingTimestamp = fileDownloadInfoBuilder.startDownloadingTimestamp;
     }
 
     // Methods
@@ -59,12 +57,12 @@ public class FileDownloadInfo {
         this.fileName = fileName;
     }
 
-    public Date getStartDownloadingTime() {
-        return startDownloadingTime;
+    public long getStartDownloadingTimestamp() {
+        return startDownloadingTimestamp;
     }
 
-    public void setStartDownloadingTime(Date startDownloadingTime) {
-        this.startDownloadingTime = startDownloadingTime;
+    public void setStartDownloadingTimestamp(long startDownloadingTimestamp) {
+        this.startDownloadingTimestamp = startDownloadingTimestamp;
     }
 
     public double getFileDownloadRateKBPerSec() {
@@ -82,7 +80,7 @@ public class FileDownloadInfo {
                 ", fileName='" + fileName + '\'' +
                 ", fileSizeInBytes=" + fileSizeInBytes +
                 ", fileDownloadedTimeInMs=" + fileDownloadedTimeInMs +
-                ", startDownloadingTime=" + startDownloadingTime +
+                ", startDownloadingTimestamp=" + startDownloadingTimestamp +
                 '}';
     }
 
@@ -94,7 +92,7 @@ public class FileDownloadInfo {
         private long   fileSizeInBytes;
         private double fileDownloadRateKBPerSec;
         private long   fileDownloadedTimeInMs;
-        private Date startDownloadingTime;
+        private long startDownloadingTimestamp;
 
         public FileDownloadInfoBuilder(String fileName) {
             this.fileName = fileName;
@@ -125,8 +123,8 @@ public class FileDownloadInfo {
             return this;
         }
 
-        public FileDownloadInfoBuilder addStartDownloadingTime(Date startDownloadingTime) {
-            this.startDownloadingTime = startDownloadingTime;
+        public FileDownloadInfoBuilder addStartDownloadingTime(long startDownloadingTime) {
+            this.startDownloadingTimestamp = startDownloadingTime;
             return this;
         }
 

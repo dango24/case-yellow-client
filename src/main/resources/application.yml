@@ -1,5 +1,6 @@
 msg: Lets go hang out on cloud
 speedTestWebSitePackage : caseyellow.client.domain.model.website.
+numOfComparisonPerTest : 1
 
 config:
   app-name: Gateway

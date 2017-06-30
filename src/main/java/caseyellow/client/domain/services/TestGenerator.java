@@ -11,6 +11,7 @@ import caseyellow.client.domain.model.test.FileDownloadInfo;
 import caseyellow.client.domain.model.test.Test;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +31,8 @@ public class TestGenerator implements TestService {
     private Logger logger = Logger.getLogger(TestGenerator.class);
 
     // Constants
-    private final int NUM_OF_COMPARISON_PER_TEST = 3;
+    @Value("${numOfComparisonPerTest}")
+    private int numOfComparisonPerTest;
 
     // Fields
     private AtomicBoolean toProduceTests;
@@ -96,14 +98,14 @@ public class TestGenerator implements TestService {
 
         systemInfo = systemService.getSystemInfo();
         speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        urls = dataAccessService.getNextUrls(NUM_OF_COMPARISON_PER_TEST);
+        urls = dataAccessService.getNextUrls(numOfComparisonPerTest);
 
         comparisonInfoList = urls.stream()
                                  .map(url -> generateComparisonInfo(speedTestWebSite, url))
                                  .collect(toList());
 
         test = new Test.TestBuilder(generateUniqueID())
-                       .addSpeedTestWebsite(speedTestWebSite)
+                       .addSpeedTestWebsite(speedTestWebSite.getIdentifier())
                        .addComparisonInfoTests(comparisonInfoList)
                        .addSystemInfo(systemInfo)
                        .build();

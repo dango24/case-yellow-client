@@ -5,17 +5,19 @@ import caseyellow.client.domain.model.website.SpeedTestWebSite;
 import caseyellow.client.domain.services.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.services.interfaces.DataAccessService;
 import caseyellow.client.exceptions.DataAccessException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.MediaType;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
  * Created by dango on 6/4/17.
  */
 @Service
+@Profile("production")
 public class DataAccessServiceImpl implements DataAccessService {
 
     private Logger logger = Logger.getLogger(DataAccessServiceImpl.class);
@@ -46,13 +49,14 @@ public class DataAccessServiceImpl implements DataAccessService {
 
     @Override
     public void saveTest(Test test) {
-        System.out.println("save test " + this.getClass().getName());
+        String uri = buildURI(URIRequests.getSaveTestRequest());
+        exchangePostRequest(uri, new ObjectMapper().valueToTree(test));
     }
 
     @Override
     public SpeedTestWebSite getNextSpeedTestWebSite() {
         String uri = buildURI(URIRequests.getNextSpeedTestWebSiteRequest());
-        String response = exchange(uri, String.class);
+        String response = exchangeGetRequest(uri, String.class);
 
         return speedTestWebSiteFactory.createSpeedTestWebSiteFromIdentifier(response);
     }
@@ -60,25 +64,55 @@ public class DataAccessServiceImpl implements DataAccessService {
     @Override
     public List<String> getNextUrls(int numOfComparisonPerTest) {
         String uri = buildURI(URIRequests.getNextUrlsRequest()) + numOfComparisonPerTest;
-        List<String> response = exchange(uri, List.class);
+        List<String> response = exchangeGetRequest(uri, List.class);
 
         return response;
     }
 
-    private <T extends Object> T exchange(String uri, Class<T> type) {
+      private void exchangePostRequest(String uri, JsonNode body) {
 
+        RequestEntity requestEntity;
         ResponseEntity<?> responseEntity;
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            requestEntity = RequestEntity.post(new URI(uri))
+                                         .contentType(MediaType.APPLICATION_JSON)
+                                         .accept(MediaType.APPLICATION_JSON)
+                                         .acceptCharset(Charset.forName("UTF-8"))
+                                         .body(body);
+
+            responseEntity = restTemplate.exchange(requestEntity, JsonNode.class);
+
+            if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+                handleFailureRequest(responseEntity.getBody().toString(), responseEntity.getStatusCodeValue());
+            }
+
+        } catch (RestClientException | URISyntaxException e) {
+            handleFailureRequest(e);
+        } catch (Exception e) {
+            handleFailureRequest(e);
+        }
+    }
+
+    private <T extends Object> T exchangeGetRequest(String uri, Class<T> type) {
+
+        ResponseEntity<?> response;
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> httpHeaders = buildHttpHeaders();
 
         try {
-            responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpHeaders, type);
+            response = restTemplate.exchange(uri, HttpMethod.GET, httpHeaders, type);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                handleFailureRequest(response.getBody().toString(), response.getStatusCodeValue());;
+            }
 
         } catch (RestClientException e) {
            throw new DataAccessException(e.getMessage());
         }
 
-        return (T)responseEntity.getBody();
+        return (T)response.getBody();
     }
 
     private HttpEntity<String> buildHttpHeaders() {
@@ -99,4 +133,18 @@ public class DataAccessServiceImpl implements DataAccessService {
                              connectionConfig.getPort(),
                              urlQuery);
     }
+
+    private void handleFailureRequest(Exception e) {
+        logger.error(e.getMessage(), e);
+
+        throw new DataAccessException(e.getMessage());
+    }
+
+    private void handleFailureRequest(String bodyMessage, int statusCode) {
+        String errorMessage = "Failed to retrieve request, status code: " + statusCode + " message:" + bodyMessage;
+        logger.error(errorMessage);
+
+        throw new DataAccessException(errorMessage);
+    }
+
 }

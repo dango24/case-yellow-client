@@ -13,14 +13,14 @@ public class Test {
     // Fields
     private String testID;
     private SystemInfo systemInfo;
-    private SpeedTestWebSite speedTestWebsite;
+    private String speedTestWebsiteIdentifier;
     private List<ComparisonInfo> comparisonInfoTests;
 
     // Constructor
     private Test(TestBuilder testBuilder) {
         this.testID = testBuilder.testID;
         this.systemInfo = testBuilder.systemInfo;
-        this.speedTestWebsite = testBuilder.speedTestWebsite;
+        this.speedTestWebsiteIdentifier = testBuilder.speedTestWebsite;
         this.comparisonInfoTests = testBuilder.comparisonInfoTests;
     }
 
@@ -34,12 +34,12 @@ public class Test {
         this.testID = testID;
     }
 
-    public SpeedTestWebSite getSpeedTestWebsite() {
-        return speedTestWebsite;
+    public String getSpeedTestWebsiteIdentifier() {
+        return speedTestWebsiteIdentifier;
     }
 
-    public void setSpeedTestWebsite(SpeedTestWebSite speedTestWebsite) {
-        this.speedTestWebsite = speedTestWebsite;
+    public void setSpeedTestWebsiteIdentifier(String speedTestWebsiteIdentifier) {
+        this.speedTestWebsiteIdentifier = speedTestWebsiteIdentifier;
     }
 
     public SystemInfo getSystemInfo() {
@@ -66,9 +66,9 @@ public class Test {
     public static class TestBuilder {
 
         // Fields
-        private String               testID;
+        private String testID;
         private SystemInfo systemInfo;
-        private SpeedTestWebSite     speedTestWebsite;
+        private String speedTestWebsite;
         private List<ComparisonInfo> comparisonInfoTests;
 
         public TestBuilder(String testID) {
@@ -80,7 +80,7 @@ public class Test {
             return this;
         }
 
-        public TestBuilder addSpeedTestWebsite(SpeedTestWebSite speedTestWebsite) {
+        public TestBuilder addSpeedTestWebsite(String speedTestWebsite) {
             this.speedTestWebsite = speedTestWebsite;
             return this;
         }

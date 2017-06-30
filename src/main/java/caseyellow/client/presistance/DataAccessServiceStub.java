@@ -8,6 +8,7 @@ import caseyellow.client.domain.services.interfaces.DataAccessService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -17,8 +18,8 @@ import java.util.Random;
 /**
  * Created by dango on 6/28/17.
  */
-@Primary
 @Service
+@Profile("beta")
 public class DataAccessServiceStub implements DataAccessService {
 
     private Logger logger = Logger.getLogger(DataAccessServiceStub.class);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 public class URIRequests {
 
+   private String saveTestRequest;
    private String nextUrlsRequest;
    private String nextSpeedTestWebSiteRequest;
 
@@ -29,5 +30,13 @@ public class URIRequests {
 
    public void setNextSpeedTestWebSiteRequest(String nextSpeedTestWebSiteRequest) {
       this.nextSpeedTestWebSiteRequest = nextSpeedTestWebSiteRequest;
+   }
+
+   public String getSaveTestRequest() {
+      return saveTestRequest;
+   }
+
+   public void setSaveTestRequest(String saveTestRequest) {
+      this.saveTestRequest = saveTestRequest;
    }
 }

@@ -10,12 +10,12 @@ import java.util.Date;
 public class SpeedTestWebSiteDownloadInfo {
 
     private String speedTestIdentifier;
-    private Date startMeasuringTime;
-    private File webSiteDownloadInfoSnapshot;
+    private long startMeasuringTimestamp;
+    private transient File webSiteDownloadInfoSnapshot;
 
-    public SpeedTestWebSiteDownloadInfo(String speedTestIdentifier, Date startDownloadingTime, File webSiteDownloadInfoSnapshot) {
+    public SpeedTestWebSiteDownloadInfo(String speedTestIdentifier, long startDownloadingTime, File webSiteDownloadInfoSnapshot) {
         this.speedTestIdentifier = speedTestIdentifier;
-        this.startMeasuringTime = startDownloadingTime;
+        this.startMeasuringTimestamp = startDownloadingTime;
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
     }
 
@@ -23,8 +23,8 @@ public class SpeedTestWebSiteDownloadInfo {
         return speedTestIdentifier;
     }
 
-    public Date getStartMeasuringTime() {
-        return startMeasuringTime;
+    public long getStartMeasuringTimestamp() {
+        return startMeasuringTimestamp;
     }
 
     public File getWebSiteDownloadInfoSnapshot() {
@@ -39,7 +39,7 @@ public class SpeedTestWebSiteDownloadInfo {
     public String toString() {
         return "SpeedTestWebSiteDownloadInfo{" +
                 "speedTestIdentifier=" + speedTestIdentifier +
-                ", startMeasuringTime=" + startMeasuringTime +
+                ", startMeasuringTimestamp=" + startMeasuringTimestamp +
                 '}';
     }
 }
