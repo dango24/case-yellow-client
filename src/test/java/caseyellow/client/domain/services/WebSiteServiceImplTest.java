@@ -1,12 +1,10 @@
 package caseyellow.client.domain.services;
 
-import caseyellow.client.domain.model.website.OoklaSpeedTestWebSite;
-import caseyellow.client.domain.services.interfaces.WebSiteService;
+import caseyellow.client.domain.website.model.OoklaSpeedTestWebSite;
+import caseyellow.client.domain.website.service.WebSiteService;
+import caseyellow.client.domain.website.service.WebSiteServiceImpl;
 import caseyellow.client.infrastructre.BrowserServiceImpl;
-import caseyellow.client.infrastructre.SystemServiceImpl;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by Dan on 6/30/2017.

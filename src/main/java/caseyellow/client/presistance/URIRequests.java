@@ -10,33 +10,33 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 public class URIRequests {
 
-   private String saveTestRequest;
-   private String nextUrlsRequest;
-   private String nextSpeedTestWebSiteRequest;
+   private String saveTestCommand;
+   private String nextUrlsQuery;
+   private String nextSpeedTestWebSiteQuery;
 
    public URIRequests() {}
 
-   public String getNextUrlsRequest() {
-      return nextUrlsRequest;
+   public String getNextUrlsQuery() {
+      return nextUrlsQuery;
    }
 
-   public void setNextUrlsRequest(String nextUrlsRequest) {
-      this.nextUrlsRequest = nextUrlsRequest;
+   public void setNextUrlsQuery(String nextUrlsQuery) {
+      this.nextUrlsQuery = nextUrlsQuery;
    }
 
-   public String getNextSpeedTestWebSiteRequest() {
-      return nextSpeedTestWebSiteRequest;
+   public String getNextSpeedTestWebSiteQuery() {
+      return nextSpeedTestWebSiteQuery;
    }
 
-   public void setNextSpeedTestWebSiteRequest(String nextSpeedTestWebSiteRequest) {
-      this.nextSpeedTestWebSiteRequest = nextSpeedTestWebSiteRequest;
+   public void setNextSpeedTestWebSiteQuery(String nextSpeedTestWebSiteQuery) {
+      this.nextSpeedTestWebSiteQuery = nextSpeedTestWebSiteQuery;
    }
 
-   public String getSaveTestRequest() {
-      return saveTestRequest;
+   public String getSaveTestCommand() {
+      return saveTestCommand;
    }
 
-   public void setSaveTestRequest(String saveTestRequest) {
-      this.saveTestRequest = saveTestRequest;
+   public void setSaveTestCommand(String saveTestCommand) {
+      this.saveTestCommand = saveTestCommand;
    }
 }

@@ -1,6 +1,7 @@
 package caseyellow.client.infrastructre;
 
-import caseyellow.client.domain.services.interfaces.BrowserService;
+import caseyellow.client.domain.interfaces.BrowserService;
+import caseyellow.client.exceptions.FindFailedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -56,20 +57,31 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressTestButton(String btnImagePath) throws FindFailed {
-        File imgLocation = getFileFromResources(btnDir + btnImagePath);
-        Screen screen = new Screen();
+    public void pressTestButton(String btnImagePath) throws FindFailedException {
 
-        screen.exists(imgLocation.getAbsolutePath());
-        screen.click(imgLocation.getAbsolutePath());
+        try {
+            File imgLocation = getFileFromResources(btnDir + btnImagePath);
+            Screen screen = new Screen();
+
+            screen.exists(imgLocation.getAbsolutePath());
+            screen.click(imgLocation.getAbsolutePath());
+
+        } catch (Exception e) {
+            throw new FindFailedException(e.getMessage());
+        }
     }
 
     @Override
-    public void waitForTestToFinish(String identifierPath, int waitForTestToFinishInSec) throws FindFailed {
-        File done = getFileFromResources(identifierDir + identifierPath);
-        Screen screen = new Screen();
+    public void waitForTestToFinish(String identifierPath, int waitForTestToFinishInSec) throws FindFailedException {
 
-        screen.wait(done.getAbsolutePath(), waitForTestToFinishInSec);
+        try {
+            File done = getFileFromResources(identifierDir + identifierPath);
+            Screen screen = new Screen();
+
+            screen.wait(done.getAbsolutePath(), waitForTestToFinishInSec);
+        } catch (Exception e) {
+            throw new FindFailedException(e.getMessage());
+        }
     }
 
     @Override

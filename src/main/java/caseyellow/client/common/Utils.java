@@ -2,10 +2,11 @@ package caseyellow.client.common;
 
 import caseyellow.client.infrastructre.SystemServiceImpl;
 
-import java.io.File;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dan on 6/20/2017.
@@ -33,5 +34,13 @@ public class Utils {
         ClassLoader classLoader = Utils.class.getClassLoader();
 
         return new File(classLoader.getResource(relativePath).getFile());
+    }
+
+    public String readFile(String path) throws IOException {
+        InputStream inputStream = Utils.class.getClassLoader().getResourceAsStream(path);
+
+        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream))) {
+            return buffer.lines().collect(Collectors.joining("\n"));
+        }
     }
 }

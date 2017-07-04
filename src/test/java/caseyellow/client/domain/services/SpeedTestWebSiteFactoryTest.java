@@ -1,10 +1,11 @@
 package caseyellow.client.domain.services;
 
 import caseyellow.client.common.Mapper;
-import caseyellow.client.domain.model.website.ATNTSpeedTestWebSite;
-import caseyellow.client.domain.model.website.HotSpeedTestWebSite;
-import caseyellow.client.domain.model.website.OoklaSpeedTestWebSite;
-import caseyellow.client.domain.model.website.SpeedTestWebSite;
+import caseyellow.client.domain.website.model.ATNTSpeedTestWebSite;
+import caseyellow.client.domain.website.model.HotSpeedTestWebSite;
+import caseyellow.client.domain.website.model.OoklaSpeedTestWebSite;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,9 +23,9 @@ public class SpeedTestWebSiteFactoryTest {
     @BeforeClass
     public static void setUp() throws Exception {
         Mapper mapper = mock(Mapper.class);
-        when(mapper.getWebSiteClassFromIdentifier("hot")).thenReturn("caseyellow.client.domain.model.website.HotSpeedTestWebSite");
-        when(mapper.getWebSiteClassFromIdentifier("ookla")).thenReturn("caseyellow.client.domain.model.website.OoklaSpeedTestWebSite");
-        when(mapper.getWebSiteClassFromIdentifier("atnt")).thenReturn("caseyellow.client.domain.model.website.ATNTSpeedTestWebSite");
+        when(mapper.getWebSiteClassFromIdentifier("hot")).thenReturn("caseyellow.client.domain.website.model.HotSpeedTestWebSite");
+        when(mapper.getWebSiteClassFromIdentifier("ookla")).thenReturn("caseyellow.client.domain.website.model.OoklaSpeedTestWebSite");
+        when(mapper.getWebSiteClassFromIdentifier("atnt")).thenReturn("caseyellow.client.domain.website.model.ATNTSpeedTestWebSite");
 
         speedTestWebSiteFactory = new SpeedTestWebSiteFactory(mapper);
     }

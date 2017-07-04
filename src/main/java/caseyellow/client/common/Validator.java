@@ -1,7 +1,7 @@
 package caseyellow.client.common;
 
 
-import caseyellow.client.domain.model.test.Test;
+import caseyellow.client.domain.test.model.Test;
 
 /**
  * Created by dango on 6/3/17.

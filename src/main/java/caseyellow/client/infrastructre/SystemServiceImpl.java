@@ -1,8 +1,8 @@
 package caseyellow.client.infrastructre;
 
-import caseyellow.client.domain.model.SystemInfo;
-import caseyellow.client.domain.services.interfaces.BrowserService;
-import caseyellow.client.domain.services.interfaces.SystemService;
+import caseyellow.client.domain.test.model.SystemInfo;
+import caseyellow.client.domain.interfaces.BrowserService;
+import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -55,6 +55,11 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public void deleteDirectory(File directory) throws IOException {
         FileUtils.deleteDirectory(directory);
+    }
+
+    @Override
+    public void copyURLToFile(URL source, File destination) throws IOException {
+        FileUtils.copyURLToFile(source, destination);
     }
 
     private String getOperationSystem() {
@@ -126,4 +131,5 @@ public class SystemServiceImpl implements SystemService {
     private String getBrowser() {
         return browserService.getBrowserName();
     }
+
 }

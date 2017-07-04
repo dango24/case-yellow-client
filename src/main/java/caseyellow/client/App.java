@@ -1,6 +1,6 @@
 package caseyellow.client;
 
-import caseyellow.client.domain.services.TestGenerator;
+import caseyellow.client.domain.test.service.TestGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -13,8 +13,8 @@ import org.springframework.context.ApplicationContext;
 import java.net.UnknownHostException;
 
 import static caseyellow.client.common.Messages.churchillSpeech;
-import static caseyellow.client.infrastructre.AppBootHelper.bootApp;
-import static caseyellow.client.infrastructre.AppBootHelper.initForkJoinCommonPool;
+import static caseyellow.client.infrastructre.AppBootInitializer.bootApp;
+import static caseyellow.client.infrastructre.AppBootInitializer.initForkJoinCommonPool;
 
 /**
  * Created by dango on 6/2/17.
