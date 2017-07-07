@@ -51,7 +51,6 @@ public class MainForm {
 
     private void startProducingTests() {
         SwingUtilities.invokeLater(domainInteractor::startProducingTests);
-        System.out.println("Dango");
     }
 
     private void stopProducingTests() {

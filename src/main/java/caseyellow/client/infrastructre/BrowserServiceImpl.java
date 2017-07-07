@@ -35,8 +35,15 @@ public class BrowserServiceImpl implements BrowserService {
     private int additionTimeForWebTestToFinish;
 
     public BrowserServiceImpl() {
-        this.webDriver = new FirefoxDriver();
         additionTimeForWebTestToFinish = 0;
+        initWebDriver();
+    }
+
+    private void initWebDriver() {
+//        String chromeDriver = "C:\\Users\\Dan\\IdeaProjects\\case-yellow-client\\src\\main\\resources\\drivers\\chromedriver.exe";
+//        System.setProperty("webdriver.chrome.driver", chromeDriver);
+//        this.webDriver = new ChromeDriver();
+        this.webDriver = new FirefoxDriver();
     }
 
     @Override
@@ -47,7 +54,7 @@ public class BrowserServiceImpl implements BrowserService {
 
         } catch (UnreachableBrowserException e) {
             logger.error("Failed to open browser, reattempt again with new driver");
-            webDriver = new FirefoxDriver();
+            initWebDriver();
             webDriver.get(url);
         }
 

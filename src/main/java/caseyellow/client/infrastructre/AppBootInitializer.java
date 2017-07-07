@@ -26,7 +26,7 @@ public class AppBootInitializer {
     public static void bootApp(String[] bootArgs) {
         Screen screen = new Screen(); // Start Sikuli engine
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
-//        updateLog4jConfiguration(argsMap.get("logFilePath"));
+        updateLog4jConfiguration(argsMap.get("logFilePath"));
     }
 
     private static Map<String, String> buildArgsKeyValueParis(String[] bootArgs) {
