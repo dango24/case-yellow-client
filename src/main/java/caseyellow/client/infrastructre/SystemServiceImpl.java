@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
  * Created by dango on 6/3/17.
  */
 @Service
+@Profile("beta")
 public class SystemServiceImpl implements SystemService {
 
     // Constants

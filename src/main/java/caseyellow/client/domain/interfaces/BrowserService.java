@@ -2,6 +2,8 @@ package caseyellow.client.domain.interfaces;
 
 import caseyellow.client.exceptions.FindFailedException;
 
+import java.io.Closeable;
+
 /**
  * Created by Dan on 6/30/2017.
  */

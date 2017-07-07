@@ -13,13 +13,17 @@ import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
+import caseyellow.client.presentation.interfaces.DomainInteractor;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static caseyellow.client.common.Utils.generateUniqueID;
@@ -29,7 +33,7 @@ import static java.util.stream.Collectors.toList;
  * Created by dango on 6/3/17.
  */
 @Component
-public class TestGenerator implements TestService {
+public class TestGenerator implements TestService, DomainInteractor {
 
     // Logger
     private Logger logger = Logger.getLogger(TestGenerator.class);
@@ -44,10 +48,12 @@ public class TestGenerator implements TestService {
     private WebSiteService webSiteService;
     private DataAccessService dataAccessService;
     private DownloadFileService downloadFileService;
+    private ExecutorService executorService;
 
     // Constructor
     public TestGenerator() {
-        this.toProduceTests = new AtomicBoolean(true);
+        this.toProduceTests = new AtomicBoolean(false);
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     // Setters
@@ -139,4 +145,16 @@ public class TestGenerator implements TestService {
         logger.error("Failed to save urls, " + e.getMessage(), e);
         return null;
     }
+
+    @Override
+    public void startProducingTests() {
+        toProduceTests.set(true);
+        executorService.submit(this::produceTests);
+    }
+
+    @Override
+    public void stopProducingTests() {
+        toProduceTests.set(false);
+    }
+
 }

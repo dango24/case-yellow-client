@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,5 +72,10 @@ public class WebSiteServiceImpl implements WebSiteService {
         } finally {
             browserService.closeBrowser();
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        browserService.closeBrowser();
     }
 }
