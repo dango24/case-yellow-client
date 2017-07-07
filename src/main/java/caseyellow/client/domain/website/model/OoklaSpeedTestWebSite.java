@@ -11,22 +11,12 @@ public class OoklaSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public String startTestButton() {
-        return "startTestButtonOokla.PNG";
-    }
-
-    @Override
     public String getIdentifier() {
         return "ookla";
     }
 
     @Override
-    public String testFinishIdentifier() {
-        return "finishTestIdentifier_ookla.PNG";
-    }
-
-    @Override
-    public int waitForTestToFinishInSec() {
-        return 60;
+    public boolean isFlashSupported() {
+        return true;
     }
 }

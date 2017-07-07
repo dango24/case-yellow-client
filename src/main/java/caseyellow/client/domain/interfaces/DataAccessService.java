@@ -10,6 +10,7 @@ import java.util.List;
  */
 public interface DataAccessService {
     void saveTest(Test test);
+    int additionalTimeForWebTestToFinishInSec();
     SpeedTestWebSite getNextSpeedTestWebSite();
     List<String> getNextUrls(int numOfComparisonPerTest);
 }

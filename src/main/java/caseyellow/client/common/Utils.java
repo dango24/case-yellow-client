@@ -1,12 +1,16 @@
 package caseyellow.client.common;
 
-import caseyellow.client.infrastructre.SystemServiceImpl;
 
-import java.io.*;
+import javax.imageio.ImageIO;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by Dan on 6/20/2017.
@@ -14,7 +18,9 @@ import java.util.stream.Collectors;
 public class Utils {
 
     // Constants Variables
-    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+    private final static String tmpDirPath = System.getProperty("java.io.tmpdir");
+    private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+    public static final String RESOLUTION_SEPERATOR = ";";
 
     // Helper functions
 
@@ -30,17 +36,36 @@ public class Utils {
         return dateFormatter.format(date);
     }
 
-    public static File getFileFromResources(String relativePath) {
+    public static String getImgFromResources(String relativePath) {
+        String screenResolution = getScreenResolution();
         ClassLoader classLoader = Utils.class.getClassLoader();
+        try {
+            InputStream resourceAsStream = classLoader.getResourceAsStream(relativePath + RESOLUTION_SEPERATOR + screenResolution  + ".PNG");
+            BufferedImage image = ImageIO.read(resourceAsStream);
+            File tmpFile = File.createTempFile(generateUniqueID(), ".PNG");
+            ImageIO.write(image, "PNG", tmpFile);
+            return tmpFile.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("dango");
+        }
 
-        return new File(classLoader.getResource(relativePath).getFile());
+        return null;
     }
 
-    public String readFile(String path) throws IOException {
-        InputStream inputStream = Utils.class.getClassLoader().getResourceAsStream(path);
+    public static File createTmpDir() {
+        File tmpDir = new File(tmpDirPath, generateUniqueID());
+        tmpDir.mkdir();
 
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream))) {
-            return buffer.lines().collect(Collectors.joining("\n"));
-        }
+        return tmpDir;
+    }
+
+    public static String getScreenResolution() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = (int)screenSize.getWidth();
+        int height = (int)screenSize.getHeight();
+
+        return width + "_" + height;
     }
 }

@@ -4,6 +4,7 @@ import caseyellow.client.App;
 import caseyellow.client.common.Mapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
+import org.sikuli.script.Screen;
 //import org.sikuli.script.Screen;
 
 import java.io.File;
@@ -23,9 +24,9 @@ public class AppBootInitializer {
 
 
     public static void bootApp(String[] bootArgs) {
-       // Screen screen = new Screen(); // Start Sikuli engine TODO dango remove after test
+        Screen screen = new Screen(); // Start Sikuli engine
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
-        updateLog4jConfiguration(argsMap.get("logFilePath"));
+//        updateLog4jConfiguration(argsMap.get("logFilePath"));
     }
 
     private static Map<String, String> buildArgsKeyValueParis(String[] bootArgs) {

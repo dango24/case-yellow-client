@@ -7,14 +7,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
-import org.sikuli.script.FindFailed;
 import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-
-import static caseyellow.client.common.Utils.getFileFromResources;
+import static caseyellow.client.common.Utils.getImgFromResources;
 
 /**
  * Created by Dan on 6/30/2017.
@@ -22,6 +19,8 @@ import static caseyellow.client.common.Utils.getFileFromResources;
 @Service
 public class BrowserServiceImpl implements BrowserService {
 
+    @Value("${waitForTestToFinishInSec}")
+    private final int waitForTestToFinishInSec = 120;
     private Logger logger = Logger.getLogger(BrowserServiceImpl.class);
 
     @Value("${buttons-dir}")
@@ -31,9 +30,11 @@ public class BrowserServiceImpl implements BrowserService {
     private String identifierDir;
 
     private WebDriver webDriver;
+    private int additionTimeForWebTestToFinish;
 
     public BrowserServiceImpl() {
         this.webDriver = new FirefoxDriver();
+        additionTimeForWebTestToFinish = 0;
     }
 
     @Override
@@ -57,14 +58,19 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressTestButton(String btnImagePath) throws FindFailedException {
+    public void addAdditionalTimeForWebTestToFinish(int additionTimeInSec) {
+        this.additionTimeForWebTestToFinish = additionTimeInSec;
+    }
+
+    @Override
+    public void pressTestButton(String webSiteBtnIdentifier) throws FindFailedException {
 
         try {
-            File imgLocation = getFileFromResources(btnDir + btnImagePath);
+            String imgLocation = getImgFromResources(btnDir + webSiteBtnIdentifier);
             Screen screen = new Screen();
 
-            screen.exists(imgLocation.getAbsolutePath());
-            screen.click(imgLocation.getAbsolutePath());
+            screen.exists(imgLocation);
+            screen.click(imgLocation);
 
         } catch (Exception e) {
             throw new FindFailedException(e.getMessage());
@@ -72,13 +78,13 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void waitForTestToFinish(String identifierPath, int waitForTestToFinishInSec) throws FindFailedException {
+    public void waitForTestToFinish(String imgIdentifier) throws FindFailedException {
 
         try {
-            File done = getFileFromResources(identifierDir + identifierPath);
+            String testFinishIdentifierImg = getImgFromResources(identifierDir + imgIdentifier);
             Screen screen = new Screen();
 
-            screen.wait(done.getAbsolutePath(), waitForTestToFinishInSec);
+            screen.wait(testFinishIdentifierImg, waitForTestToFinishInSec + additionTimeForWebTestToFinish);
         } catch (Exception e) {
             throw new FindFailedException(e.getMessage());
         }

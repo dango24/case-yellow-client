@@ -2,6 +2,7 @@ package caseyellow.client.presistance.service;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.test.model.Test;
+import caseyellow.client.domain.website.model.SpeedOfSpeedTestWebSite;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by dango on 6/28/17.
@@ -24,10 +24,14 @@ public class DataAccessServiceStub implements DataAccessService {
     private Logger logger = Logger.getLogger(DataAccessServiceStub.class);
     private Mapper mapper;
     private SpeedTestWebSiteFactory speedTestWebSiteFactory;
+    private List<String> websiteIdentifiers;
+    private int currentWebTest;
 
     @Autowired
     public DataAccessServiceStub(Mapper mapper, SpeedTestWebSiteFactory speedTestWebSiteFactory) {
+        this.currentWebTest = 0;
         this.mapper = mapper;
+        this.websiteIdentifiers = mapper.getWebsiteIdentifiers();
         this.speedTestWebSiteFactory = speedTestWebSiteFactory;
     }
 
@@ -37,11 +41,14 @@ public class DataAccessServiceStub implements DataAccessService {
     }
 
     @Override
-    public SpeedTestWebSite getNextSpeedTestWebSite() {
-        List<String> websiteIdentifiers = mapper.getWebsiteIdentifiers();
-        int index = new Random().nextInt(websiteIdentifiers.size());
+    public int additionalTimeForWebTestToFinishInSec() {
+        return 0;
+    }
 
-        return speedTestWebSiteFactory.createSpeedTestWebSiteFromIdentifier(websiteIdentifiers.get(index));
+    @Override
+    public SpeedTestWebSite getNextSpeedTestWebSite() {
+        currentWebTest++;
+        return speedTestWebSiteFactory.createSpeedTestWebSiteFromIdentifier(websiteIdentifiers.get(currentWebTest %websiteIdentifiers.size()));
     }
 
     @Override

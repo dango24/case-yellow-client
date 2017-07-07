@@ -10,14 +10,17 @@ import java.util.stream.IntStream;
 
 import static caseyellow.client.common.Utils.generateUniqueID;
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by Dan on 6/24/2017.
  */
 public class UtilsTest {
+    @Test
+    public void getScreenResolution() throws Exception {
+        String screenResolution = Utils.getScreenResolution();
+        assertNotNull(screenResolution);
+    }
 
     @Test
     public void uniqueIdNotEmpty() throws Exception {

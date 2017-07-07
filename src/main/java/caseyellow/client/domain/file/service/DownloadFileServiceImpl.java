@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static caseyellow.client.common.Utils.generateUniqueID;
+import static caseyellow.client.common.Utils.createTmpDir;
 
 /**
  * Created by dango on 6/3/17.
@@ -23,9 +23,6 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
     // Logger
     private Logger logger = Logger.getLogger(DownloadFileServiceImpl.class);
-
-    // Constants
-    private final static String tmpDirPath = System.getProperty("java.io.tmpdir");
 
     // Fields
     private Mapper mapper;
@@ -55,8 +52,6 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     public FileDownloadInfo generateFileDownloadInfo(String urlStr) throws FileDownloadInfoException {
         URL url;
         File tmpFile;
-        long startDownloadingTime;
-        long endDownloadingTime;
         long fileSizeInBytes;
         long fileDownloadedTimeInMs;
         double fileDownloadRateKBPerSec;
@@ -68,9 +63,9 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             tmpFile = new File(createTmpDir(), fileName);
 
             logger.debug("Start measuring and downloading file: " + fileName + ", from url: " + urlStr);
-            startDownloadingTime = System.currentTimeMillis();
+            long startDownloadingTime = System.currentTimeMillis();
             urlToFileService.copyURLToFile(url, tmpFile);
-            endDownloadingTime = System.currentTimeMillis();
+            long endDownloadingTime = System.currentTimeMillis();
 
             fileDownloadedTimeInMs = (endDownloadingTime - startDownloadingTime);
             fileSizeInBytes = tmpFile.length();
@@ -89,13 +84,6 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             logger.error("Failed to download file, " + e.getMessage(), e);
             throw new FileDownloadInfoException(e.getMessage());
         }
-    }
-
-    private File createTmpDir() {
-        File tmpDir = new File(tmpDirPath, generateUniqueID());
-        tmpDir.mkdir();
-
-        return tmpDir;
     }
 
     private double calculateDownloadRateKBPerSec(long fileDownloadedTimeInMs, long fileSizeInBytes) {

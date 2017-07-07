@@ -5,8 +5,8 @@ import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.exceptions.DataAccessException;
-import caseyellow.client.presistance.ConnectionConfig;
-import caseyellow.client.presistance.URIRequests;
+import caseyellow.client.presistance.model.ConnectionConfig;
+import caseyellow.client.presistance.model.URIRequests;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
@@ -35,7 +35,7 @@ public class DataAccessServiceImpl implements DataAccessService {
     private final String REQUEST_URI_SCHEMA = "%s://%s:%s/%s";
 
     private ConnectionConfig connectionConfig;
-    private caseyellow.client.presistance.URIRequests URIRequests;
+    private caseyellow.client.presistance.model.URIRequests URIRequests;
     private SpeedTestWebSiteFactory speedTestWebSiteFactory;
 
     @Autowired
@@ -52,6 +52,11 @@ public class DataAccessServiceImpl implements DataAccessService {
     public void saveTest(Test test) {
         String uri = buildURI(URIRequests.getSaveTestCommand());
         postRequest(uri, new ObjectMapper().valueToTree(test));
+    }
+
+    @Override
+    public int additionalTimeForWebTestToFinishInSec() {
+        return 0;
     }
 
     @Override

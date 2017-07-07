@@ -1,4 +1,4 @@
-package caseyellow.client.presistance;
+package caseyellow.client.presistance.model;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

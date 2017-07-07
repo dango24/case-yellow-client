@@ -13,7 +13,8 @@ public class WebSiteServiceImplTest {
 
     @Test
     public void produceSpeedTestWebSiteDownloadInfo() throws Exception {
-        WebSiteService webSiteService = new WebSiteServiceImpl(new BrowserServiceImpl());
+        WebSiteServiceImpl webSiteService = new WebSiteServiceImpl();
+        webSiteService.setBrowserService(new BrowserServiceImpl());
         webSiteService.produceSpeedTestWebSiteDownloadInfo(new OoklaSpeedTestWebSite());
     }
 

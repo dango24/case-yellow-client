@@ -1,7 +1,8 @@
 msg: Lets go hang out on cloud
-speedTestWebSitePackage : caseyellow.client.domain.model.website.
+speedTestWebSitePackage : caseyellow.client.domain.website.model.
 numOfComparisonPerTest : 1
-buttons-dir : speed_test_start_buttons/semeak/
+waitForTestToFinishInSec : 110
+buttons-dir : speed_test_start_buttons/
 identifier-dir : speed_test_done_identifiers/
 
 config:

@@ -11,22 +11,12 @@ public class FastSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public String startTestButton() {
-        return null;
-    }
-
-    @Override
     public String getIdentifier() {
         return "fast";
     }
 
     @Override
-    public String testFinishIdentifier() {
-        return null;
-    }
-
-    @Override
-    public int waitForTestToFinishInSec() {
-        return 50;
+    public boolean isFlashSupported() {
+        return false;
     }
 }

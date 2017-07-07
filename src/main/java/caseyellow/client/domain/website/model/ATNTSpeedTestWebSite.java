@@ -11,22 +11,12 @@ public class ATNTSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public String startTestButton() {
-        return "startTestButtonAtnt.PNG";
-    }
-
-    @Override
     public String getIdentifier() {
         return "atnt";
     }
 
     @Override
-    public String testFinishIdentifier() {
-        return null;
-    }
-
-    @Override
-    public int waitForTestToFinishInSec() {
-        return 50;
+    public boolean isFlashSupported() {
+        return true;
     }
 }

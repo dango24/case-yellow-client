@@ -44,7 +44,7 @@ public class DownloadFileServiceImplTest {
 
     @Test
     public void generateFileDownloadInfoKodi() throws Exception {
-        URLToFileService urlToFileService = new URLToFileServiceImpl();
+        URLToFileService urlToFileService = new SystemServiceImpl();
         downloadFileService.setUrlToFileService(urlToFileService);
 
         FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(KODI_URL);
@@ -56,5 +56,4 @@ public class DownloadFileServiceImplTest {
         assertTrue(fileDownloadInfo.getFileSizeInBytes() > 0);
         assertTrue(fileDownloadInfo.getStartDownloadingTimestamp() < System.currentTimeMillis());
     }
-
 }

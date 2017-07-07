@@ -8,8 +8,9 @@ import caseyellow.client.exceptions.FindFailedException;
 public interface BrowserService {
     void openBrowser(String url);
     void closeBrowser();
+    void addAdditionalTimeForWebTestToFinish(int additionTimeInSec);
     void pressTestButton(String btnImagePath) throws FindFailedException;
-    void waitForTestToFinish(String identifierPath, int waitForTestToFinishInSec) throws FindFailedException;
+    void waitForTestToFinish(String identifierPath) throws FindFailedException;
     String takeScreenSnapshot();
     String getBrowserName();
 }

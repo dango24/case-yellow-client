@@ -18,33 +18,30 @@ public class Mapper {
     private Map<String, String> urlInfo = new HashMap<>();
     private Map<String, String> websiteInfo = new HashMap<>();
 
-    // Constructor
-    public Mapper() {}
-
     // Methods
-
-    public String getSpeedTestWebSitePackage() {
-        return speedTestWebSitePackage;
-    }
 
     public void setSpeedTestWebSitePackage(String speedTestWebSitePackage) {
         this.speedTestWebSitePackage = speedTestWebSitePackage;
-    }
-
-    public Map<String, String> getUrlInfo() {
-        return urlInfo;
     }
 
     public void setUrlInfo(Map<String, String> urlInfo) {
         this.urlInfo = urlInfo;
     }
 
-    public Map<String, String> getWebsiteInfo() {
-        return websiteInfo;
-    }
-
     public void setWebsiteInfo(Map<String, String> websiteInfo) {
         this.websiteInfo = websiteInfo;
+    }
+
+    public String getSpeedTestWebSitePackage() {
+        return speedTestWebSitePackage;
+    }
+
+    public Map<String, String> getUrlInfo() {
+        return urlInfo;
+    }
+
+    public Map<String, String> getWebsiteInfo() {
+        return websiteInfo;
     }
 
     public String getFileNameFromUrl(String urlStr) {

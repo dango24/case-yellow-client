@@ -11,22 +11,12 @@ public class BezeqSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public String startTestButton() {
-        return null;
-    }
-
-    @Override
     public String getIdentifier() {
         return "bezeq";
     }
 
     @Override
-    public String testFinishIdentifier() {
-        return null;
-    }
-
-    @Override
-    public int waitForTestToFinishInSec() {
-        return 60;
+    public boolean isFlashSupported() {
+        return false;
     }
 }

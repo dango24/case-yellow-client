@@ -12,10 +12,11 @@ import caseyellow.client.domain.website.service.WebSiteService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.test.model.Test;
+import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -27,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by dango on 6/3/17.
  */
-@Service
+@Component
 public class TestGenerator implements TestService {
 
     // Logger
@@ -121,7 +122,7 @@ public class TestGenerator implements TestService {
         return test;
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException {
+    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException, WebSiteDownloadInfoException {
         SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
         FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
 
@@ -132,8 +133,6 @@ public class TestGenerator implements TestService {
         CompletableFuture.supplyAsync(() -> test)
                          .exceptionally(this::saveTestExceptionHandler)
                          .thenAccept(dataAccessService::saveTest);
-
-
     }
 
     private Test saveTestExceptionHandler(Throwable e) {
