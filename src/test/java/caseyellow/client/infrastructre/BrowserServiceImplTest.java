@@ -37,11 +37,11 @@ public class BrowserServiceImplTest {
 
     @Parameterized.Parameters
     public static List<String[]> dango() {
-        String[][] arr = { /*{"http://speedtest.att.com/speedtest/", "AT&T High Speed Internet Speed Test"},*/
-//                           {"http://www.bezeq.co.il/internetandphone/internet/speedtest/", "בדיקת מהירות בזק -בזק"},
-                           /*{"https://www.fast.com/", "Internet Speed Test | Fast.com"},*/
-//                           {"http://www.hot.net.il/heb/Internet/speed/", "בדיקת מהירות הוט - Speed Test"},
-                           /*{"http://www.speedtest.net/", "Speedtest.net by Ookla - The Global Broadband Speed Test"},*/
+        String[][] arr = { {"http://speedtest.att.com/speedtest/", "AT&T High Speed Internet Speed Test"},
+                           {"http://www.bezeq.co.il/internetandphone/internet/speedtest/", "בדיקת מהירות בזק -בזק"},
+                           {"https://www.fast.com/", "Internet Speed Test | Fast.com"},
+                           {"http://www.hot.net.il/heb/Internet/speed/", "בדיקת מהירות הוט - Speed Test"},
+                           {"http://www.speedtest.net/", "Speedtest.net by Ookla - The Global Broadband Speed Test"},
                            {"http://www.speedof.me/", "SpeedOf.Me, HTML5 Speed Test | Non Flash/Java Broadband Speed Test"} };
 
         return Arrays.asList(arr);

@@ -72,7 +72,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             tmpFile = new File(createTmpDir(), fileName);
 
             String message = "Start measuring and downloading file: " + fileName + ", from url: " + urlStr;
-            logger.debug(message);
+            logger.info(message);
             messagesService.showMessage(message);
 
             long startDownloadingTime = System.currentTimeMillis();

@@ -1,6 +1,9 @@
 package caseyellow.client.common;
 
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import javax.imageio.ImageIO;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -8,6 +11,8 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -36,22 +41,26 @@ public class Utils {
         return dateFormatter.format(date);
     }
 
-    public static String getImgFromResources(String relativePath) {
+    public static File getFileFromResources(String relativePath) throws IOException {
+        Path path = Paths.get(relativePath);
+        ClassLoader classLoader = Utils.class.getClassLoader();
+        File file = File.createTempFile(generateUniqueID(), path.getFileName().toString());
+        InputStream resourceAsStream = classLoader.getResourceAsStream(relativePath);
+        byte[] bytes = IOUtils.toByteArray(resourceAsStream);
+        FileUtils.writeByteArrayToFile(file, bytes);
+
+        return file;
+    }
+
+    public static String getImgFromResources(String relativePath) throws IOException {
         String screenResolution = getScreenResolution();
         ClassLoader classLoader = Utils.class.getClassLoader();
-        try {
-            InputStream resourceAsStream = classLoader.getResourceAsStream(relativePath + RESOLUTION_SEPERATOR + screenResolution  + ".PNG");
-            BufferedImage image = ImageIO.read(resourceAsStream);
-            File tmpFile = File.createTempFile(generateUniqueID(), ".PNG");
-            ImageIO.write(image, "PNG", tmpFile);
-            return tmpFile.getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("dango");
-        }
+        InputStream resourceAsStream = classLoader.getResourceAsStream(relativePath + RESOLUTION_SEPERATOR + screenResolution  + ".PNG");
+        BufferedImage image = ImageIO.read(resourceAsStream);
+        File tmpFile = File.createTempFile(generateUniqueID(), ".PNG");
+        ImageIO.write(image, "PNG", tmpFile);
 
-        return null;
+        return tmpFile.getAbsolutePath();
     }
 
     public static File createTmpDir() {

@@ -2,6 +2,7 @@ package caseyellow.client.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.jni.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,8 @@ import java.util.*;
 @ConfigurationProperties
 public class Mapper {
 
+//    @Value("${centralizedWebPageData}")
+
     // Fields
     private String speedTestWebSitePackage;
     private Map<String, String> urlInfo = new HashMap<>();
@@ -26,7 +29,8 @@ public class Mapper {
     // Methods
 
     public Mapper() throws IOException {
-        centralizedWebPage = new ObjectMapper().readValue(new File("C:\\Users\\Dan\\IdeaProjects\\case-yellow-client\\src\\main\\resources\\CentralizedWebPageData.json"), CentralizedWebPage.class);
+        String centralizedWebPageData = "centralizedWebPageData.json";
+        centralizedWebPage = new ObjectMapper().readValue(Utils.getFileFromResources(centralizedWebPageData), CentralizedWebPage.class);
     }
 
     public void setSpeedTestWebSitePackage(String speedTestWebSitePackage) {

@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
+import static caseyellow.client.common.Utils.getFileFromResources;
 import static caseyellow.client.common.Utils.getImgFromResources;
 import static java.lang.Math.toIntExact;
 
@@ -33,17 +36,20 @@ public class BrowserServiceImpl implements BrowserService {
     @Value("${identifier-dir}")
     private String identifierDir;
 
+    @Value("${chromeDriverExecutorPath}")
+    private String chromeDriverExecutorPath;
+
     private WebDriver webDriver;
     private Mapper mapper;
     private int additionTimeForWebTestToFinish;
 
-    public BrowserServiceImpl() {
+    public BrowserServiceImpl() throws IOException {
         additionTimeForWebTestToFinish = 0;
         initWebDriver();
     }
 
-    private void initWebDriver() {
-        String chromeDriver = "C:\\Users\\Dan\\IdeaProjects\\case-yellow-client\\src\\main\\resources\\drivers\\chromedriver.exe";
+    private void initWebDriver() throws IOException {
+        String chromeDriver = getFileFromResources("drivers/chromedriver.exe").getAbsolutePath();
         System.setProperty("webdriver.chrome.driver", chromeDriver);
         this.webDriver = new ChromeDriver();
     }
@@ -54,7 +60,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void openBrowser(String url) {
+    public void openBrowser(String url) throws IOException {
 
         try {
             webDriver.get(url);
@@ -98,6 +104,7 @@ public class BrowserServiceImpl implements BrowserService {
             screen.wait(testFinishIdentifierImg, waitForTestToFinishInSec + additionTimeForWebTestToFinish);
 
         } catch (Exception e) {
+            logger.error(e.getMessage());
             throw new FindFailedException(e.getMessage());
         }
     }

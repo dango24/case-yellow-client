@@ -42,7 +42,7 @@ public class App {
             mainForm.view();
         } catch (Exception e) {
             logger.error(e.getMessage());
-            JOptionPane.showMessageDialog(null, "The best app ever failed to initiate, please check if you have valid firefox installed");
+            JOptionPane.showMessageDialog(null, "The best app ever failed to initialized, " + e.getMessage());
         }
     }
 }

@@ -47,8 +47,7 @@ public class WebSiteServiceImpl implements WebSiteService {
                 browserService.pressStartTestButton(speedTestWebsite.getIdentifier());
             }
 
-
-            logger.debug("Start " + speedTestWebsite.getIdentifier() + " speed test");
+            logger.info("Start '" + speedTestWebsite.getIdentifier() + "' speed test");
             startMeasuringTimestamp = System.currentTimeMillis();
             browserService.waitForTestToFinish(speedTestWebsite.getIdentifier());
 
