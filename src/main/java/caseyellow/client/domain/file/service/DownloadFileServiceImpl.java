@@ -2,12 +2,12 @@ package caseyellow.client.domain.file.service;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
+import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.interfaces.URLToFileService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +31,14 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     private Mapper mapper;
     private SystemService systemService;
     private URLToFileService urlToFileService;
+    private MessagesService messagesService;
 
     // Setters
+
+    @Autowired
+    public void setMessagesService(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
 
     @Autowired
     public void setMapper(Mapper mapper) {
@@ -65,7 +71,10 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             url = new URL(urlStr);
             tmpFile = new File(createTmpDir(), fileName);
 
-            logger.debug("Start measuring and downloading file: " + fileName + ", from url: " + urlStr);
+            String message = "Start measuring and downloading file: " + fileName + ", from url: " + urlStr;
+            logger.debug(message);
+            messagesService.showMessage(message);
+
             long startDownloadingTime = System.currentTimeMillis();
             urlToFileService.copyURLToFile(url, tmpFile);
             long endDownloadingTime = System.currentTimeMillis();
@@ -84,6 +93,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
         } catch (IOException e) {
+            messagesService.showMessage("Failed to download file, " + e.getMessage());
             logger.error("Failed to download file, " + e.getMessage(), e);
             throw new FileDownloadInfoException(e.getMessage());
         }

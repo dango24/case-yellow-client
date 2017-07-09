@@ -1,6 +1,5 @@
 package caseyellow.client;
 
-import caseyellow.client.domain.test.service.TestGenerator;
 import caseyellow.client.presentation.MainForm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,19 +30,19 @@ public class App {
 
     public static void main(String[] args) throws UnknownHostException {
         logger.info(churchillSpeech());
-        bootApp(args);
         initForkJoinCommonPool();
-        startTestGenerator(args);
+        bootApp(args);
+        startApp(args);
     }
 
-    private static void startTestGenerator(String[] args) {
+    private static void startApp(String[] args) {
         try {
             ApplicationContext ctx = SpringApplication.run(App.class, args);
             MainForm mainForm = (MainForm) ctx.getBean("mainForm");
-          //  MainForm mainForm = new MainForm(null);
             mainForm.view();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "The best app ever failed to load, please check if you valid firefox installed");
+            logger.error(e.getMessage());
+            JOptionPane.showMessageDialog(null, "The best app ever failed to initiate, please check if you have valid firefox installed");
         }
     }
 }

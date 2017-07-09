@@ -14,7 +14,7 @@ public class Messages {
         sb.append("we shall fight on the landing grounds, ");
         sb.append("we shall fight in the fields and in the streets, ");
         sb.append("we shall fight in the hills; ");
-        sb.append("we shall never surrender.");
+        sb.append("we shall never SURRENDER.");
 
         return sb.toString();
     }

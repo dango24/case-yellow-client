@@ -16,7 +16,7 @@ public class FastSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public boolean isFlashSupported() {
+    public boolean isFlashable() {
         return false;
     }
 }

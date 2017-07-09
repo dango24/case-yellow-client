@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class WebSiteServiceImpl implements WebSiteService {
 
+    public static final int DELAY_TIME_BEFORE_SNAPSHOT = 1000;
     // Logger
     private Logger logger = Logger.getLogger(WebSiteServiceImpl.class);
 
@@ -40,18 +41,18 @@ public class WebSiteServiceImpl implements WebSiteService {
 
         try {
             browserService.openBrowser(speedTestWebsite.webSiteUrl());
-            TimeUnit.SECONDS.sleep(2);
+            browserService.centralizedWebPage(speedTestWebsite.getIdentifier());
 
-            // startTestButton as null indicates no start test button at the specific speed test url
-            if (speedTestWebsite.isFlashSupported()) {
-                browserService.pressTestButton(speedTestWebsite.getIdentifier());
+            if (speedTestWebsite.isFlashable()) {
+                browserService.pressStartTestButton(speedTestWebsite.getIdentifier());
             }
+
 
             logger.debug("Start " + speedTestWebsite.getIdentifier() + " speed test");
             startMeasuringTimestamp = System.currentTimeMillis();
             browserService.waitForTestToFinish(speedTestWebsite.getIdentifier());
 
-            TimeUnit.MILLISECONDS.sleep(1000);
+            TimeUnit.MILLISECONDS.sleep(DELAY_TIME_BEFORE_SNAPSHOT);
             websiteSnapshot = browserService.takeScreenSnapshot();
 
             return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())

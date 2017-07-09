@@ -1,24 +1,26 @@
 package caseyellow.client.infrastructre;
 
+import caseyellow.client.common.Mapper;
+import caseyellow.client.common.Utils;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.exceptions.FindFailedException;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.sikuli.script.Screen;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
+import org.springframework.stereotype.Component;
 
 import static caseyellow.client.common.Utils.getImgFromResources;
+import static java.lang.Math.toIntExact;
 
 /**
  * Created by Dan on 6/30/2017.
  */
-@Service
+@Component
 public class BrowserServiceImpl implements BrowserService {
 
     @Value("${waitForTestToFinishInSec}")
@@ -32,6 +34,7 @@ public class BrowserServiceImpl implements BrowserService {
     private String identifierDir;
 
     private WebDriver webDriver;
+    private Mapper mapper;
     private int additionTimeForWebTestToFinish;
 
     public BrowserServiceImpl() {
@@ -40,10 +43,14 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     private void initWebDriver() {
-//        String chromeDriver = "C:\\Users\\Dan\\IdeaProjects\\case-yellow-client\\src\\main\\resources\\drivers\\chromedriver.exe";
-//        System.setProperty("webdriver.chrome.driver", chromeDriver);
-//        this.webDriver = new ChromeDriver();
-        this.webDriver = new FirefoxDriver();
+        String chromeDriver = "C:\\Users\\Dan\\IdeaProjects\\case-yellow-client\\src\\main\\resources\\drivers\\chromedriver.exe";
+        System.setProperty("webdriver.chrome.driver", chromeDriver);
+        this.webDriver = new ChromeDriver();
+    }
+
+    @Autowired
+    public void setMapper(Mapper mapper) {
+        this.mapper = mapper;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class BrowserServiceImpl implements BrowserService {
         try {
             webDriver.get(url);
 
-        } catch (UnreachableBrowserException e) {
+        } catch (Exception e) {
             logger.error("Failed to open browser, reattempt again with new driver");
             initWebDriver();
             webDriver.get(url);
@@ -63,16 +70,11 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public void closeBrowser() {
-        webDriver.close();
+        webDriver.quit();
     }
 
     @Override
-    public void addAdditionalTimeForWebTestToFinish(int additionTimeInSec) {
-        this.additionTimeForWebTestToFinish = additionTimeInSec;
-    }
-
-    @Override
-    public void pressTestButton(String webSiteBtnIdentifier) throws FindFailedException {
+    public void pressStartTestButton(String webSiteBtnIdentifier) throws FindFailedException {
 
         try {
             String imgLocation = getImgFromResources(btnDir + webSiteBtnIdentifier);
@@ -94,6 +96,7 @@ public class BrowserServiceImpl implements BrowserService {
             Screen screen = new Screen();
 
             screen.wait(testFinishIdentifierImg, waitForTestToFinishInSec + additionTimeForWebTestToFinish);
+
         } catch (Exception e) {
             throw new FindFailedException(e.getMessage());
         }
@@ -109,4 +112,23 @@ public class BrowserServiceImpl implements BrowserService {
     public String getBrowserName() {
         return ((RemoteWebDriver)webDriver).getCapabilities().getBrowserName();
     }
+
+    @Override
+    public void addAdditionalTimeForWebTestToFinish(int additionTimeInSec) {
+        this.additionTimeForWebTestToFinish = additionTimeInSec;
+    }
+
+    @Override
+    public void centralizedWebPage(String identifier) {
+        String screenResolution = Utils.getScreenResolution();
+        long scrollDownPixel = mapper.getPixelScrollDown(identifier, screenResolution);
+
+        scrollDown(toIntExact(scrollDownPixel));
+    }
+
+    private void scrollDown(int scrollDownPixel) {
+        JavascriptExecutor jse = (JavascriptExecutor)webDriver;
+        jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
+    }
+
 }

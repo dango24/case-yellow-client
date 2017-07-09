@@ -4,6 +4,8 @@ import caseyellow.client.common.Validator;
 import caseyellow.client.domain.file.service.DownloadFileService;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.SystemService;
+import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
+import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
@@ -13,13 +15,11 @@ import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
-import caseyellow.client.presentation.interfaces.DomainInteractor;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +33,7 @@ import static java.util.stream.Collectors.toList;
  * Created by dango on 6/3/17.
  */
 @Component
-public class TestGenerator implements TestService, DomainInteractor {
+public class TestGenerator implements TestService, StartProducingTestsCommand, StopProducingTestsCommand {
 
     // Logger
     private Logger logger = Logger.getLogger(TestGenerator.class);
@@ -84,6 +84,7 @@ public class TestGenerator implements TestService, DomainInteractor {
     public void produceTests() {
         Test test;
 
+        Thread.currentThread().setName("TestProducer-Thread");
         while (toProduceTests.get()) {
 
             try {
@@ -147,13 +148,13 @@ public class TestGenerator implements TestService, DomainInteractor {
     }
 
     @Override
-    public void startProducingTests() {
+    public void executeStartProducingTestsCommand() {
         toProduceTests.set(true);
         executorService.submit(this::produceTests);
     }
 
     @Override
-    public void stopProducingTests() {
+    public void executeStopProducingCommand() {
         toProduceTests.set(false);
     }
 

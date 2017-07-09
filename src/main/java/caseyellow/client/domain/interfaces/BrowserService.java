@@ -10,9 +10,11 @@ import java.io.Closeable;
 public interface BrowserService {
     void openBrowser(String url);
     void closeBrowser();
+    void centralizedWebPage(String identifier);
     void addAdditionalTimeForWebTestToFinish(int additionTimeInSec);
-    void pressTestButton(String btnImagePath) throws FindFailedException;
+    void pressStartTestButton(String btnImagePath) throws FindFailedException;
     void waitForTestToFinish(String identifierPath) throws FindFailedException;
     String takeScreenSnapshot();
     String getBrowserName();
+
 }

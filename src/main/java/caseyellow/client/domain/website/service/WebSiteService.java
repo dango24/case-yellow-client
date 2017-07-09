@@ -8,6 +8,6 @@ import java.io.Closeable;
 /**
  * Created by dango on 6/3/17.
  */
-public interface WebSiteService extends Closeable{
+public interface WebSiteService extends Closeable {
     SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite);
 }

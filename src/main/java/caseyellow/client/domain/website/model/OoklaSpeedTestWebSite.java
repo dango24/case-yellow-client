@@ -16,7 +16,7 @@ public class OoklaSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public boolean isFlashSupported() {
+    public boolean isFlashable() {
         return true;
     }
 }
