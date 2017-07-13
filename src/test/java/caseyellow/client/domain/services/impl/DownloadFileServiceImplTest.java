@@ -51,7 +51,7 @@ public class DownloadFileServiceImplTest {
         assertNotNull(fileDownloadInfo);
         assertNotNull(fileDownloadInfo.getFileName());
         assertNotNull(fileDownloadInfo.getFileURL());
-        assertTrue(fileDownloadInfo.getFileDownloadedTimeInMs() > 0);
+        assertTrue(fileDownloadInfo.getFileDownloadedDurationTimeInMs() > 0);
         assertTrue(fileDownloadInfo.getFileDownloadRateKBPerSec() > 0);
         assertTrue(fileDownloadInfo.getFileSizeInBytes() > 0);
         assertTrue(fileDownloadInfo.getStartDownloadingTimestamp() < System.currentTimeMillis());

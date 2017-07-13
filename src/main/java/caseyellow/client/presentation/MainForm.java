@@ -89,6 +89,7 @@ public class MainForm implements MessagesService {
     }
 
     private void startProducingTests() {
+        showMessage("Start producing tests");
         SwingUtilities.invokeLater(startProducingTestsCommand::executeStartProducingTestsCommand);
     }
 

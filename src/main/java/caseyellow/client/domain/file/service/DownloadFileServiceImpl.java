@@ -62,7 +62,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         URL url;
         File tmpFile;
         long fileSizeInBytes;
-        long fileDownloadedTimeInMs;
+        long fileDownloadedDurationTimeInMs;
         double fileDownloadRateKBPerSec;
         String fileName;
 
@@ -77,11 +77,10 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
             long startDownloadingTime = System.currentTimeMillis();
             urlToFileService.copyURLToFile(url, tmpFile);
-            long endDownloadingTime = System.currentTimeMillis();
+            fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
 
-            fileDownloadedTimeInMs = (endDownloadingTime - startDownloadingTime);
             fileSizeInBytes = tmpFile.length();
-            fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedTimeInMs, fileSizeInBytes);
+            fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedDurationTimeInMs, fileSizeInBytes);
 
             systemService.deleteDirectory(tmpFile.getParentFile());
 
@@ -89,7 +88,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addFileURL(url.toString())
                                        .addFileSizeInBytes(fileSizeInBytes)
                                        .addFileDownloadRateKBPerSec(fileDownloadRateKBPerSec)
-                                       .addFileDownloadedTimeInMs(fileDownloadedTimeInMs)
+                                       .addFileDownloadedDurationTimeInMs(fileDownloadedDurationTimeInMs)
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
         } catch (IOException e) {

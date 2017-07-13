@@ -10,7 +10,7 @@ public class FileDownloadInfo {
     private String fileURL;
     private long   fileSizeInBytes;
     private double fileDownloadRateKBPerSec;
-    private long   fileDownloadedTimeInMs;
+    private long   fileDownloadedDurationTimeInMs;
     private long   startDownloadingTimestamp;
 
     //Constructors
@@ -25,7 +25,7 @@ public class FileDownloadInfo {
         fileURL = fileDownloadInfoBuilder.fileURL;
         fileSizeInBytes = fileDownloadInfoBuilder.fileSizeInBytes;
         fileDownloadRateKBPerSec = fileDownloadInfoBuilder.fileDownloadRateKBPerSec;
-        fileDownloadedTimeInMs = fileDownloadInfoBuilder.fileDownloadedTimeInMs;
+        fileDownloadedDurationTimeInMs = fileDownloadInfoBuilder.fileDownloadedDurationTimeInMs;
         startDownloadingTimestamp = fileDownloadInfoBuilder.startDownloadingTimestamp;
     }
 
@@ -43,10 +43,10 @@ public class FileDownloadInfo {
         this.fileSizeInBytes = fileSizeInBytes;
     }
 
-    public long getFileDownloadedTimeInMs() { return fileDownloadedTimeInMs; }
+    public long getFileDownloadedDurationTimeInMs() { return fileDownloadedDurationTimeInMs; }
 
-    public void setFileDownloadedTimeInMs(long fileDownloadedTimeInMs) {
-        this.fileDownloadedTimeInMs = fileDownloadedTimeInMs;
+    public void setFileDownloadedDurationTimeInMs(long fileDownloadedDurationTimeInMs) {
+        this.fileDownloadedDurationTimeInMs = fileDownloadedDurationTimeInMs;
     }
 
     public String getFileName() {
@@ -79,7 +79,7 @@ public class FileDownloadInfo {
                 "fileURL='" + fileURL + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", fileSizeInBytes=" + fileSizeInBytes +
-                ", fileDownloadedTimeInMs=" + fileDownloadedTimeInMs +
+                ", fileDownloadedDurationTimeInMs=" + fileDownloadedDurationTimeInMs +
                 ", startDownloadingTimestamp=" + startDownloadingTimestamp +
                 '}';
     }
@@ -91,7 +91,7 @@ public class FileDownloadInfo {
         private String fileName;
         private long   fileSizeInBytes;
         private double fileDownloadRateKBPerSec;
-        private long   fileDownloadedTimeInMs;
+        private long fileDownloadedDurationTimeInMs;
         private long startDownloadingTimestamp;
 
         public FileDownloadInfoBuilder(String fileName) {
@@ -118,8 +118,8 @@ public class FileDownloadInfo {
             return this;
         }
 
-        public FileDownloadInfoBuilder addFileDownloadedTimeInMs(long fileDownloadedTimeInMs) {
-            this.fileDownloadedTimeInMs = fileDownloadedTimeInMs;
+        public FileDownloadInfoBuilder addFileDownloadedDurationTimeInMs(long fileDownloadedTimeInMs) {
+            this.fileDownloadedDurationTimeInMs = fileDownloadedTimeInMs;
             return this;
         }
 
