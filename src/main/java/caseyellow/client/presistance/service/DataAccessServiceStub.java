@@ -9,6 +9,7 @@ import caseyellow.client.domain.interfaces.DataAccessService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * Created by dango on 6/28/17.
  */
-@Service
+@Component
 @Profile({"beta", "test"})
 public class DataAccessServiceStub implements DataAccessService {
 
