@@ -1,5 +1,7 @@
 package caseyellow.client;
 
+import caseyellow.client.domain.test.service.TestGenerator;
+import caseyellow.client.domain.test.service.TestService;
 import caseyellow.client.presentation.MainForm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,21 +27,28 @@ import static caseyellow.client.infrastructre.AppBootInitializer.initForkJoinCom
 public class App {
 
     public final static Logger logger = Logger.getLogger(App.class);
+    private static MainForm mainForm;
 
     // Functions
 
     public static void main(String[] args) throws UnknownHostException {
         logger.info(churchillSpeech());
+        mainForm = new MainForm();//(MainForm) ctx.getBean("mainForm");
+        mainForm.view();
         initForkJoinCommonPool();
         bootApp(args);
         startApp(args);
     }
 
     private static void startApp(String[] args) {
+
         try {
             ApplicationContext ctx = SpringApplication.run(App.class, args);
-            MainForm mainForm = (MainForm) ctx.getBean("mainForm");
-            mainForm.view();
+            TestGenerator testService = (TestGenerator)ctx.getBean("testGenerator");
+            mainForm.setStartProducingTestsCommand(testService);
+            mainForm.setStopProducingTestsCommand(testService);
+            mainForm.enableApp();
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             JOptionPane.showMessageDialog(null, "The best app ever failed to initialized, " + e.getMessage());

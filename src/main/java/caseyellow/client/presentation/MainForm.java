@@ -17,6 +17,9 @@ import static caseyellow.client.common.Messages.churchillSpeech;
 @Component
 public class MainForm implements MessagesService {
 
+    // Constants
+    private static final String LOADING_APP_MESSAGE = "loading app...";
+
     // Fields
     private JFrame frame;
     private JButton startButton;
@@ -63,7 +66,7 @@ public class MainForm implements MessagesService {
     private void buildEditorScrollPane() {
         editorPane = new JEditorPane();
         editorPane.setEditable(false);
-        editorPane.setText(churchillSpeech());
+        editorPane.setText(LOADING_APP_MESSAGE); //churchillSpeech());
         editorScrollPane = new JScrollPane(editorPane);
         editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         editorScrollPane.setPreferredSize(new Dimension(250, 145));
@@ -75,6 +78,8 @@ public class MainForm implements MessagesService {
         stopButton = new JButton();
         startButton.setText("Start Producing Tests");
         stopButton.setText("Stop");
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
         startButton.addActionListener( (l) -> startProducingTests());
         stopButton.addActionListener( (l) -> stopProducingTests());
     }
@@ -86,6 +91,18 @@ public class MainForm implements MessagesService {
 
     public void view() {
         frame.setVisible(true);
+    }
+
+    public void enableApp() {
+        startButton.setEnabled(true);
+        stopButton.setEnabled(true);
+        editorPane.setText(churchillSpeech());
+    }
+
+    public void disableApp() {
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        stopProducingTests();
     }
 
     private void startProducingTests() {
