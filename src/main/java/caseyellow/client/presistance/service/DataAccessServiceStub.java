@@ -38,7 +38,7 @@ public class DataAccessServiceStub implements DataAccessService {
 
     @Override
     public void saveTest(Test test) {
-        logger.info("save test at stub mode" + test);
+        System.out.println("save test at stub mode" + test);
     }
 
     @Override

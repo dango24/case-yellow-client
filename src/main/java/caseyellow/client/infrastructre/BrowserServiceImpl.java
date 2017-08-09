@@ -1,6 +1,7 @@
 package caseyellow.client.infrastructre;
 
 import caseyellow.client.common.Mapper;
+import caseyellow.client.common.ResolutionPropertiesWrapper;
 import caseyellow.client.common.Utils;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.exceptions.FindFailedException;
@@ -9,15 +10,20 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.sikuli.script.Match;
 import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.util.StringJoiner;
 
-import static caseyellow.client.common.Utils.getFileFromResources;
-import static caseyellow.client.common.Utils.getImgFromResources;
+import static caseyellow.client.common.Utils.*;
 import static java.lang.Math.toIntExact;
 
 /**
@@ -46,10 +52,11 @@ public class BrowserServiceImpl implements BrowserService {
     public BrowserServiceImpl() throws IOException {
         additionTimeForWebTestToFinish = 0;
         initWebDriver();
+        closeBrowser();
     }
 
     private void initWebDriver() throws IOException {
-        String chromeDriver = getFileFromResources("drivers/chromedriver.exe").getAbsolutePath();
+        String chromeDriver = getTempFileFromResources("drivers/chromedriver.exe").getAbsolutePath();
         System.setProperty("webdriver.chrome.driver", chromeDriver);
         this.webDriver = new ChromeDriver();
     }
@@ -66,7 +73,7 @@ public class BrowserServiceImpl implements BrowserService {
             webDriver.get(url);
 
         } catch (Exception e) {
-            logger.error("Failed to open browser, reattempt again with new driver");
+            logger.warn("Failed to open browser, reattempt again with new driver" + e);
             initWebDriver();
             webDriver.get(url);
         }
@@ -86,7 +93,8 @@ public class BrowserServiceImpl implements BrowserService {
             String imgLocation = getImgFromResources(btnDir + webSiteBtnIdentifier);
             Screen screen = new Screen();
 
-            screen.exists(imgLocation);
+            Match match  = screen.exists(imgLocation);
+            mapper.addStartTestResolutionProperties(webSiteBtnIdentifier, getScreenResolution(), match);
             screen.click(imgLocation);
 
         } catch (Exception e) {
@@ -101,12 +109,31 @@ public class BrowserServiceImpl implements BrowserService {
             String testFinishIdentifierImg = getImgFromResources(identifierDir + imgIdentifier);
             Screen screen = new Screen();
 
-            screen.wait(testFinishIdentifierImg, waitForTestToFinishInSec + additionTimeForWebTestToFinish);
+            Match match = screen.wait(testFinishIdentifierImg, waitForTestToFinishInSec + additionTimeForWebTestToFinish);
+            System.out.println(match);
+
+            mapper.addFinishTestResolutionProperties(imgIdentifier, getScreenResolution(), match);
 
         } catch (Exception e) {
             logger.error(e.getMessage());
             throw new FindFailedException(e.getMessage());
         }
+    }
+
+    private String imageInByteScreen(String imgPath) throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(new File(imgPath));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write( bufferedImage, "png", baos );
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+
+        StringJoiner sj = new StringJoiner(",");
+
+        for (byte b : imageInByte) {
+            sj.add(String.valueOf(b));
+        }
+
+        return sj.toString();
     }
 
     @Override
@@ -130,12 +157,13 @@ public class BrowserServiceImpl implements BrowserService {
         String screenResolution = Utils.getScreenResolution();
         long scrollDownPixel = mapper.getPixelScrollDown(identifier, screenResolution);
 
-        scrollDown(toIntExact(scrollDownPixel));
+        if (scrollDownPixel > 0) {
+            scrollDown(toIntExact(scrollDownPixel));
+        }
     }
 
     private void scrollDown(int scrollDownPixel) {
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
     }
-
 }

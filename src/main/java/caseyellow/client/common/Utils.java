@@ -11,6 +11,8 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -41,7 +43,7 @@ public class Utils {
         return dateFormatter.format(date);
     }
 
-    public static File getFileFromResources(String relativePath) throws IOException {
+    public static File getTempFileFromResources(String relativePath) throws IOException {
         Path path = Paths.get(relativePath);
         ClassLoader classLoader = Utils.class.getClassLoader();
         File file = File.createTempFile(generateUniqueID(), path.getFileName().toString());
@@ -50,6 +52,11 @@ public class Utils {
         FileUtils.writeByteArrayToFile(file, bytes);
 
         return file;
+    }
+
+    public static File getFileFromResources(String relativePath) throws IOException, URISyntaxException {
+        URL resource = Utils.class.getResource("/" + relativePath);
+        return Paths.get(resource.toURI()).toFile();
     }
 
     public static String getImgFromResources(String relativePath) throws IOException {
@@ -76,5 +83,21 @@ public class Utils {
         int height = (int)screenSize.getHeight();
 
         return width + "_" + height;
+    }
+
+    public static File getSubImageFile(int x, int y , int w , int h, String screenshot) throws IOException {
+
+        if (screenshot == null) {
+            return null;
+        }
+
+        File screenshotFile = new File(screenshot);
+        File subImageFile = new File("subImage.png");
+        BufferedImage fullImg = ImageIO.read(screenshotFile);
+
+        BufferedImage downloadRateScreenshot = fullImg.getSubimage(x, y, w, h);
+        ImageIO.write(downloadRateScreenshot, "png", subImageFile);
+
+        return subImageFile;
     }
 }

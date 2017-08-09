@@ -44,7 +44,6 @@
             <version>20.0</version>
         </dependency>
 
-
         <!--SikuliX API-->
         <dependency>
             <groupId>com.sikulix</groupId>

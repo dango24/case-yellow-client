@@ -1,11 +1,11 @@
 msg: Lets go hang out on cloud
 speedTestWebSitePackage : caseyellow.client.domain.website.model.
-numOfComparisonPerTest : 3
+numOfComparisonPerTest : 1
 waitForTestToFinishInSec : 110
 buttons-dir : speed_test_start_buttons/
 identifier-dir : speed_test_done_identifiers/
 chromeDriverExecutorPath : drivers/chromedriver.exe
-centralizedWebPageData : centralizedWebPageData.json
+resolutionPropertiesMapper : resolutionPropertiesMapper.json
 
 config:
   app-name: Gateway

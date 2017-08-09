@@ -10,8 +10,8 @@ import java.io.IOException;
 /**
  * Created by dango on 7/25/17.
  */
-@Service
-@Primary
+//@Service
+//@Primary
 public class BrowserServiceStub implements BrowserService {
 
     @Override

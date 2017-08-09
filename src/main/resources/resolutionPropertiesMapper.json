@@ -1,0 +1,168 @@
+{
+  "resolutionPropertiesMapper": {
+    "ookla": {
+      "resolutionPropertiesMap": {
+        "1920_1080": {
+          "centralized": 0,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 866.0,
+              "y": 503.0
+            },
+            "coordinates": {
+              "x": 739,
+              "y": 468,
+              "h": 71,
+              "w": 255
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 858.0,
+              "y": 545.0
+            },
+            "coordinates": {
+              "x": 713,
+              "y": 517,
+              "h": 57,
+              "w": 291
+            }
+          }
+        }
+      }
+    },
+    "fast": {
+      "resolutionPropertiesMap": {
+        "1920_1080": {
+          "centralized": 0,
+          "startButtonResolutionProperties": null,
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 913.0,
+              "y": 875.0
+            },
+            "coordinates": {
+              "x": 803,
+              "y": 840,
+              "h": 70,
+              "w": 220
+            }
+          }
+        }
+      }
+    },
+    "atnt": {
+      "resolutionPropertiesMap": {
+        "1920_1080": {
+          "centralized": 0,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 947.0,
+              "y": 824.0
+            },
+            "coordinates": {
+              "x": 893,
+              "y": 794,
+              "h": 60,
+              "w": 108
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 946.0,
+              "y": 698.0
+            },
+            "coordinates": {
+              "x": 822,
+              "y": 661,
+              "h": 75,
+              "w": 249
+            }
+          }
+        }
+      }
+    },
+    "speedof": {
+      "resolutionPropertiesMap": {
+        "1920_1080": {
+          "centralized": 0,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 362.0,
+              "y": 894.0
+            },
+            "coordinates": {
+              "x": 260,
+              "y": 874,
+              "h": 41,
+              "w": 205
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 361.0,
+              "y": 830.0
+            },
+            "coordinates": {
+              "x": 208,
+              "y": 805,
+              "h": 50,
+              "w": 306
+            }
+          }
+        }
+      }
+    },
+    "bezeq": {
+      "resolutionPropertiesMap": {
+        "1920_1080": {
+          "centralized": 0,
+          "startButtonResolutionProperties": null,
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 600.0,
+              "y": 605.0
+            },
+            "coordinates": {
+              "x": 446,
+              "y": 589,
+              "h": 33,
+              "w": 308
+            }
+          }
+        }
+      }
+    },
+    "hot": {
+      "resolutionPropertiesMap": {
+        "1920_1080": {
+          "centralized": 250,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 831.0,
+              "y": 571.0
+            },
+            "coordinates": {
+              "x": 698,
+              "y": 531,
+              "h": 80,
+              "w": 266
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 526.0,
+              "y": 674.0
+            },
+            "coordinates": {
+              "x": 470,
+              "y": 623,
+              "h": 103,
+              "w": 112
+            }
+          }
+        }
+      }
+    }
+  }
+}
