@@ -105,11 +105,6 @@ public class Mapper {
     }
 
     public int getPixelScrollDown(String identifier, String screenResolution) {
-
-        if (identifier.equals("hot")) {
-            return 250;
-        }
-
         return resolutionPropertiesMapper.getPixelScrollDown(identifier, screenResolution);
     }
 }

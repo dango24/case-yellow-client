@@ -28,6 +28,33 @@
               "w": 291
             }
           }
+        },
+        "1366_768": {
+          "centralized": 0,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 608.0,
+              "y": 294.0
+            },
+            "coordinates": {
+              "x": 507,
+              "y": 262,
+              "h": 64,
+              "w": 202
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 605.0,
+              "y": 343.0
+            },
+            "coordinates": {
+              "x": 490,
+              "y": 323,
+              "h": 40,
+              "w": 230
+            }
+          }
         }
       }
     },
@@ -46,6 +73,22 @@
               "y": 840,
               "h": 70,
               "w": 220
+            }
+          }
+        },
+        "1366_768": {
+          "centralized": 0,
+          "startButtonResolutionProperties": null,
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 684.0,
+              "y": 621.0
+            },
+            "coordinates": {
+              "x": 606,
+              "y": 593,
+              "h": 57,
+              "w": 156
             }
           }
         }
@@ -79,6 +122,33 @@
               "w": 249
             }
           }
+        },
+        "1366_768": {
+          "centralized": 0,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 674.0,
+              "y": 656.0
+            },
+            "coordinates": {
+              "x": 633,
+              "y": 633,
+              "h": 46,
+              "w": 82
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 676.0,
+              "y": 556.0
+            },
+            "coordinates": {
+              "x": 580,
+              "y": 526,
+              "h": 60,
+              "w": 192
+            }
+          }
         }
       }
     },
@@ -110,6 +180,33 @@
               "w": 306
             }
           }
+        },
+        "1366_768": {
+          "centralized": 0,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 266.0,
+              "y": 635.0
+            },
+            "coordinates": {
+              "x": 196,
+              "y": 618,
+              "h": 34,
+              "w": 141
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 280.0,
+              "y": 590.0
+            },
+            "coordinates": {
+              "x": 166,
+              "y": 576,
+              "h": 29,
+              "w": 229
+            }
+          }
         }
       }
     },
@@ -128,6 +225,22 @@
               "y": 589,
               "h": 33,
               "w": 308
+            }
+          }
+        },
+        "1366_768": {
+          "centralized": 0,
+          "startButtonResolutionProperties": null,
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 397.0,
+              "y": 485.0
+            },
+            "coordinates": {
+              "x": 272,
+              "y": 470,
+              "h": 30,
+              "w": 250
             }
           }
         }
@@ -159,6 +272,33 @@
               "y": 623,
               "h": 103,
               "w": 112
+            }
+          }
+        },
+        "1366_768": {
+          "centralized": 180,
+          "startButtonResolutionProperties": {
+            "center": {
+              "x": 302.0,
+              "y": 293.0
+            },
+            "coordinates": {
+              "x": 196,
+              "y": 259,
+              "h": 69,
+              "w": 212
+            }
+          },
+          "finishTestResolutionProperties": {
+            "center": {
+              "x": 336.0,
+              "y": 610.0
+            },
+            "coordinates": {
+              "x": 292,
+              "y": 568,
+              "h": 85,
+              "w": 88
             }
           }
         }
