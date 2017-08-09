@@ -1,8 +1,5 @@
 package caseyellow.client.common;
 
-
-import org.sikuli.script.Match;
-
 import java.awt.Point;
 
 /**
@@ -42,19 +39,6 @@ public class ResolutionPropertiesWrapper {
         this.finishTestResolutionProperties = finishTestResolutionProperties;
     }
 
-    public void createStartTestResolutionProperties(Match match) {
-        ResolutionProperties resolutionProperties = new ResolutionProperties(new Point(match.getTarget().getX(), match.getTarget().getY()),
-                                                                             new Coordinates(match.getX(), match.getY(), match.getH(), match.getW()));
-
-        setStartButtonResolutionProperties(resolutionProperties);
-    }
-
-    public void createFinishTestResolutionProperties(Match match) {
-        ResolutionProperties resolutionProperties = new ResolutionProperties(new Point(match.getTarget().getX(), match.getTarget().getY()),
-                new Coordinates(match.getX(), match.getY(), match.getH(), match.getW()));
-
-        setFinishTestResolutionProperties(resolutionProperties);
-    }
 }
 
 class ResolutionProperties {

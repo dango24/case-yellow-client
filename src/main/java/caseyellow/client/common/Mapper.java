@@ -1,20 +1,17 @@
 package caseyellow.client.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sikuli.script.Match;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static caseyellow.client.common.Utils.getFileFromResources;
 
@@ -84,26 +81,6 @@ public class Mapper {
         return speedTestWebSitePackage + websiteInfo.get(identifier);
     }
 
-    public void addStartTestResolutionProperties(String webSiteBtnIdentifier, String screenResolution, Match match) throws IOException, URISyntaxException {
-        addResolutionProperties(webSiteBtnIdentifier, screenResolution, match, ResolutionPropertiesType.START_TEST);
-        saveToDisk();
-    }
-
-    public void addFinishTestResolutionProperties(String identifier, String resolution, Match resolutionProperties) throws IOException, URISyntaxException {
-        addResolutionProperties(identifier, resolution, resolutionProperties, ResolutionPropertiesType.FINISH_TEST);
-        saveToDisk();
-    }
-
-    private void addResolutionProperties(String identifier, String resolution, Match resolutionProperties, ResolutionPropertiesType resolutionPropertiesType) {
-        resolutionPropertiesMapper.addResolutionProperties(identifier, resolution, resolutionProperties, resolutionPropertiesType);
-    }
-
-    private void saveToDisk() throws IOException, URISyntaxException {
-        URL resource = Mapper.class.getResource("/" + resolutionPropertiesMapperPath);
-        String content = new ObjectMapper().writeValueAsString(resolutionPropertiesMapper);
-        Files.write(Paths.get(resource.toURI()), content.getBytes());
-    }
-
     public int getPixelScrollDown(String identifier, String screenResolution) {
         return resolutionPropertiesMapper.getPixelScrollDown(identifier, screenResolution);
     }
@@ -139,14 +116,6 @@ class ResolutionPropertiesMapper {
         }
     }
 
-    public void addResolutionProperties(String identifier, String resolution, Match resolutionProperties, Mapper.ResolutionPropertiesType resolutionPropertiesType) {
-        ResolutionWebPageData resolutionWebPageData;
-
-        if (!resolutionPropertiesMapper.containsKey(identifier)) {
-            resolutionPropertiesMapper.put(identifier, new ResolutionWebPageData());
-        }
-        resolutionPropertiesMapper.get(identifier).addResolutionProperties(resolution, resolutionProperties, resolutionPropertiesType);
-    }
 }
 
 class ResolutionWebPageData {
@@ -173,28 +142,4 @@ class ResolutionWebPageData {
         return resolutionPropertiesMap.getOrDefault(screenResolution, new ResolutionPropertiesWrapper()).getCentralized();
     }
 
-    public void addResolutionProperties(String resolution, Match match, Mapper.ResolutionPropertiesType resolutionPropertiesType) {
-        ResolutionProperties resolutionProperties = createResolutionProperties(match);
-        ResolutionPropertiesWrapper resolutionPropertiesWrapper = resolutionPropertiesMap.get(resolution);
-
-        if (resolutionPropertiesWrapper == null) {
-            resolutionPropertiesMap.put(resolution, new ResolutionPropertiesWrapper());
-            resolutionPropertiesWrapper = resolutionPropertiesMap.get(resolution);
-        }
-
-        switch (resolutionPropertiesType) {
-
-            case FINISH_TEST:
-                resolutionPropertiesWrapper.setFinishTestResolutionProperties(resolutionProperties);
-                break;
-
-            case START_TEST:
-                resolutionPropertiesWrapper.setStartButtonResolutionProperties(resolutionProperties);
-        }
-    }
-
-    private ResolutionProperties createResolutionProperties(Match match) {
-        return new ResolutionProperties(new Point(match.getTarget().getX(), match.getTarget().getY()),
-                new Coordinates(match.getX(), match.getY(), match.getH(), match.getW()));
-    }
 }

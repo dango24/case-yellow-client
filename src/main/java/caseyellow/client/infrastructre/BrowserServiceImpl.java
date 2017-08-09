@@ -1,17 +1,16 @@
 package caseyellow.client.infrastructre;
 
 import caseyellow.client.common.Mapper;
-import caseyellow.client.common.ResolutionPropertiesWrapper;
 import caseyellow.client.common.Utils;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.exceptions.FindFailedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sikuli.script.Match;
-import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -91,11 +90,6 @@ public class BrowserServiceImpl implements BrowserService {
 
         try {
             String imgLocation = getImgFromResources(btnDir + webSiteBtnIdentifier);
-            Screen screen = new Screen();
-
-            Match match  = screen.exists(imgLocation);
-            mapper.addStartTestResolutionProperties(webSiteBtnIdentifier, getScreenResolution(), match);
-            screen.click(imgLocation);
 
         } catch (Exception e) {
             throw new FindFailedException(e.getMessage());
@@ -107,12 +101,6 @@ public class BrowserServiceImpl implements BrowserService {
 
         try {
             String testFinishIdentifierImg = getImgFromResources(identifierDir + imgIdentifier);
-            Screen screen = new Screen();
-
-            Match match = screen.wait(testFinishIdentifierImg, waitForTestToFinishInSec + additionTimeForWebTestToFinish);
-            System.out.println(match);
-
-            mapper.addFinishTestResolutionProperties(imgIdentifier, getScreenResolution(), match);
 
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -138,8 +126,8 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public String takeScreenSnapshot() {
-        Screen screen = new Screen();
-        return screen.capture().getFile();
+        File scrFile = ((TakesScreenshot)webDriver).getScreenshotAs(OutputType.FILE);
+        return scrFile.getAbsolutePath();
     }
 
     @Override
