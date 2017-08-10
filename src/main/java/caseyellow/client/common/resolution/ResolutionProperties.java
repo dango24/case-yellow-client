@@ -5,15 +5,17 @@ package caseyellow.client.common.resolution;
  */
 public class ResolutionProperties {
 
+    private double comparisionThreshold;
     private Point center;
     private Coordinates coordinates;
 
     public ResolutionProperties() {
     }
 
-    public ResolutionProperties(Point center, Coordinates coordinates) {
+    public ResolutionProperties(Point center, Coordinates coordinates, double comparisionThreshold) {
         this.center = center;
         this.coordinates = coordinates;
+        this.comparisionThreshold = comparisionThreshold;
     }
 
     public Point getCenter() {
@@ -32,6 +34,13 @@ public class ResolutionProperties {
         this.coordinates = coordinates;
     }
 
+    public double getComparisionThreshold() {
+        return comparisionThreshold;
+    }
+
+    public void setComparisionThreshold(double comparisionThreshold) {
+        this.comparisionThreshold = comparisionThreshold;
+    }
 
     public int getX() {
         return coordinates.getX();

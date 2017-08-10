@@ -156,7 +156,8 @@ public class BrowserServiceImpl implements BrowserService {
             String screenshot = takeScreenSnapshot();
             String subImagePath = getSubImageFile(resolutionProperties, screenshot);
 
-            if (imageComparison.compare(subImagePath, btnIdentifierImgPath)) {
+            if (imageComparison.compare(subImagePath, btnIdentifierImgPath, resolutionProperties.getComparisionThreshold())) {
+                System.out.println(btnIdentifierImgPath + " : " + imageComparison.getComparisionResult());
                 return true;
             }
 
@@ -169,9 +170,9 @@ public class BrowserServiceImpl implements BrowserService {
 
     private String getSubImageFile(ResolutionProperties resolutionProperties, String screenshot) throws IOException {
         return Utils.getSubImageFile(resolutionProperties.getX() -100,
-                                     resolutionProperties.getY() - 100,
+                                     resolutionProperties.getY() - 200,
                                      resolutionProperties.getW() + 200,
-                                     resolutionProperties.getH() + 200,
+                                     resolutionProperties.getH() + 300,
                                      screenshot).getAbsolutePath();
     }
 

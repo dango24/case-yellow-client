@@ -5,23 +5,21 @@ import org.springframework.stereotype.Component;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 @Component
 public class ImageComparison implements ImageComparisonService {
 
-	@Value("${comparision-threshold}")
-	private final double COMPARISION_THRESHOLD = 0.05;
 	private ImageChecker imageChecker;
+	private double comparisonResult;
 
 	public ImageComparison() {
 		imageChecker = new ImageChecker();
 	}
 
 	@Override
-	public boolean compare(String imgPath, String subImgPath) {
+	public boolean compare(String imgPath, String subImgPath, double comparisionThreshold) {
 
 		try {
 			BufferedImage image = ImageIO.read(new File(imgPath));
@@ -34,10 +32,16 @@ public class ImageComparison implements ImageComparisonService {
 				throw new InternalFailureException("Sub image is larger then main image");
 			}
 
-			return imageChecker.compareImages() < COMPARISION_THRESHOLD;
+			comparisonResult = imageChecker.compareImages();
+			return comparisonResult < comparisionThreshold;
 
 		} catch (Exception e) {
 			throw new InternalFailureException("Failure to compare images, " + e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public double getComparisionResult() {
+		return comparisonResult;
 	}
 }

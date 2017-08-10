@@ -9,7 +9,6 @@ buttons-dir : speed_test_start_buttons/
 identifier-dir : speed_test_done_identifiers/
 chromeDriverExecutorPath : drivers/chromedriver.exe
 resolutionPropertiesMapper : resolutionPropertiesMapper.json
-comparision-threshold : 0.05
 
 config:
   app-name: Gateway

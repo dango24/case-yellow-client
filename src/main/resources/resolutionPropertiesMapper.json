@@ -5,6 +5,7 @@
         "1920_1080": {
           "centralized": 0,
           "startButtonResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 862.0,
               "y": 500.0
@@ -17,6 +18,7 @@
             }
           },
           "finishTestResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 858.0,
               "y": 559.0
@@ -64,6 +66,7 @@
           "centralized": 0,
           "startButtonResolutionProperties": null,
           "finishTestResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 913.0,
               "y": 875.0
@@ -99,6 +102,7 @@
         "1920_1080": {
           "centralized": 0,
           "startButtonResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 947.0,
               "y": 824.0
@@ -111,6 +115,7 @@
             }
           },
           "finishTestResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 946.0,
               "y": 698.0
@@ -157,6 +162,7 @@
         "1920_1080": {
           "centralized": 0,
           "startButtonResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 355.0,
               "y": 893.0
@@ -169,6 +175,7 @@
             }
           },
           "finishTestResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 361.0,
               "y": 830.0
@@ -216,6 +223,7 @@
           "centralized": 0,
           "startButtonResolutionProperties": null,
           "finishTestResolutionProperties": {
+            "comparisionThreshold": 0.096,
             "center": {
               "x": 600.0,
               "y": 605.0
@@ -251,6 +259,7 @@
         "1920_1080": {
           "centralized": 250,
           "startButtonResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 831.0,
               "y": 571.0
@@ -263,6 +272,7 @@
             }
           },
           "finishTestResolutionProperties": {
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 526.0,
               "y": 674.0
