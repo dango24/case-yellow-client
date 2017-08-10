@@ -1,8 +1,8 @@
 package caseyellow.client.domain.interfaces;
 
-import caseyellow.client.exceptions.FindFailedException;
+import caseyellow.client.exceptions.BrowserCommandFailedException;
 
-import java.io.Closeable;
+import java.awt.*;
 import java.io.IOException;
 
 /**
@@ -12,10 +12,6 @@ public interface BrowserService {
     void openBrowser(String url) throws IOException;
     void closeBrowser();
     void centralizedWebPage(String identifier);
-    void addAdditionalTimeForWebTestToFinish(int additionTimeInSec);
-    void pressStartTestButton(String btnImagePath) throws FindFailedException;
-    void waitForTestToFinish(String identifierPath) throws FindFailedException;
-    String takeScreenSnapshot();
-    String getBrowserName();
-
+    void pressStartTestButton(String btnImagePath) throws BrowserCommandFailedException;
+    void waitForTestToFinish(String identifierPath) throws BrowserCommandFailedException;
 }

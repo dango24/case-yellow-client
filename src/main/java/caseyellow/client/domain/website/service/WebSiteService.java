@@ -2,6 +2,7 @@ package caseyellow.client.domain.website.service;
 
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.exceptions.BrowserCommandFailedException;
 
 import java.io.Closeable;
 

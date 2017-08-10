@@ -4,6 +4,8 @@ import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
+import caseyellow.client.exceptions.InternalFailureException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -11,13 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 /**
@@ -32,17 +39,6 @@ public class SystemServiceImpl implements SystemService {
 
     // Logger
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
-
-    private BrowserService browserService;
-
-    public SystemServiceImpl() {
-        this(null);
-    }
-
-    @Autowired
-    public SystemServiceImpl(BrowserService browserService) {
-        this.browserService = browserService;
-    }
 
     @Override
     public SystemInfo getSystemInfo() {
@@ -62,6 +58,29 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public void copyURLToFile(URL source, File destination) throws IOException {
 //        FileUtils.copyURLToFile(source, destination);
+    }
+
+    @Override
+    public String getImgMD5HashValue(String imgPath) {
+        try {
+            byte[] bytes = convertImgToByteArray(imgPath);
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            byte[] hashResult = messageDigest.digest(bytes);
+
+            return Hex.encodeHexString(hashResult);
+
+        } catch (Exception e) {
+           throw new InternalFailureException(e.getMessage(), e);
+        }
+    }
+
+    private byte[] convertImgToByteArray(String imgPath) throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(new File(imgPath));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write( bufferedImage, "png", baos );
+        baos.flush();
+
+        return baos.toByteArray();
     }
 
     private String getOperationSystem() {
@@ -131,7 +150,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     private String getBrowser() {
-        return browserService.getBrowserName();
+        return "CHROME";
     }
 
 }

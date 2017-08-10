@@ -4,13 +4,15 @@ import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.interfaces.BrowserService;
-import caseyellow.client.exceptions.FindFailedException;
+import caseyellow.client.exceptions.BrowserCommandFailedException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import static caseyellow.client.common.Utils.takeScreenSnapshot;
 
 /**
  * Created by dango on 6/3/17.
@@ -35,7 +37,7 @@ public class WebSiteServiceImpl implements WebSiteService {
     // Methods
 
     @Override
-    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) throws WebSiteDownloadInfoException {
+    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) {
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
@@ -52,7 +54,7 @@ public class WebSiteServiceImpl implements WebSiteService {
             browserService.waitForTestToFinish(speedTestWebsite.getIdentifier());
 
             TimeUnit.MILLISECONDS.sleep(DELAY_TIME_BEFORE_SNAPSHOT);
-            websiteSnapshot = browserService.takeScreenSnapshot();
+            websiteSnapshot = takeScreenSnapshot();
 
             return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                                    .setSucceed()
@@ -60,11 +62,11 @@ public class WebSiteServiceImpl implements WebSiteService {
                                                    .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
                                                    .build();
 
-        } catch (FindFailedException | InterruptedException e) {
+        } catch (BrowserCommandFailedException | InterruptedException e) {
             logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
             return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                                    .setFailure()
-                                                   .setWebSiteDownloadInfoSnapshot(browserService.takeScreenSnapshot())
+                                                   .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
                                                    .build();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

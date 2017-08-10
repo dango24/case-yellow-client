@@ -1,6 +1,4 @@
-package caseyellow.client.common;
-
-import java.awt.Point;
+package caseyellow.client.common.resolution;
 
 /**
  * Created by Dan on 7/22/2017.
@@ -39,34 +37,4 @@ public class ResolutionPropertiesWrapper {
         this.finishTestResolutionProperties = finishTestResolutionProperties;
     }
 
-}
-
-class ResolutionProperties {
-
-    private Point center;
-    private Coordinates coordinates;
-
-    public ResolutionProperties() {
-    }
-
-    public ResolutionProperties(Point center, Coordinates coordinates) {
-        this.center = center;
-        this.coordinates = coordinates;
-    }
-
-    public Point getCenter() {
-        return center;
-    }
-
-    public void setCenter(Point center) {
-        this.center = center;
-    }
-
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
-    }
 }

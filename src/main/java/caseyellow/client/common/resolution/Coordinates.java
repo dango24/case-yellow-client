@@ -1,4 +1,4 @@
-package caseyellow.client.common;
+package caseyellow.client.common.resolution;
 
 /**
  * Created by Dan on 7/22/2017.

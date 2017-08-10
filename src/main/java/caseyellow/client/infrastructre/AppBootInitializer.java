@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import static caseyellow.client.common.Utils.cleanTmpDir;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -21,7 +22,8 @@ import static java.util.stream.Collectors.toMap;
 public class AppBootInitializer {
 
 
-    public static void bootApp(String[] bootArgs) {
+    public static void initAppPreRequuments(String[] bootArgs) throws IOException {
+        cleanTmpDir();
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
         updateLog4jConfiguration(argsMap.get("logFilePath"));
     }

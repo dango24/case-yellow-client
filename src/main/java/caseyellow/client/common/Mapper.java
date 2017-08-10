@@ -1,5 +1,7 @@
 package caseyellow.client.common;
 
+import caseyellow.client.common.resolution.ResolutionProperties;
+import caseyellow.client.common.resolution.ResolutionPropertiesMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static caseyellow.client.common.Utils.getFileFromResources;
+import static caseyellow.client.common.Utils.getTempFileFromResources;
 
 /**
  * Created by dango on 6/2/17.
@@ -21,10 +23,6 @@ import static caseyellow.client.common.Utils.getFileFromResources;
 @Component
 @ConfigurationProperties
 public class Mapper {
-
-    enum ResolutionPropertiesType {
-        FINISH_TEST, START_TEST
-    }
 
     // Fields
     @Value("${resolutionPropertiesMapper}")
@@ -38,7 +36,7 @@ public class Mapper {
 
     @PostConstruct
     public void init() throws IOException, URISyntaxException {
-        resolutionPropertiesMapper = new ObjectMapper().readValue(getFileFromResources(resolutionPropertiesMapperPath), ResolutionPropertiesMapper.class);
+        resolutionPropertiesMapper = new ObjectMapper().readValue(getTempFileFromResources(resolutionPropertiesMapperPath), ResolutionPropertiesMapper.class);
     }
 
     public void setSpeedTestWebSitePackage(String speedTestWebSitePackage) {
@@ -84,62 +82,12 @@ public class Mapper {
     public int getPixelScrollDown(String identifier, String screenResolution) {
         return resolutionPropertiesMapper.getPixelScrollDown(identifier, screenResolution);
     }
-}
 
-class ResolutionPropertiesMapper {
-
-    private Map<String, ResolutionWebPageData> resolutionPropertiesMapper;
-
-    public ResolutionPropertiesMapper() {
-        resolutionPropertiesMapper = new HashMap<>();
+    public ResolutionProperties getStartButtonResolutionProperties(String identifier) {
+        return resolutionPropertiesMapper.getStartButtonResolutionProperties(identifier);
     }
 
-    public ResolutionPropertiesMapper(Map<String, ResolutionWebPageData> resolutionPropertiesMapper) {
-        this.resolutionPropertiesMapper = resolutionPropertiesMapper;
+    public ResolutionProperties getFinishIdentifierImg(String identifier) {
+        return resolutionPropertiesMapper.getFinishIdentifierImg(identifier);
     }
-
-    public Map<String, ResolutionWebPageData> getResolutionPropertiesMapper() {
-        return resolutionPropertiesMapper;
-    }
-
-    public void setResolutionPropertiesMapper(Map<String, ResolutionWebPageData> resolutionPropertiesMapper) {
-        this.resolutionPropertiesMapper = resolutionPropertiesMapper;
-    }
-
-    public int getPixelScrollDown(String identifier, String screenResolution) {
-        ResolutionWebPageData resolutionWebPageData = resolutionPropertiesMapper.get(identifier);
-
-        if (resolutionWebPageData != null) {
-            return resolutionWebPageData.getPixelScrollDown(screenResolution);
-        } else {
-            return 0;
-        }
-    }
-
-}
-
-class ResolutionWebPageData {
-
-    private Map<String, ResolutionPropertiesWrapper> resolutionPropertiesMap;
-
-    public ResolutionWebPageData() {
-        resolutionPropertiesMap = new HashMap<>();
-    }
-
-    public ResolutionWebPageData(Map<String, ResolutionPropertiesWrapper> resolutionPropertiesMap) {
-        this.resolutionPropertiesMap = resolutionPropertiesMap;
-    }
-
-    public Map<String, ResolutionPropertiesWrapper> getResolutionPropertiesMap() {
-        return resolutionPropertiesMap;
-    }
-
-    public void setResolutionPropertiesMap(Map<String, ResolutionPropertiesWrapper> resolutionPropertiesMap) {
-        this.resolutionPropertiesMap = resolutionPropertiesMap;
-    }
-
-    public int getPixelScrollDown(String screenResolution) {
-        return resolutionPropertiesMap.getOrDefault(screenResolution, new ResolutionPropertiesWrapper()).getCentralized();
-    }
-
 }

@@ -1,6 +1,6 @@
 package caseyellow.client.domain.website.model;
 
-import caseyellow.client.common.ResolutionPropertiesWrapper;
+import caseyellow.client.common.resolution.ResolutionPropertiesWrapper;
 
 import java.util.HashMap;
 import java.util.Map;

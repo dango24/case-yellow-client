@@ -1,9 +1,7 @@
 package caseyellow.client.infrastructre;
 
 import caseyellow.client.domain.interfaces.BrowserService;
-import caseyellow.client.exceptions.FindFailedException;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
+import caseyellow.client.exceptions.BrowserCommandFailedException;
 
 import java.io.IOException;
 
@@ -30,27 +28,13 @@ public class BrowserServiceStub implements BrowserService {
     }
 
     @Override
-    public void addAdditionalTimeForWebTestToFinish(int additionTimeInSec) {
+    public void pressStartTestButton(String btnImagePath) throws BrowserCommandFailedException {
 
     }
 
     @Override
-    public void pressStartTestButton(String btnImagePath) throws FindFailedException {
+    public void waitForTestToFinish(String identifierPath) throws BrowserCommandFailedException {
 
     }
 
-    @Override
-    public void waitForTestToFinish(String identifierPath) throws FindFailedException {
-
-    }
-
-    @Override
-    public String takeScreenSnapshot() {
-        return null;
-    }
-
-    @Override
-    public String getBrowserName() {
-        return null;
-    }
 }

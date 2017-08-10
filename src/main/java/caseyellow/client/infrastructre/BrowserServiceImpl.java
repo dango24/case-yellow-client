@@ -2,25 +2,22 @@ package caseyellow.client.infrastructre;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.common.Utils;
+import caseyellow.client.common.resolution.ResolutionProperties;
 import caseyellow.client.domain.interfaces.BrowserService;
-import caseyellow.client.exceptions.FindFailedException;
+import caseyellow.client.exceptions.BrowserCommandFailedException;
+import caseyellow.client.infrastructre.image.comparison.ImageComparison;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.awt.*;
+import java.awt.event.InputEvent;
 import java.io.IOException;
-import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Utils.*;
 import static java.lang.Math.toIntExact;
@@ -31,9 +28,19 @@ import static java.lang.Math.toIntExact;
 @Component
 public class BrowserServiceImpl implements BrowserService {
 
-    @Value("${waitForTestToFinishInSec}")
-    private final int waitForTestToFinishInSec = 120;
     private Logger logger = Logger.getLogger(BrowserServiceImpl.class);
+
+    @Value("${wait-for-start-test-button-to-appear-in-sec}")
+    private final int waitForStartTestButtonToAppearInSec = 20;
+
+    @Value("${wait-for-test-to-finish-in-sec}")
+    private final int waitForTestToFinishInSec = 120;
+
+    @Value("${wait-for-start-button}")
+    private final int waitForStartButton = 2;
+
+    @Value("${wait-For-Finish-identifier}")
+    private final int waitForFinishIdentifier = 10;
 
     @Value("${buttons-dir}")
     private String btnDir;
@@ -44,12 +51,10 @@ public class BrowserServiceImpl implements BrowserService {
     @Value("${chromeDriverExecutorPath}")
     private String chromeDriverExecutorPath;
 
-    private WebDriver webDriver;
     private Mapper mapper;
-    private int additionTimeForWebTestToFinish;
+    private WebDriver webDriver;
 
     public BrowserServiceImpl() throws IOException {
-        additionTimeForWebTestToFinish = 0;
         initWebDriver();
         closeBrowser();
     }
@@ -86,58 +91,65 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressStartTestButton(String webSiteBtnIdentifier) throws FindFailedException {
+    public void pressStartTestButton(String webSiteBtnIdentifier) throws BrowserCommandFailedException {
 
         try {
-            String imgLocation = getImgFromResources(btnDir + webSiteBtnIdentifier);
+            String btnIdentifierImgPath = getImgFromResources(btnDir + webSiteBtnIdentifier);
+            ResolutionProperties startButtonProperties = mapper.getStartButtonResolutionProperties(webSiteBtnIdentifier);
+            int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForStartButton;
 
+            TimeUnit.MILLISECONDS.sleep(700);
+
+            waitForStartButtonAppearance(btnIdentifierImgPath, startButtonProperties, numOfAttempts, waitForStartButton);
+
+            click(startButtonProperties.getCenter().getX(),
+                  startButtonProperties.getCenter().getY());
         } catch (Exception e) {
-            throw new FindFailedException(e.getMessage());
+            throw new BrowserCommandFailedException(e.getMessage(), e);
         }
     }
 
     @Override
-    public void waitForTestToFinish(String imgIdentifier) throws FindFailedException {
+    public void waitForTestToFinish(String imgIdentifier) throws BrowserCommandFailedException {
 
         try {
             String testFinishIdentifierImg = getImgFromResources(identifierDir + imgIdentifier);
+            ResolutionProperties finishTestIdentifierProperties = mapper.getFinishIdentifierImg(imgIdentifier);
+            int numOfAttempts = waitForTestToFinishInSec / waitForFinishIdentifier;
+
+            waitForStartButtonAppearance(testFinishIdentifierImg, finishTestIdentifierProperties, numOfAttempts, waitForFinishIdentifier);
 
         } catch (Exception e) {
             logger.error(e.getMessage());
-            throw new FindFailedException(e.getMessage());
+            throw new BrowserCommandFailedException(e.getMessage());
         }
     }
 
-    private String imageInByteScreen(String imgPath) throws IOException {
-        BufferedImage bufferedImage = ImageIO.read(new File(imgPath));
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write( bufferedImage, "png", baos );
-        baos.flush();
-        byte[] imageInByte = baos.toByteArray();
+    private boolean waitForStartButtonAppearance(String btnIdentifierImgPath, ResolutionProperties resolutionProperties,
+                                                 int numOfAttempts , int waitForImageInSec) throws IOException, InterruptedException, BrowserCommandFailedException {
+        int currentAttempt = 0;
 
-        StringJoiner sj = new StringJoiner(",");
+        do {
+            String screenshot = takeScreenSnapshot();
+            String subImagePath = getSubImageFile(resolutionProperties, screenshot);
 
-        for (byte b : imageInByte) {
-            sj.add(String.valueOf(b));
-        }
+            if (ImageComparison.compare(btnIdentifierImgPath, subImagePath)) {
+                return true;
+            }
 
-        return sj.toString();
+            TimeUnit.SECONDS.sleep(waitForImageInSec);
+
+        } while (++currentAttempt < numOfAttempts);
+
+        throw new BrowserCommandFailedException("Failure to find start button for btn image path: " + btnIdentifierImgPath);
     }
 
-    @Override
-    public String takeScreenSnapshot() {
-        File scrFile = ((TakesScreenshot)webDriver).getScreenshotAs(OutputType.FILE);
-        return scrFile.getAbsolutePath();
-    }
-
-    @Override
-    public String getBrowserName() {
-        return ((RemoteWebDriver)webDriver).getCapabilities().getBrowserName();
-    }
-
-    @Override
-    public void addAdditionalTimeForWebTestToFinish(int additionTimeInSec) {
-        this.additionTimeForWebTestToFinish = additionTimeInSec;
+    private String getSubImageFile(ResolutionProperties resolutionProperties, String screenshot) throws IOException {
+        return Utils.getSubImageFile(resolutionProperties.getX(),
+                                     resolutionProperties.getY(),
+                                     resolutionProperties.getW(),
+                                     resolutionProperties.getH(),
+                                     screenshot).getAbsolutePath();
     }
 
     @Override
@@ -153,5 +165,12 @@ public class BrowserServiceImpl implements BrowserService {
     private void scrollDown(int scrollDownPixel) {
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
+    }
+
+    public void click(int x, int y) throws AWTException {
+        Robot bot = new Robot();
+        bot.mouseMove(x, y);
+        bot.mousePress(InputEvent.BUTTON1_MASK);
+        bot.mouseRelease(InputEvent.BUTTON1_MASK);
     }
 }
