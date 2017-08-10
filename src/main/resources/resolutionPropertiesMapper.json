@@ -6,12 +6,12 @@
           "centralized": 0,
           "startButtonResolutionProperties": {
             "center": {
-              "x": 866.0,
-              "y": 503.0
+              "x": 862.0,
+              "y": 500.0
             },
             "coordinates": {
-              "x": 739,
-              "y": 468,
+              "x": 735,
+              "y": 465,
               "h": 71,
               "w": 255
             }
