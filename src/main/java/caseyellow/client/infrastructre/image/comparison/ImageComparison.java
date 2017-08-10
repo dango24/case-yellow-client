@@ -10,19 +10,18 @@ import javax.imageio.ImageIO;
 
 public class ImageComparison {
 
-	public static boolean compare(String imgPath1, String imgPath2) {
+	public static boolean compare(String imgPath, String subImgPath) {
 		ImageChecker imageChecker = new ImageChecker();
 
 		try {
-			BufferedImage imageOne = ImageIO.read(new File(imgPath1));
-			BufferedImage imageTwo = ImageIO.read(new File(imgPath2));
+			BufferedImage image = ImageIO.read(new File(imgPath));
+			BufferedImage subImage = ImageIO.read(new File(subImgPath));
 
-			if (imageOne.getWidth() + imageOne.getHeight() >= imageTwo.getWidth() + imageTwo.getHeight()) {
-				imageChecker.setOne(imageOne);
-				imageChecker.setTwo(imageTwo);
+			if (image.getWidth() + image.getHeight() >= subImage.getWidth() + subImage.getHeight()) {
+				imageChecker.setOne(image);
+				imageChecker.setTwo(subImage);
 			} else {
-				imageChecker.setOne(imageTwo);
-				imageChecker.setTwo(imageOne);
+				throw new InternalFailureException("Sub image is larger then main image");
 			}
 
 			return imageChecker.compareImages();
