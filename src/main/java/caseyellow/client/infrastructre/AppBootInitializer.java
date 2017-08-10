@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toMap;
 public class AppBootInitializer {
 
 
-    public static void initAppPreRequuments(String[] bootArgs) throws IOException {
+    public static void initAppPieRequirements(String[] bootArgs) throws IOException {
         cleanTmpDir();
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
         updateLog4jConfiguration(argsMap.get("logFilePath"));

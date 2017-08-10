@@ -1,7 +1,5 @@
 package caseyellow.client.infrastructre.image.comparison;
 
-import org.springframework.stereotype.Component;
-
 import java.awt.image.BufferedImage;
 
 public class ImageChecker {
@@ -12,9 +10,7 @@ public class ImageChecker {
 	private int x = 0;
 	private int y = 0;
 
-	public ImageChecker() {
-
-	}
+	public ImageChecker() { }
 
 	public double compareImages() {
 		int f = 20;

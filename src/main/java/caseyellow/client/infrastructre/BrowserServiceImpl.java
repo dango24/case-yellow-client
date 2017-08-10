@@ -109,7 +109,7 @@ public class BrowserServiceImpl implements BrowserService {
 
             TimeUnit.MILLISECONDS.sleep(700);
 
-            waitForStartButtonAppearance(btnIdentifierImgPath, startButtonProperties, numOfAttempts, waitForStartButton);
+            waitForImageAppearance(btnIdentifierImgPath, startButtonProperties, numOfAttempts, waitForStartButton);
 
             click(startButtonProperties.getCenter().getX(),
                   startButtonProperties.getCenter().getY());
@@ -131,7 +131,7 @@ public class BrowserServiceImpl implements BrowserService {
             ResolutionProperties finishTestIdentifierProperties = mapper.getFinishIdentifierImg(imgIdentifier);
             int numOfAttempts = waitForTestToFinishInSec / waitForFinishIdentifier;
 
-            waitForStartButtonAppearance(testFinishIdentifierImg, finishTestIdentifierProperties, numOfAttempts, waitForFinishIdentifier);
+            waitForImageAppearance(testFinishIdentifierImg, finishTestIdentifierProperties, numOfAttempts, waitForFinishIdentifier);
 
         } catch (WebDriverException e) {
             logger.error(e.getMessage());
@@ -147,8 +147,8 @@ public class BrowserServiceImpl implements BrowserService {
         webDriver.getTitle(); // Will throw an exception if browser is closed
     }
 
-    private boolean waitForStartButtonAppearance(String btnIdentifierImgPath, ResolutionProperties resolutionProperties,
-                                                 int numOfAttempts , int waitForImageInSec) throws IOException, InterruptedException, BrowserCommandFailedException {
+    private boolean waitForImageAppearance(String btnIdentifierImgPath, ResolutionProperties resolutionProperties,
+                                           int numOfAttempts , int waitForImageInSec) throws IOException, InterruptedException, BrowserCommandFailedException {
         int currentAttempt = 0;
 
         do {
@@ -157,7 +157,6 @@ public class BrowserServiceImpl implements BrowserService {
             String subImagePath = getSubImageFile(resolutionProperties, screenshot);
 
             if (imageComparison.compare(subImagePath, btnIdentifierImgPath, resolutionProperties.getComparisionThreshold())) {
-                System.out.println(btnIdentifierImgPath + " : " + imageComparison.getComparisionResult());
                 return true;
             }
 

@@ -34,7 +34,7 @@ public class ImageComparison implements ImageComparisonService {
 			}
 
 			comparisonResult = imageChecker.compareImages();
-			return comparisonResult < comparisionThreshold;
+			return comparisonResult < 0.1;
 
 		} catch (Exception e) {
 			throw new InternalFailureException("Failure to compare images, " + e.getMessage(), e);
