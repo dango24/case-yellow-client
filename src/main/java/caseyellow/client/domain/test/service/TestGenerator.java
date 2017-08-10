@@ -131,8 +131,12 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     }
 
     private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException, WebSiteDownloadInfoException {
+        FileDownloadInfo fileDownloadInfo = null;
         SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
-        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
+
+        if (speedTestWebSiteDownloadInfo.isSucceed()) {
+            fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
+        }
 
         return new ComparisonInfo(speedTestWebSiteDownloadInfo, fileDownloadInfo);
     }

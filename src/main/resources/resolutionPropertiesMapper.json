@@ -158,14 +158,14 @@
           "centralized": 0,
           "startButtonResolutionProperties": {
             "center": {
-              "x": 362.0,
-              "y": 894.0
+              "x": 355.0,
+              "y": 893.0
             },
             "coordinates": {
-              "x": 260,
-              "y": 874,
+              "x": 253,
+              "y": 873,
               "h": 41,
-              "w": 205
+              "w": 203
             }
           },
           "finishTestResolutionProperties": {
