@@ -21,6 +21,7 @@ public class ImageComparison implements ImageComparisonService {
 	@Override
 	public boolean compare(String imgPath, String subImgPath, double comparisionThreshold) {
 
+		comparisionThreshold = comparisionThreshold == 0 ? 0.05 : comparisionThreshold;
 		try {
 			BufferedImage image = ImageIO.read(new File(imgPath));
 			BufferedImage subImage = ImageIO.read(new File(subImgPath));

@@ -169,10 +169,10 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     private String getSubImageFile(ResolutionProperties resolutionProperties, String screenshot) throws IOException {
-        return Utils.getSubImageFile(resolutionProperties.getX() -100,
-                                     resolutionProperties.getY() - 200,
-                                     resolutionProperties.getW() + 200,
-                                     resolutionProperties.getH() + 300,
+        return Utils.getSubImageFile(resolutionProperties.getX(),// -70,
+                                     resolutionProperties.getY(),// - 100,
+                                     resolutionProperties.getW(),// + 100,
+                                     resolutionProperties.getH(),// + 150,
                                      screenshot).getAbsolutePath();
     }
 
