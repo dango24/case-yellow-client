@@ -1,8 +1,10 @@
 package caseyellow.client.domain.services.impl;
 
 import caseyellow.client.common.Mapper;
+import caseyellow.client.common.Messages;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.service.DownloadFileServiceImpl;
+import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.interfaces.URLToFileService;
 import caseyellow.client.infrastructre.SystemServiceImpl;
@@ -27,10 +29,12 @@ public class DownloadFileServiceImplTest {
     public void setUp() throws Exception {
         SystemService systemService = new SystemServiceImpl();
         Mapper mapper = mock(Mapper.class);
+        MessagesService messagesService = mock(MessagesService.class);
         when(mapper.getFileNameFromUrl(KODI_URL)).thenReturn("kodi");
         downloadFileService = new DownloadFileServiceImpl();
         downloadFileService.setSystemService(systemService);
         downloadFileService.setMapper(mapper);
+        downloadFileService.setMessagesService(messagesService);
     }
 
     @Test

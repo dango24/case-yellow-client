@@ -1,10 +1,11 @@
 package caseyellow.client.infrastructre.image.comparison;
 
+import org.springframework.stereotype.Component;
+
 import java.awt.image.BufferedImage;
 
 public class ImageChecker {
 
-	private static final double COMPARISION_THRESHOLD = 0.05;
 	private BufferedImage one;
 	private BufferedImage two;
 	private double difference = 0;
@@ -15,7 +16,7 @@ public class ImageChecker {
 
 	}
 
-	public boolean compareImages() {
+	public double compareImages() {
 		int f = 20;
 		int w1 = Math.min(50, one.getWidth() - two.getWidth());
 		int h1 = Math.min(50, one.getHeight() - two.getHeight());
@@ -49,7 +50,7 @@ public class ImageChecker {
 			}
 		}
 
-		return difference < COMPARISION_THRESHOLD;
+		return difference;
 	}
 
 	private void compareSubset(int a, int b, int f) {

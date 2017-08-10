@@ -14,6 +14,7 @@ import caseyellow.client.domain.website.service.WebSiteService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.test.model.Test;
+import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,9 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                     saveTest(test);
                 }
 
+            } catch (UserInterruptException e) {
+                logger.error("Failed to produce test, " + e.getMessage(), e);
+
             } catch (Exception e) {
                 logger.error("Failed to produce test, " + e.getMessage(), e);
             }
@@ -106,7 +110,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         toProduceTests.set(false);
     }
 
-    private Test generateNewTest() {
+    private Test generateNewTest() throws UserInterruptException {
         Test test;
         SystemInfo systemInfo;
         SpeedTestWebSite speedTestWebSite;
@@ -130,7 +134,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         return test;
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException, WebSiteDownloadInfoException {
+    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException {
         FileDownloadInfo fileDownloadInfo = null;
         SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
 

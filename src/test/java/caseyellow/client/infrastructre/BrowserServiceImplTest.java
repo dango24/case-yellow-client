@@ -62,7 +62,7 @@ public class BrowserServiceImplTest {
             browserService.closeBrowser();
 
             assertEquals(expectedTitle, actualTitle);
-        } catch (WebDriverException e) {
+        } catch (Exception e) {
             System.out.println(e);
         }
     }

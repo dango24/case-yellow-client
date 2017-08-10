@@ -1,11 +1,13 @@
 package caseyellow.client.domain.website.service;
 
+import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.exceptions.BrowserCommandFailedException;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +39,7 @@ public class WebSiteServiceImpl implements WebSiteService {
     // Methods
 
     @Override
-    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) {
+    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) throws UserInterruptException {
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
@@ -68,6 +70,9 @@ public class WebSiteServiceImpl implements WebSiteService {
                                                    .setFailure()
                                                    .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
                                                    .build();
+        } catch (WebDriverException e) {
+            throw new UserInterruptException(e.getMessage(), e);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new WebSiteDownloadInfoException(e.getMessage());

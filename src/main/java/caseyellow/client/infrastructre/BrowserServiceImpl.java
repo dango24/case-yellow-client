@@ -5,10 +5,12 @@ import caseyellow.client.common.Utils;
 import caseyellow.client.common.resolution.ResolutionProperties;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.exceptions.BrowserCommandFailedException;
+import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.infrastructre.image.comparison.ImageComparison;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +55,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     private Mapper mapper;
     private WebDriver webDriver;
+    private ImageComparison imageComparison;
 
     public BrowserServiceImpl() throws IOException {
         initWebDriver();
@@ -68,6 +71,11 @@ public class BrowserServiceImpl implements BrowserService {
     @Autowired
     public void setMapper(Mapper mapper) {
         this.mapper = mapper;
+    }
+
+    @Autowired
+    public void setImageComparison(ImageComparison imageComparison) {
+        this.imageComparison = imageComparison;
     }
 
     @Override
@@ -91,7 +99,8 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressStartTestButton(String webSiteBtnIdentifier) throws BrowserCommandFailedException {
+    public void pressStartTestButton(String webSiteBtnIdentifier) throws BrowserCommandFailedException, UserInterruptException {
+        checkBrowser();
 
         try {
             String btnIdentifierImgPath = getImgFromResources(btnDir + webSiteBtnIdentifier);
@@ -104,13 +113,18 @@ public class BrowserServiceImpl implements BrowserService {
 
             click(startButtonProperties.getCenter().getX(),
                   startButtonProperties.getCenter().getY());
+
+        } catch (WebDriverException e) {
+            throw new UserInterruptException(e.getMessage(), e);
+
         } catch (Exception e) {
             throw new BrowserCommandFailedException(e.getMessage(), e);
         }
     }
 
     @Override
-    public void waitForTestToFinish(String imgIdentifier) throws BrowserCommandFailedException {
+    public void waitForTestToFinish(String imgIdentifier) throws BrowserCommandFailedException, UserInterruptException {
+        checkBrowser();
 
         try {
             String testFinishIdentifierImg = getImgFromResources(identifierDir + imgIdentifier);
@@ -119,10 +133,18 @@ public class BrowserServiceImpl implements BrowserService {
 
             waitForStartButtonAppearance(testFinishIdentifierImg, finishTestIdentifierProperties, numOfAttempts, waitForFinishIdentifier);
 
+        } catch (WebDriverException e) {
+            logger.error(e.getMessage());
+            throw new UserInterruptException(e.getMessage());
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             throw new BrowserCommandFailedException(e.getMessage());
         }
+    }
+
+    private void checkBrowser() {
+        webDriver.getTitle(); // Will throw an exception if browser is closed
     }
 
     private boolean waitForStartButtonAppearance(String btnIdentifierImgPath, ResolutionProperties resolutionProperties,
@@ -130,10 +152,11 @@ public class BrowserServiceImpl implements BrowserService {
         int currentAttempt = 0;
 
         do {
+            checkBrowser();
             String screenshot = takeScreenSnapshot();
             String subImagePath = getSubImageFile(resolutionProperties, screenshot);
 
-            if (ImageComparison.compare(btnIdentifierImgPath, subImagePath)) {
+            if (imageComparison.compare(subImagePath, btnIdentifierImgPath)) {
                 return true;
             }
 
@@ -145,15 +168,16 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     private String getSubImageFile(ResolutionProperties resolutionProperties, String screenshot) throws IOException {
-        return Utils.getSubImageFile(resolutionProperties.getX(),
-                                     resolutionProperties.getY(),
-                                     resolutionProperties.getW(),
-                                     resolutionProperties.getH(),
+        return Utils.getSubImageFile(resolutionProperties.getX() -100,
+                                     resolutionProperties.getY() - 100,
+                                     resolutionProperties.getW() + 200,
+                                     resolutionProperties.getH() + 200,
                                      screenshot).getAbsolutePath();
     }
 
     @Override
     public void centralizedWebPage(String identifier) {
+        checkBrowser();
         String screenResolution = Utils.getScreenResolution();
         long scrollDownPixel = mapper.getPixelScrollDown(identifier, screenResolution);
 
