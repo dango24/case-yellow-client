@@ -83,7 +83,7 @@
           "centralized": 0,
           "startButtonResolutionProperties": null,
           "finishTestResolutionProperties": {
-            "comparisionThreshold": 0.025,
+            "comparisionThreshold": 0.05,
             "center": {
               "x": 684.0,
               "y": 621.0
