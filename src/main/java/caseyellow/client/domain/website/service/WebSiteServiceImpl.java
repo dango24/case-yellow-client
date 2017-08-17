@@ -11,9 +11,11 @@ import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static caseyellow.client.common.Utils.moveMouseToStartingPoint;
 import static caseyellow.client.common.Utils.takeScreenSnapshot;
 
 /**
@@ -47,14 +49,14 @@ public class WebSiteServiceImpl implements WebSiteService {
             browserService.openBrowser(speedTestWebsite.webSiteUrl());
             browserService.centralizedWebPage(speedTestWebsite.getIdentifier());
 
-            if (speedTestWebsite.isFlashable()) {
-                browserService.pressStartTestButton(speedTestWebsite.getIdentifier());
+            if (speedTestWebsite.haveStartButton()) {
+                clickStartTestButton(speedTestWebsite);
+                moveMouseToStartingPoint();
             }
 
             logger.info("Start '" + speedTestWebsite.getIdentifier() + "' speed test");
             startMeasuringTimestamp = System.currentTimeMillis();
-            browserService.waitForTestToFinish(speedTestWebsite.getIdentifier());
-
+            waitForTestToFinish(speedTestWebsite);
             TimeUnit.MILLISECONDS.sleep(DELAY_TIME_BEFORE_SNAPSHOT);
             websiteSnapshot = takeScreenSnapshot();
 
@@ -64,20 +66,40 @@ public class WebSiteServiceImpl implements WebSiteService {
                                                    .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
                                                    .build();
 
-        } catch (BrowserCommandFailedException | InterruptedException e) {
+        } catch (BrowserCommandFailedException e) {
             logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
             return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                                    .setFailure()
                                                    .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
                                                    .build();
-        } catch (WebDriverException e) {
+
+        } catch (WebDriverException | InterruptedException e) {
             throw new UserInterruptException(e.getMessage(), e);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new WebSiteDownloadInfoException(e.getMessage());
+
         } finally {
             browserService.closeBrowser();
+        }
+    }
+
+    private void clickStartTestButton(SpeedTestWebSite speedTestWebsite) throws BrowserCommandFailedException {
+        if (speedTestWebsite.isFlashAble()) {
+            browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier());
+        } else {
+            browserService.pressStartButtonById(speedTestWebsite.buttonId());
+        }
+    }
+
+
+    private void waitForTestToFinish(SpeedTestWebSite speedTestWebsite) throws BrowserCommandFailedException, InterruptedException {
+        if (speedTestWebsite.isFlashAble()) {
+            browserService.waitForFlashTestToFinish(speedTestWebsite.getIdentifier());
+        } else {
+            browserService.waitForTestToFinishByText(speedTestWebsite.finishIdentifier(),
+                                                     speedTestWebsite.finishTextIdentifier());
         }
     }
 

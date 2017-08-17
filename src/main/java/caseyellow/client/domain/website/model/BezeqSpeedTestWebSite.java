@@ -16,7 +16,27 @@ public class BezeqSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public boolean isFlashable() {
+    public String buttonId() {
+        return null;
+    }
+
+    @Override
+    public String finishIdentifier() {
+        return "בדוק";
+    }
+
+    @Override
+    public String finishTextIdentifier() {
+        return null;
+    }
+
+    @Override
+    public boolean haveStartButton() {
         return false;
+    }
+
+    @Override
+    public boolean isFlashAble() {
+        return true;
     }
 }

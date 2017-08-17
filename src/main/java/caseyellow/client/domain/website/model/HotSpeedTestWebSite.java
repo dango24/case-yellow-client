@@ -16,7 +16,27 @@ public class HotSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public boolean isFlashable() {
+    public String buttonId() {
+        return null;
+    }
+
+    @Override
+    public String finishIdentifier() {
+        return null;
+    }
+
+    @Override
+    public String finishTextIdentifier() {
+        return null;
+    }
+
+    @Override
+    public boolean haveStartButton() {
+        return true;
+    }
+
+    @Override
+    public boolean isFlashAble() {
         return true;
     }
 }

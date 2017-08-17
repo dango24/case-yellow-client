@@ -4,11 +4,11 @@ numOfComparisonPerTest : 1
 wait-for-test-to-finish-in-sec : 110
 wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2
-wait-For-Finish-identifier : 10
-buttons-dir : speed_test_start_buttons/
-identifier-dir : speed_test_done_identifiers/
+wait-For-Finish-identifier : 10000
 chromeDriverExecutorPath : drivers/chromedriver.exe
 resolutionPropertiesMapper : resolutionPropertiesMapper.json
+google_vision_url : https://vision.googleapis.com/
+google_vision_key : AIzaSyBrkKNc_7vNBvlY6P83atDavKvZGJKQTms
 
 config:
   app-name: Gateway
@@ -27,9 +27,9 @@ urlInfo :
     https://secure-appldnld.apple.com/itunes12/031-69284-20160802-7E7B2D20-552B-11E6-B2B9-696CECD541CE/iTunes64Setup.exe : itunes
 
 websiteInfo :
-  atnt : ATNTSpeedTestWebSite
+#  atnt : ATNTSpeedTestWebSite
   bezeq : BezeqSpeedTestWebSite
-  fast : FastSpeedTestWebSite
-  hot : HotSpeedTestWebSite
-  ookla : OoklaSpeedTestWebSite
-  speedof : SpeedOfSpeedTestWebSite
+#  fast : FastSpeedTestWebSite
+#  hot : HotSpeedTestWebSite
+#  ookla : OoklaSpeedTestWebSite
+#  speedof : SpeedOfSpeedTestWebSite

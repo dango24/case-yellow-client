@@ -16,7 +16,27 @@ public class SpeedOfSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
-    public boolean isFlashable() {
+    public String buttonId() {
+        return "btnStart";
+    }
+
+    @Override
+    public String finishIdentifier() {
+        return "id=msgContainer3";
+    }
+
+    @Override
+    public String finishTextIdentifier() {
+        return "Click 'Share' to share this result";
+    }
+
+    @Override
+    public boolean haveStartButton() {
         return true;
+    }
+
+    @Override
+    public boolean isFlashAble() {
+        return false;
     }
 }

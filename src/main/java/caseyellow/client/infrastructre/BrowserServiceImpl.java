@@ -2,23 +2,22 @@ package caseyellow.client.infrastructre;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.common.Utils;
-import caseyellow.client.common.resolution.ResolutionProperties;
+import caseyellow.client.common.resolution.Point;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.exceptions.BrowserCommandFailedException;
 import caseyellow.client.exceptions.UserInterruptException;
-import caseyellow.client.infrastructre.image.comparison.ImageComparison;
+import caseyellow.client.infrastructre.image.comparison.*;
+import caseyellow.client.domain.interfaces.OcrService;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
-import java.awt.event.InputEvent;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Utils.*;
@@ -35,27 +34,22 @@ public class BrowserServiceImpl implements BrowserService {
     @Value("${wait-for-start-test-button-to-appear-in-sec}")
     private final int waitForStartTestButtonToAppearInSec = 20;
 
+
+    @Value("${wait-for-start-button}")
+    private final int waitForStartButton = 900;
+
     @Value("${wait-for-test-to-finish-in-sec}")
     private final int waitForTestToFinishInSec = 120;
 
-    @Value("${wait-for-start-button}")
-    private final int waitForStartButton = 2;
-
     @Value("${wait-For-Finish-identifier}")
-    private final int waitForFinishIdentifier = 10;
-
-    @Value("${buttons-dir}")
-    private String btnDir;
-
-    @Value("${identifier-dir}")
-    private String identifierDir;
+    private final int waitForFinishIdentifier = 10_000;
 
     @Value("${chromeDriverExecutorPath}")
     private String chromeDriverExecutorPath;
 
     private Mapper mapper;
     private WebDriver webDriver;
-    private ImageComparison imageComparison;
+    private OcrService ocrService;
 
     public BrowserServiceImpl() throws IOException {
         initWebDriver();
@@ -69,13 +63,13 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Autowired
-    public void setMapper(Mapper mapper) {
-        this.mapper = mapper;
+    public void setOcrService(OcrService ocrService) {
+        this.ocrService = ocrService;
     }
 
     @Autowired
-    public void setImageComparison(ImageComparison imageComparison) {
-        this.imageComparison = imageComparison;
+    public void setMapper(Mapper mapper) {
+        this.mapper = mapper;
     }
 
     @Override
@@ -98,21 +92,14 @@ public class BrowserServiceImpl implements BrowserService {
         webDriver.quit();
     }
 
+
     @Override
-    public void pressStartTestButton(String webSiteBtnIdentifier) throws BrowserCommandFailedException, UserInterruptException {
+    public void pressStartButtonById(String btnId) throws BrowserCommandFailedException {
         checkBrowser();
 
         try {
-            String btnIdentifierImgPath = getImgFromResources(btnDir + webSiteBtnIdentifier);
-            ResolutionProperties startButtonProperties = mapper.getStartButtonResolutionProperties(webSiteBtnIdentifier);
-            int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForStartButton;
-
-            TimeUnit.MILLISECONDS.sleep(700);
-
-            waitForImageAppearance(btnIdentifierImgPath, startButtonProperties, numOfAttempts, waitForStartButton);
-
-            click(startButtonProperties.getCenter().getX(),
-                  startButtonProperties.getCenter().getY());
+            TimeUnit.MILLISECONDS.sleep(900);
+            webDriver.findElement(By.id(btnId)).click();
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);
@@ -123,15 +110,30 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void waitForTestToFinish(String imgIdentifier) throws BrowserCommandFailedException, UserInterruptException {
+    public void pressFlashStartTestButton(String webSiteBtnIdentifier) throws BrowserCommandFailedException, UserInterruptException {
         checkBrowser();
 
         try {
-            String testFinishIdentifierImg = getImgFromResources(identifierDir + imgIdentifier);
-            ResolutionProperties finishTestIdentifierProperties = mapper.getFinishIdentifierImg(imgIdentifier);
+            int waitForTestToFinishInSec = waitForStartButton < 1000 ? 1 : (int)TimeUnit.SECONDS.toSeconds(waitForStartButton);
+            int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForTestToFinishInSec;
+            waitForImageAppearance(webSiteBtnIdentifier, numOfAttempts, waitForTestToFinishInSec, true);
+
+        } catch (WebDriverException e) {
+            throw new UserInterruptException(e.getMessage(), e);
+
+        } catch (Exception e) {
+            throw new BrowserCommandFailedException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void waitForFlashTestToFinish(String identifier) throws BrowserCommandFailedException, UserInterruptException {
+        checkBrowser();
+
+        try {
             int numOfAttempts = waitForTestToFinishInSec / waitForFinishIdentifier;
 
-            waitForImageAppearance(testFinishIdentifierImg, finishTestIdentifierProperties, numOfAttempts, waitForFinishIdentifier);
+            waitForImageAppearance(identifier, numOfAttempts, waitForFinishIdentifier, false);
 
         } catch (WebDriverException e) {
             logger.error(e.getMessage());
@@ -143,36 +145,79 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
 
+    @Override
+    public boolean waitForTestToFinishByText(String identifier, String finishTextIdentifier) throws BrowserCommandFailedException, InterruptedException {
+        int currentAttempt = 0;
+        int numOfAttempts = waitForTestToFinishInSec / waitForFinishIdentifier;
+        String[] identifiers = identifier.split("=");
+        By by = identifiers[0].equals("id") ? By.id(identifiers[1]) : By.className(identifiers[1]);
+
+        do {
+            checkBrowser();
+
+            if (webDriver.findElement(by).getText().equals(finishTextIdentifier)) {
+                return true;
+            }
+
+            TimeUnit.SECONDS.sleep(waitForFinishIdentifier);
+
+        } while (++currentAttempt < numOfAttempts);
+
+        throw new BrowserCommandFailedException("Failure to find finish test identifier : " + identifier + " with text: " + finishTextIdentifier);
+    }
+
     private void checkBrowser() {
         webDriver.getTitle(); // Will throw an exception if browser is closed
     }
 
-    private boolean waitForImageAppearance(String btnIdentifierImgPath, ResolutionProperties resolutionProperties,
-                                           int numOfAttempts , int waitForImageInSec) throws IOException, InterruptedException, BrowserCommandFailedException {
+    private boolean waitForImageAppearance(String textIdentifier, int numOfAttempts , int waitForImageInSec, boolean clickImage) throws IOException, InterruptedException, BrowserCommandFailedException {
+        OcrResponse ocrResponse;
         int currentAttempt = 0;
 
         do {
             checkBrowser();
-            String screenshot = takeScreenSnapshot();
-            String subImagePath = getSubImageFile(resolutionProperties, screenshot);
+            TimeUnit.MILLISECONDS.sleep(waitForImageInSec);
+            ocrResponse = ocrService.parseImage(takeScreenSnapshot());
 
-            if (imageComparison.compare(subImagePath, btnIdentifierImgPath, resolutionProperties.getComparisionThreshold())) {
+            if (isTextIdentifierExist(textIdentifier, ocrResponse, clickImage)) {
                 return true;
             }
 
-            TimeUnit.SECONDS.sleep(waitForImageInSec);
-
         } while (++currentAttempt < numOfAttempts);
 
-        throw new BrowserCommandFailedException("Failure to find start button for btn image path: " + btnIdentifierImgPath);
+        logger.warn("Failure to find finish test identifier: " + textIdentifier);
+        logger.info("Assume the test finish properly");
+
+        return false;
     }
 
-    private String getSubImageFile(ResolutionProperties resolutionProperties, String screenshot) throws IOException {
-        return Utils.getSubImageFile(resolutionProperties.getX(),// -70,
-                                     resolutionProperties.getY(),// - 100,
-                                     resolutionProperties.getW(),// + 100,
-                                     resolutionProperties.getH(),// + 150,
-                                     screenshot).getAbsolutePath();
+    private boolean isTextIdentifierExist(String textIdentifier, OcrResponse ocrResponse, boolean clickImage) {
+        Optional<WordData> wordDataOptional = ocrResponse.getTextAnnotations()
+                                                         .stream()
+                                                         .filter(word -> word.getDescription().equals(textIdentifier))
+                                                         .findFirst();
+        if (wordDataOptional.isPresent()) {
+
+            if (clickImage) {
+                clickImage(wordDataOptional.get());
+            }
+
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    private void clickImage(WordData wordData) {
+        List<Point> vertices = wordData.getBoundingPoly().getVertices();
+        int minX = Utils.getMinX(vertices);
+        int minY = Utils.getMinY(vertices);
+        int maxX = Utils.getMaxX(vertices);
+        int maxY = Utils.getMaxY(vertices);
+
+        Point center = new Point( (minX + maxX)/2, (minY + maxY)/2);
+        click(center.getX(), center.getY());
     }
 
     @Override
@@ -189,12 +234,5 @@ public class BrowserServiceImpl implements BrowserService {
     private void scrollDown(int scrollDownPixel) {
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
-    }
-
-    public void click(int x, int y) throws AWTException {
-        Robot bot = new Robot();
-        bot.mouseMove(x, y);
-        bot.mousePress(InputEvent.BUTTON1_MASK);
-        bot.mouseRelease(InputEvent.BUTTON1_MASK);
     }
 }

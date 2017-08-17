@@ -6,5 +6,9 @@ package caseyellow.client.domain.website.model;
 public interface SpeedTestWebSite {
     String webSiteUrl();
     String getIdentifier();
-    boolean isFlashable();
+    String buttonId();
+    String finishIdentifier();
+    String finishTextIdentifier();
+    boolean haveStartButton();
+    boolean isFlashAble();
 }

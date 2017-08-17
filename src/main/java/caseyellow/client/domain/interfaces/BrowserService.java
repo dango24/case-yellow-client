@@ -13,6 +13,8 @@ public interface BrowserService {
     void openBrowser(String url) throws IOException;
     void closeBrowser();
     void centralizedWebPage(String identifier);
-    void pressStartTestButton(String btnImagePath) throws BrowserCommandFailedException, UserInterruptException;
-    void waitForTestToFinish(String identifierPath) throws BrowserCommandFailedException, UserInterruptException;
+    void pressFlashStartTestButton(String btnImagePath) throws BrowserCommandFailedException, UserInterruptException;
+    void waitForFlashTestToFinish(String identifier) throws BrowserCommandFailedException, UserInterruptException;
+    boolean waitForTestToFinishByText(String identifier, String finishTextIdentifier) throws BrowserCommandFailedException, InterruptedException;
+    void pressStartButtonById(String btnId) throws BrowserCommandFailedException;
 }

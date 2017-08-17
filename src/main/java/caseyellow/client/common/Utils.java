@@ -1,27 +1,25 @@
 package caseyellow.client.common;
 
-
-import caseyellow.client.exceptions.BrowserCommandFailedException;
+import caseyellow.client.common.resolution.Point;
 import caseyellow.client.exceptions.InternalFailureException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.List;
+import java.util.function.ToIntFunction;
 
 /**
  * Created by Dan on 6/20/2017.
@@ -77,6 +75,15 @@ public class Utils {
         return tmpFile.getAbsolutePath();
     }
 
+    public static File createTmpFile(String fileExtension) {
+        if (!fileExtension.startsWith(".")) {
+            fileExtension = "." + fileExtension;
+        }
+        File tmpFile = new File(tmpDirPath, generateUniqueID() + fileExtension);
+
+        return tmpFile;
+    }
+
     public static File createTmpDir() {
         File tmpDir = new File(tmpDirPath, generateUniqueID());
         tmpDir.mkdir();
@@ -90,22 +97,6 @@ public class Utils {
         int height = (int)screenSize.getHeight();
 
         return width + "_" + height;
-    }
-
-    public static File getSubImageFile(int x, int y , int w , int h, String screenshot) throws IOException {
-
-        if (Objects.isNull(screenshot)) {
-            throw new InternalFailureException("Screenshot is null");
-        }
-
-        File screenshotFile = new File(screenshot);
-        File subImageFile = new File(createTmpDir(), "subImage.png");
-        BufferedImage fullImg = ImageIO.read(screenshotFile);
-
-        BufferedImage downloadRateScreenshot = fullImg.getSubimage(x, y, w, h);
-        ImageIO.write(downloadRateScreenshot, "png", subImageFile);
-
-        return subImageFile;
     }
 
     public static String takeScreenSnapshot() {
@@ -126,5 +117,65 @@ public class Utils {
 
         File tmpDir = new File(tmpDirPath);
         tmpDir.mkdir();
+    }
+
+    public static byte[] createImageBase64Encode(String imgPath) throws IOException {
+        File imageFile = new File(imgPath);
+        byte[] imageBase64Encode = Base64.getEncoder().encode(FileUtils.readFileToByteArray(imageFile));
+
+        return imageBase64Encode;
+    }
+
+    public static void click(int x, int y) {
+        try {
+            Robot bot = new Robot();
+            bot.mouseMove(x, y);
+            bot.mousePress(InputEvent.BUTTON1_MASK);
+            bot.mouseRelease(InputEvent.BUTTON1_MASK);
+
+        } catch (AWTException e) {
+            throw new InternalFailureException(e.getMessage());
+        }
+    }
+
+    public static void moveMouseToStartingPoint() {
+        try {
+            Robot robot = new Robot();
+            robot.mouseMove(0, 0);
+        } catch (AWTException e) {
+            throw new InternalFailureException(e.getMessage());
+        }
+    }
+
+    public static int getMinX(List<Point> vertices) {
+        return getMin(Point::getX, vertices);
+    }
+
+    public static int getMinY(List<Point> vertices) {
+        return getMin(Point::getY, vertices);
+    }
+
+    public static int getMaxX(List<Point> vertices) {
+        return getMax(Point::getX, vertices);
+    }
+
+    public static int getMaxY(List<Point> vertices) {
+        return getMax(Point::getY, vertices);
+    }
+
+    private static int getMin(ToIntFunction<? super Point> intMinFunction, List<Point> points) {
+
+        return points.stream()
+                     .mapToInt(intMinFunction)
+                     .min()
+                     .orElseThrow(() -> new InternalFailureException("There is no min point in points: " + points));
+    }
+
+    private static int getMax(ToIntFunction<? super Point> intMaxFunction, List<Point> points) {
+
+        return points.stream()
+                     .mapToInt(intMaxFunction)
+                     .max()
+                     .orElseThrow(() -> new InternalFailureException("There is no max point in points: " + points));
     }
 }
