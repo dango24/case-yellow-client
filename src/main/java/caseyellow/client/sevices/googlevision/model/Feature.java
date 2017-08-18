@@ -1,6 +1,4 @@
-package caseyellow.client.sevices.googlevision;
-
-import java.util.List;
+package caseyellow.client.sevices.googlevision.model;
 
 public class Feature {
 

@@ -33,11 +33,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--Guava: Google Core Libraries For Java-->
+        <!--Okhttp 3-->
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>20.0</version>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.8.1</version>
         </dependency>
 
         <!--Selenium-->

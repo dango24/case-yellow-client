@@ -11,7 +11,7 @@ public class SpeedTestWebSiteDownloadInfo {
     private boolean succeed;
     private String speedTestIdentifier;
     private long startMeasuringTimestamp;
-    @JsonIgnore private String webSiteDownloadInfoSnapshot;
+    private String webSiteDownloadInfoSnapshot;
 
     public SpeedTestWebSiteDownloadInfo(String speedTestIdentifier, boolean succeed, long startDownloadingTime, String webSiteDownloadInfoSnapshot) {
         this.succeed = succeed;

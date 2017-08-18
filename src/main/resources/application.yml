@@ -6,7 +6,6 @@ wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2
 wait-For-Finish-identifier : 10000
 chromeDriverExecutorPath : drivers/chromedriver.exe
-resolutionPropertiesMapper : resolutionPropertiesMapper.json
 google_vision_url : https://vision.googleapis.com/
 google_vision_key : AIzaSyBrkKNc_7vNBvlY6P83atDavKvZGJKQTms
 
@@ -30,6 +29,6 @@ websiteInfo :
 #  atnt : ATNTSpeedTestWebSite
   bezeq : BezeqSpeedTestWebSite
 #  fast : FastSpeedTestWebSite
-#  hot : HotSpeedTestWebSite
-#  ookla : OoklaSpeedTestWebSite
+  hot : HotSpeedTestWebSite
+  ookla : OoklaSpeedTestWebSite
 #  speedof : SpeedOfSpeedTestWebSite

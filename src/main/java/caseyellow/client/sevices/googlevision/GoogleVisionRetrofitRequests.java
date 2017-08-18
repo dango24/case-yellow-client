@@ -1,5 +1,6 @@
 package caseyellow.client.sevices.googlevision;
 
+import caseyellow.client.sevices.googlevision.model.GoogleVisionRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import retrofit2.Call;
 import retrofit2.http.Body;

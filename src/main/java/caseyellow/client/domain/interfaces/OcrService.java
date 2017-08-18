@@ -1,6 +1,6 @@
 package caseyellow.client.domain.interfaces;
 
-import caseyellow.client.infrastructre.image.comparison.OcrResponse;
+import caseyellow.client.infrastructre.image.recognition.OcrResponse;
 
 import java.io.IOException;
 

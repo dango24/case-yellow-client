@@ -1,4 +1,4 @@
-package caseyellow.client.infrastructre.image.comparison;
+package caseyellow.client.infrastructre.image.recognition;
 
 import java.util.List;
 

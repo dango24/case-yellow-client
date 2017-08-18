@@ -11,6 +11,7 @@ import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.WebSiteService;
+import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.test.model.Test;
@@ -22,10 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static caseyellow.client.common.Utils.generateUniqueID;
@@ -83,10 +81,19 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     // Methods
 
     @Override
-    public void produceTests() {
-        Test test;
+    public void start() {
+        try {
+            produceTests();
 
+        } catch (Exception e) {
+            logger.error("Produce tests failed, currently stop creating nre test until user interaction" + e.getMessage(), e);
+        }
+    }
+
+    private void produceTests() throws InterruptedException {
+        Test test;
         Thread.currentThread().setName("TestProducer-Thread");
+
         while (toProduceTests.get()) {
 
             try {
@@ -96,13 +103,22 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                     saveTest(test);
                 }
 
-            } catch (UserInterruptException e) {
+            } catch (ConnectionException e) {
+                logger.error("Connection with host failed, " + e.getMessage(), e);
+                handleLostConnection();
+
+            } catch(UserInterruptException e) {
                 logger.error("Failed to produce test, " + e.getMessage(), e);
 
             } catch (Exception e) {
                 logger.error("Failed to produce test, " + e.getMessage(), e);
             }
         }
+    }
+
+    private void handleLostConnection() throws InterruptedException {
+        logger.info("Wait for 20 seconds before new attempt to produce new test");
+        TimeUnit.SECONDS.sleep(20);
     }
 
     @Override
@@ -134,7 +150,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         return test;
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException {
+    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, String url) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo = null;
         SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
 
@@ -159,7 +175,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     @Override
     public void executeStartProducingTestsCommand() {
         toProduceTests.set(true);
-        executorService.submit(this::produceTests);
+        executorService.submit(this::start);
     }
 
     @Override

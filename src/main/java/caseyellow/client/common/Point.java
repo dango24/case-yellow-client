@@ -1,4 +1,4 @@
-package caseyellow.client.common.resolution;
+package caseyellow.client.common;
 
 public class Point {
 

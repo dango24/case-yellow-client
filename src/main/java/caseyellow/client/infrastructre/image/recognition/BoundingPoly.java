@@ -1,6 +1,6 @@
-package caseyellow.client.infrastructre.image.comparison;
+package caseyellow.client.infrastructre.image.recognition;
 
-import caseyellow.client.common.resolution.Point;
+import caseyellow.client.common.Point;
 
 import java.util.List;
 

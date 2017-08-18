@@ -1,4 +1,4 @@
-package caseyellow.client.sevices.googlevision;
+package caseyellow.client.sevices.googlevision.model;
 
 public class Image {
 

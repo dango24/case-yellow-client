@@ -1,6 +1,5 @@
 package caseyellow.client.common;
 
-import caseyellow.client.common.resolution.Point;
 import caseyellow.client.exceptions.InternalFailureException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -19,7 +18,9 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.ToIntFunction;
+import java.util.stream.IntStream;
 
 /**
  * Created by Dan on 6/20/2017.
@@ -127,24 +128,41 @@ public class Utils {
     }
 
     public static void click(int x, int y) {
+        IntStream.range(0, 3).forEach(attempt -> clickImage(x, y));
+    }
+
+    private static void clickImage(int x, int y) {
         try {
             Robot bot = new Robot();
             bot.mouseMove(x, y);
             bot.mousePress(InputEvent.BUTTON1_MASK);
             bot.mouseRelease(InputEvent.BUTTON1_MASK);
+            TimeUnit.MILLISECONDS.sleep(400);
 
-        } catch (AWTException e) {
+        } catch (AWTException | InterruptedException e) {
             throw new InternalFailureException(e.getMessage());
         }
     }
 
     public static void moveMouseToStartingPoint() {
         try {
-            Robot robot = new Robot();
-            robot.mouseMove(0, 0);
+            Robot bot = new Robot();
+            bot.mouseMove(0, 0);
+
         } catch (AWTException e) {
             throw new InternalFailureException(e.getMessage());
         }
+    }
+
+    public static Point getCenter(List<Point> vertices) {
+        int minX = Utils.getMinX(vertices);
+        int minY = Utils.getMinY(vertices);
+        int maxX = Utils.getMaxX(vertices);
+        int maxY = Utils.getMaxY(vertices);
+
+        Point center = new Point( (minX + maxX)/2, (minY + maxY)/2);
+
+        return center;
     }
 
     public static int getMinX(List<Point> vertices) {

@@ -1,5 +1,11 @@
 package caseyellow.client.domain.website.model;
 
+import caseyellow.client.domain.analyze.model.WordIdentifier;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by dango on 6/2/17.
  */
@@ -21,6 +27,16 @@ public class ATNTSpeedTestWebSite implements SpeedTestWebSite {
     }
 
     @Override
+    public Set<WordIdentifier> buttonIds() {
+        return null;
+    }
+
+    @Override
+    public Set<WordIdentifier> finishIdentifiers() {
+        return null;
+    }
+
+    @Override
     public String finishIdentifier() {
         return "class=Resultstitle";
     }
@@ -38,5 +54,10 @@ public class ATNTSpeedTestWebSite implements SpeedTestWebSite {
     @Override
     public boolean isFlashAble() {
         return false;
+    }
+
+    @Override
+    public int centralized() {
+        return 0;
     }
 }

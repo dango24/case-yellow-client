@@ -1,5 +1,7 @@
 package caseyellow.client.domain.website.service;
 
+import caseyellow.client.common.Utils;
+import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
@@ -11,8 +13,8 @@ import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Utils.moveMouseToStartingPoint;
@@ -41,13 +43,13 @@ public class WebSiteServiceImpl implements WebSiteService {
     // Methods
 
     @Override
-    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) throws UserInterruptException {
+    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) throws UserInterruptException, ConnectionException {
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
         try {
             browserService.openBrowser(speedTestWebsite.webSiteUrl());
-            browserService.centralizedWebPage(speedTestWebsite.getIdentifier());
+            browserService.centralizedWebPage(speedTestWebsite.centralized());
 
             if (speedTestWebsite.haveStartButton()) {
                 clickStartTestButton(speedTestWebsite);
@@ -76,7 +78,10 @@ public class WebSiteServiceImpl implements WebSiteService {
         } catch (WebDriverException | InterruptedException e) {
             throw new UserInterruptException(e.getMessage(), e);
 
-        } catch (Exception e) {
+        } catch (UnknownHostException e) {
+            throw new ConnectionException(e.getMessage(), e);
+
+        } catch(Exception e) {
             logger.error(e.getMessage(), e);
             throw new WebSiteDownloadInfoException(e.getMessage());
 
@@ -85,9 +90,9 @@ public class WebSiteServiceImpl implements WebSiteService {
         }
     }
 
-    private void clickStartTestButton(SpeedTestWebSite speedTestWebsite) throws BrowserCommandFailedException {
+    private void clickStartTestButton(SpeedTestWebSite speedTestWebsite) throws BrowserCommandFailedException, IOException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
-            browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier());
+            browserService.pressFlashStartTestButton(speedTestWebsite.buttonIds());
         } else {
             browserService.pressStartButtonById(speedTestWebsite.buttonId());
         }
@@ -96,7 +101,7 @@ public class WebSiteServiceImpl implements WebSiteService {
 
     private void waitForTestToFinish(SpeedTestWebSite speedTestWebsite) throws BrowserCommandFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
-            browserService.waitForFlashTestToFinish(speedTestWebsite.getIdentifier());
+            browserService.waitForFlashTestToFinish(speedTestWebsite.finishIdentifiers());
         } else {
             browserService.waitForTestToFinishByText(speedTestWebsite.finishIdentifier(),
                                                      speedTestWebsite.finishTextIdentifier());

@@ -1,7 +1,10 @@
-package caseyellow.client.sevices.googlevision;
+package caseyellow.client.sevices.googlevision.model;
+
+import caseyellow.client.sevices.googlevision.model.Feature;
+import caseyellow.client.sevices.googlevision.model.Image;
+import caseyellow.client.sevices.googlevision.model.ImageContext;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 

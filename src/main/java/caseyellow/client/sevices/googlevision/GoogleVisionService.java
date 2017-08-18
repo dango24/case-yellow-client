@@ -1,7 +1,8 @@
 package caseyellow.client.sevices.googlevision;
 
-import caseyellow.client.infrastructre.image.comparison.OcrResponse;
+import caseyellow.client.infrastructre.image.recognition.OcrResponse;
 import caseyellow.client.domain.interfaces.OcrService;
+import caseyellow.client.sevices.googlevision.model.GoogleVisionRequest;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

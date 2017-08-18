@@ -1,9 +1,5 @@
-package caseyellow.client.infrastructre.image.comparison;
+package caseyellow.client.infrastructre.image.recognition;
 
-
-import caseyellow.client.common.resolution.Point;
-
-import java.util.List;
 
 public class WordData {
 
@@ -12,6 +8,10 @@ public class WordData {
     private BoundingPoly boundingPoly;
 
     public WordData() {
+    }
+
+    public WordData(String description) {
+        this.description = description;
     }
 
     public String getDescription() {
@@ -36,5 +36,20 @@ public class WordData {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WordData wordData = (WordData) o;
+
+        return description != null ? description.equals(wordData.description) : wordData.description == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return description != null ? description.hashCode() : 0;
     }
 }
