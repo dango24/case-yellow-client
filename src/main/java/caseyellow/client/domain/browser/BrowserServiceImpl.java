@@ -180,7 +180,7 @@ public class BrowserServiceImpl implements BrowserService {
         try {
             webDriver.getTitle(); // Will throw UnreachableBrowserException if browser is closed
 
-        } catch (UnreachableBrowserException e) {
+        } catch (UnreachableBrowserException | NoSuchSessionException e) {
             throw new UserInterruptException(e.getMessage(), e);
         } catch (Exception e) {
             throw new BrowserFailedException("Browser is closed, " + e.getMessage(), e);
