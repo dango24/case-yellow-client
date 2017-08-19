@@ -5,13 +5,14 @@ import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
-import caseyellow.client.domain.interfaces.BrowserService;
+import caseyellow.client.domain.browser.BrowserService;
 import caseyellow.client.exceptions.BrowserFailedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +24,7 @@ import static caseyellow.client.common.Utils.takeScreenSnapshot;
  * Created by dango on 6/3/17.
  */
 @Service
-public class WebSiteServiceImpl implements WebSiteService {
+public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     public static final int DELAY_TIME_BEFORE_SNAPSHOT = 1000;
     // Logger

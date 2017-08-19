@@ -13,7 +13,6 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-import static caseyellow.client.common.Utils.cleanTmpDir;
 import static java.util.stream.Collectors.toMap;
 
 /**

@@ -113,13 +113,6 @@ public class Utils {
         }
     }
 
-    public static void cleanTmpDir() throws IOException {
-        FileUtils.deleteDirectory(new File(tmpDirPath));
-
-        File tmpDir = new File(tmpDirPath);
-        tmpDir.mkdir();
-    }
-
     public static byte[] createImageBase64Encode(String imgPath) throws IOException {
         File imageFile = new File(imgPath);
         byte[] imageBase64Encode = Base64.getEncoder().encode(FileUtils.readFileToByteArray(imageFile));

@@ -1,7 +1,8 @@
-package caseyellow.client.domain.interfaces;
+package caseyellow.client.domain.browser;
 
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.exceptions.BrowserFailedException;
+import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.exceptions.UserInterruptException;
 
 import java.io.IOException;

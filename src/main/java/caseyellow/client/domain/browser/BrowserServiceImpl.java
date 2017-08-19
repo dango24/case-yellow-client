@@ -1,30 +1,29 @@
-package caseyellow.client.infrastructre;
+package caseyellow.client.domain.browser;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.common.Point;
+import caseyellow.client.common.Utils;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
-import caseyellow.client.domain.interfaces.BrowserService;
-import caseyellow.client.exceptions.AnalyzeException;
-import caseyellow.client.exceptions.BrowserFailedException;
-import caseyellow.client.exceptions.OcrParsingException;
-import caseyellow.client.exceptions.UserInterruptException;
+import caseyellow.client.exceptions.*;
 import caseyellow.client.infrastructre.image.recognition.*;
 import caseyellow.client.domain.interfaces.OcrService;
-import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static caseyellow.client.common.Mapper.USER_INTERRUPT_CODE;
 import static caseyellow.client.common.Utils.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
@@ -53,12 +52,12 @@ public class BrowserServiceImpl implements BrowserService {
     @Value("${chromeDriverExecutorPath}")
     private String chromeDriverExecutorPath;
 
-    private Mapper mapper;
     private WebDriver webDriver;
     private OcrService ocrService;
     private TextAnalyzerService textAnalyzer;
 
-    public BrowserServiceImpl() throws IOException {
+    @PostConstruct
+    public void init() throws IOException {
         initWebDriver();
         closeBrowser();
     }
@@ -72,11 +71,6 @@ public class BrowserServiceImpl implements BrowserService {
     @Autowired
     public void setOcrService(OcrService ocrService) {
         this.ocrService = ocrService;
-    }
-
-    @Autowired
-    public void setMapper(Mapper mapper) {
-        this.mapper = mapper;
     }
 
     @Autowired
@@ -102,8 +96,8 @@ public class BrowserServiceImpl implements BrowserService {
     @Override
     public void closeBrowser() {
         webDriver.quit();
+        ocrService.cancelRequest();
     }
-
 
     @Override
     public void pressStartButtonById(String btnId) throws BrowserFailedException {
@@ -126,13 +120,14 @@ public class BrowserServiceImpl implements BrowserService {
         checkBrowser();
 
         try {
-            int waitForTestToFinishInSec = waitForStartButton < 1000 ? 1 : (int)TimeUnit.MILLISECONDS.toSeconds(waitForStartButton);
+            int waitForTestToFinishInSec = getWaitForTestToFinishInSec(waitForStartButton);
             int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForTestToFinishInSec;
             waitForImageAppearance(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true);
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);
-
+        } catch (RequestFailureException e) {
+            throw new BrowserFailedException(e.getMessage(), e);
         }
     }
 
@@ -141,7 +136,7 @@ public class BrowserServiceImpl implements BrowserService {
         checkBrowser();
 
         try {
-            int waitForTestToFinishInterval = waitForFinishIdentifier < 1000 ? 1 : (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
+            int waitForTestToFinishInterval = getWaitForTestToFinishInSec(waitForFinishIdentifier);
             int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
 
             waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false);
@@ -160,8 +155,7 @@ public class BrowserServiceImpl implements BrowserService {
     public boolean waitForTestToFinishByText(String identifier, String finishTextIdentifier) throws BrowserFailedException, InterruptedException {
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
-        String[] identifiers = identifier.split("=");
-        By by = identifiers[0].equals("id") ? By.id(identifiers[1]) : By.className(identifiers[1]);
+        By by = getByIdentifier(identifier);
 
         do {
             checkBrowser();
@@ -177,15 +171,27 @@ public class BrowserServiceImpl implements BrowserService {
         throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + finishTextIdentifier);
     }
 
+    private By getByIdentifier(String identifier) {
+        String[] identifiers = identifier.split("=");
+        return identifiers[0].equals("id") ? By.id(identifiers[1]) : By.className(identifiers[1]);
+    }
+
     private void checkBrowser() throws BrowserFailedException {
         try {
-            webDriver.getTitle(); // Will throw an exception if browser is closed
+            webDriver.getTitle(); // Will throw UnreachableBrowserException if browser is closed
+
+        } catch (UnreachableBrowserException e) {
+            throw new UserInterruptException(e.getMessage(), e);
         } catch (Exception e) {
             throw new BrowserFailedException("Browser is closed, " + e.getMessage(), e);
         }
     }
 
-    private boolean waitForImageAppearance(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage) throws IOException, InterruptedException, BrowserFailedException {
+    private int getWaitForTestToFinishInSec(int waitForStartButton) {
+        return waitForStartButton < 1000 ? 1 : (int) TimeUnit.MILLISECONDS.toSeconds(waitForStartButton);
+    }
+
+    private boolean waitForImageAppearance(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage) throws IOException, InterruptedException, BrowserFailedException, RequestFailureException {
         int currentAttempt = 0;
 
         do {
@@ -207,13 +213,10 @@ public class BrowserServiceImpl implements BrowserService {
 
         } while (++currentAttempt < numOfAttempts);
 
-        logger.warn("Failure to find finish test identifiers: " + textIdentifiers);
-        logger.info("Assume the test finish properly");
-
-        return false;
+        throw new BrowserFailedException("Failure to find finish test identifiers: " + textIdentifiers);
     }
 
-    private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException {
+    private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException, RequestFailureException {
         Point point;
         OcrResponse ocrResponse = ocrService.parseImage(takeScreenSnapshot());
         checkNotNull(ocrResponse, "Ocr response is null");

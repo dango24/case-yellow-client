@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -108,7 +109,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                 handleLostConnection();
 
             } catch(UserInterruptException e) {
-                logger.error("Failed to produce test, " + e.getMessage(), e);
+                logger.info("Stop to produce test, user interrupt action" + e.getMessage(), e);
 
             } catch (Exception e) {
                 logger.error("Failed to produce test, " + e.getMessage(), e);
@@ -180,7 +181,14 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
     @Override
     public void executeStopProducingCommand() {
-        toProduceTests.set(false);
+        try {
+            toProduceTests.set(false);
+            webSiteService.close();
+            downloadFileService.close();
+
+        } catch (Exception e) {
+            logger.warn("Error accrued while user cancel request, " + e.getMessage(), e);
+        }
     }
 
 }

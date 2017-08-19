@@ -111,7 +111,7 @@ public class MainForm implements MessagesService {
     }
 
     private void stopProducingTests() {
-        showMessage("App stopped, After the current test will be finish there will be no more test production");
+        showMessage("App stopped, there will be no more test production");
         SwingUtilities.invokeLater(stopProducingTestsCommand::executeStopProducingCommand);
     }
 

@@ -15,6 +15,8 @@ import java.util.Map;
 @ConfigurationProperties
 public class Mapper {
 
+    public static final int USER_INTERRUPT_CODE = 22;
+
     // Fields
     private String speedTestWebSitePackage;
     private Map<String, String> urlInfo = new HashMap<>();

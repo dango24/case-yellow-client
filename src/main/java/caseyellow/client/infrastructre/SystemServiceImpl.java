@@ -1,7 +1,6 @@
 package caseyellow.client.infrastructre;
 
 import caseyellow.client.domain.test.model.SystemInfo;
-import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
 import caseyellow.client.exceptions.InternalFailureException;
@@ -9,7 +8,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,6 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 /**
@@ -58,6 +55,11 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public void copyURLToFile(URL source, File destination) throws IOException {
 //        FileUtils.copyURLToFile(source, destination);
+    }
+
+    @Override
+    public void close() throws IOException {
+        // todo dango
     }
 
     @Override

@@ -58,6 +58,6 @@ public class ATNTSpeedTestWebSite implements SpeedTestWebSite {
 
     @Override
     public int centralized() {
-        return 0;
+        return 100;
     }
 }

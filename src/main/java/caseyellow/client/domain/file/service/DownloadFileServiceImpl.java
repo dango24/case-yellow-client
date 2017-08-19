@@ -105,4 +105,9 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
         return bytesPerSec / Math.pow(2, 10); // Transform to KB
     }
+
+    @Override
+    public void close() throws IOException {
+        urlToFileService.close();
+    }
 }

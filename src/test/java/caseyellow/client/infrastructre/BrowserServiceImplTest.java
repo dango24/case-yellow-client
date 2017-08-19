@@ -1,11 +1,11 @@
 package caseyellow.client.infrastructre;
 
+import caseyellow.client.domain.browser.BrowserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
