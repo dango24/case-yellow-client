@@ -23,7 +23,6 @@ public class AppBootInitializer {
 
 
     public static void initAppPieRequirements(String[] bootArgs) throws IOException {
-        cleanTmpDir();
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
         updateLog4jConfiguration(argsMap.get("logFilePath"));
     }
