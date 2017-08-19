@@ -1,13 +1,12 @@
 package caseyellow.client.domain.website.service;
 
-import caseyellow.client.common.Utils;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.interfaces.BrowserService;
-import caseyellow.client.exceptions.BrowserCommandFailedException;
+import caseyellow.client.exceptions.BrowserFailedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class WebSiteServiceImpl implements WebSiteService {
                                                    .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
                                                    .build();
 
-        } catch (BrowserCommandFailedException e) {
+        } catch (BrowserFailedException e) {
             logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
             return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                                    .setFailure()
@@ -90,7 +89,7 @@ public class WebSiteServiceImpl implements WebSiteService {
         }
     }
 
-    private void clickStartTestButton(SpeedTestWebSite speedTestWebsite) throws BrowserCommandFailedException, IOException, InterruptedException {
+    private void clickStartTestButton(SpeedTestWebSite speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
             browserService.pressFlashStartTestButton(speedTestWebsite.buttonIds());
         } else {
@@ -99,7 +98,7 @@ public class WebSiteServiceImpl implements WebSiteService {
     }
 
 
-    private void waitForTestToFinish(SpeedTestWebSite speedTestWebsite) throws BrowserCommandFailedException, InterruptedException {
+    private void waitForTestToFinish(SpeedTestWebSite speedTestWebsite) throws BrowserFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
             browserService.waitForFlashTestToFinish(speedTestWebsite.finishIdentifiers());
         } else {

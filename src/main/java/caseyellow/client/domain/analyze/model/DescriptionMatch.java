@@ -12,7 +12,7 @@ public class DescriptionMatch {
     }
 
     private DescriptionMatch(boolean found) {
-        this(found, null);
+        this(found, DescriptionLocation.defaultDescriptionLocation());
     }
 
     public DescriptionMatch(String description, Point center) {

@@ -7,10 +7,12 @@ import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
 import caseyellow.client.domain.interfaces.BrowserService;
 import caseyellow.client.exceptions.AnalyzeException;
-import caseyellow.client.exceptions.BrowserCommandFailedException;
+import caseyellow.client.exceptions.BrowserFailedException;
+import caseyellow.client.exceptions.OcrParsingException;
 import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.infrastructre.image.recognition.*;
 import caseyellow.client.domain.interfaces.OcrService;
+import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -24,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Utils.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
 
 /**
@@ -103,7 +106,7 @@ public class BrowserServiceImpl implements BrowserService {
 
 
     @Override
-    public void pressStartButtonById(String btnId) throws BrowserCommandFailedException {
+    public void pressStartButtonById(String btnId) throws BrowserFailedException {
         checkBrowser();
 
         try {
@@ -114,12 +117,12 @@ public class BrowserServiceImpl implements BrowserService {
             throw new UserInterruptException(e.getMessage(), e);
 
         } catch (Exception e) {
-            throw new BrowserCommandFailedException(e.getMessage(), e);
+            throw new BrowserFailedException(e.getMessage(), e);
         }
     }
 
     @Override
-    public void pressFlashStartTestButton(Set<WordIdentifier> webSiteBtnIdentifiers) throws BrowserCommandFailedException, UserInterruptException, IOException, InterruptedException {
+    public void pressFlashStartTestButton(Set<WordIdentifier> webSiteBtnIdentifiers) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException {
         checkBrowser();
 
         try {
@@ -134,7 +137,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserCommandFailedException, UserInterruptException {
+    public void waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
         checkBrowser();
 
         try {
@@ -149,12 +152,12 @@ public class BrowserServiceImpl implements BrowserService {
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new BrowserCommandFailedException(e.getMessage(), e);
+            throw new BrowserFailedException(e.getMessage(), e);
         }
     }
 
     @Override
-    public boolean waitForTestToFinishByText(String identifier, String finishTextIdentifier) throws BrowserCommandFailedException, InterruptedException {
+    public boolean waitForTestToFinishByText(String identifier, String finishTextIdentifier) throws BrowserFailedException, InterruptedException {
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
         String[] identifiers = identifier.split("=");
@@ -171,17 +174,19 @@ public class BrowserServiceImpl implements BrowserService {
 
         } while (++currentAttempt < numOfAttempts);
 
-        throw new BrowserCommandFailedException("Failure to find finish test identifier : " + identifier + " with text: " + finishTextIdentifier);
+        throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + finishTextIdentifier);
     }
 
-    private void checkBrowser() {
-        webDriver.getTitle(); // Will throw an exception if browser is closed
+    private void checkBrowser() throws BrowserFailedException {
+        try {
+            webDriver.getTitle(); // Will throw an exception if browser is closed
+        } catch (Exception e) {
+            throw new BrowserFailedException("Browser is closed, " + e.getMessage(), e);
+        }
     }
 
-    private boolean waitForImageAppearance(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage) throws IOException, InterruptedException, BrowserCommandFailedException {
+    private boolean waitForImageAppearance(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage) throws IOException, InterruptedException, BrowserFailedException {
         int currentAttempt = 0;
-        Point point;
-        OcrResponse ocrResponse;
 
         do {
             try {
@@ -196,6 +201,8 @@ public class BrowserServiceImpl implements BrowserService {
                 logger.error("Reached socket timeout, try new attempt, " + e.getMessage(), e);
             } catch (AnalyzeException e) {
                 logger.error("Analyze failed, try new attempt, " + e.getMessage(), e);
+            } catch (OcrParsingException e) {
+                logger.error("OCR parsing failed, try new attempt, " + e.getMessage(), e);
             }
 
         } while (++currentAttempt < numOfAttempts);
@@ -206,26 +213,31 @@ public class BrowserServiceImpl implements BrowserService {
         return false;
     }
 
-    private Boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException {
+    private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException {
         Point point;
-        OcrResponse ocrResponse;
-        ocrResponse = ocrService.parseImage(takeScreenSnapshot());
+        OcrResponse ocrResponse = ocrService.parseImage(takeScreenSnapshot());
+        checkNotNull(ocrResponse, "Ocr response is null");
         DescriptionMatch matchDescription = textAnalyzer.isDescriptionExist(textIdentifiers, ocrResponse.getTextAnnotations());
+        checkNotNull(matchDescription, "Match Description is null");
+        checkNotNull(matchDescription.getDescriptionLocation(), "Match Description location is null");
 
         if (matchDescription.foundMatchedDescription()) {
 
             if (clickImage) {
                 point = matchDescription.getDescriptionLocation().getCenter();
+                checkNotNull(point, "Matched description center point is null");
                 click(point.getX(), point.getY());
             }
 
             return true;
+
+        } else {
+            return false;
         }
-        return null;
     }
 
     @Override
-    public void centralizedWebPage(int centralized) throws InterruptedException {
+    public void centralizedWebPage(int centralized) throws InterruptedException, BrowserFailedException {
         checkBrowser();
 
         if (centralized > 0) {

@@ -128,12 +128,18 @@ public class TextAnalyzerImp implements TextAnalyzerService {
     }
 
     private Point buildCenterMatchingPoint(Map<String, List<Point>> wordDescription) {
+
         double distance;
         double minDistance = Integer.MAX_VALUE;
         Point firstPoint = null;
         Point secondPoint = null;
         List<List<Point>> points = new ArrayList<>(wordDescription.values());
         List<Point> firstPointsList = points.get(0);
+
+        if (wordDescription.size() == 1) {
+            return firstPointsList.get(0);
+        }
+
         List<Point> secondPointsList = points.get(1);
 
         for (Point point1 : firstPointsList) {

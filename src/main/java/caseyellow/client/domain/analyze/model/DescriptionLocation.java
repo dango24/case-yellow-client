@@ -8,6 +8,7 @@ public class DescriptionLocation {
     private Point center;
 
     public DescriptionLocation() {
+        this("", new Point(0,0));
     }
 
     public DescriptionLocation(String word, Point center) {
@@ -31,4 +32,7 @@ public class DescriptionLocation {
         this.center = center;
     }
 
+    public static DescriptionLocation defaultDescriptionLocation() {
+        return new DescriptionLocation();
+    }
 }
