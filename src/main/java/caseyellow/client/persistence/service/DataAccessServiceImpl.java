@@ -1,12 +1,12 @@
-package caseyellow.client.presistance.service;
+package caseyellow.client.persistence.service;
 
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.exceptions.DataAccessException;
-import caseyellow.client.presistance.model.ConnectionConfig;
-import caseyellow.client.presistance.model.URIRequests;
+import caseyellow.client.persistence.model.ConnectionConfig;
+import caseyellow.client.persistence.model.URIRequests;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
@@ -35,7 +35,7 @@ public class DataAccessServiceImpl implements DataAccessService {
     private final String REQUEST_URI_SCHEMA = "%s://%s:%s/%s";
 
     private ConnectionConfig connectionConfig;
-    private caseyellow.client.presistance.model.URIRequests URIRequests;
+    private caseyellow.client.persistence.model.URIRequests URIRequests;
     private SpeedTestWebSiteFactory speedTestWebSiteFactory;
 
     @Autowired
