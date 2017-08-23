@@ -33,7 +33,17 @@ public class Utils {
     public static final String RESOLUTION_SEPARATOR = ";";
 
     static {
-        tmpDirPath = new File(System.getProperty("java.io.tmpdir"), "case-yellow-tmp-dir").getAbsolutePath();
+        tmpDirPath = createRootTmpDir();
+    }
+
+    private static String createRootTmpDir() {
+        File rootTmpFile = new File(System.getProperty("java.io.tmpdir"), "case-yellow-tmp-dir");
+
+        if (!rootTmpFile.exists()) {
+            rootTmpFile.mkdir();
+        }
+
+        return rootTmpFile.getAbsolutePath();
     }
     // Helper functions
 

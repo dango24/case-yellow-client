@@ -18,7 +18,7 @@ import static caseyellow.client.common.Messages.churchillSpeech;
 public class MainForm implements MessagesService {
 
     // Constants
-    private static final String LOADING_APP_MESSAGE = "loading app...";
+    private static final String LOADING_APP_MESSAGE = "loading app...  Please wait";
 
     // Fields
     private JFrame frame;
@@ -95,7 +95,7 @@ public class MainForm implements MessagesService {
 
     public void enableApp() {
         startButton.setEnabled(true);
-        stopButton.setEnabled(true);
+//        stopButton.setEnabled(true);
         editorPane.setText(churchillSpeech());
     }
 
@@ -108,11 +108,15 @@ public class MainForm implements MessagesService {
     private void startProducingTests() {
         showMessage("Start producing tests");
         SwingUtilities.invokeLater(startProducingTestsCommand::executeStartProducingTestsCommand);
+        startButton.setEnabled(false);
+        stopButton.setEnabled(true);
     }
 
     private void stopProducingTests() {
         showMessage("App stopped, there will be no more test production");
         SwingUtilities.invokeLater(stopProducingTestsCommand::executeStopProducingCommand);
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
     }
 
     public void terminate() {

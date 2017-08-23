@@ -1,8 +1,6 @@
 package caseyellow.client.domain.browser;
 
-import caseyellow.client.common.Mapper;
 import caseyellow.client.common.Point;
-import caseyellow.client.common.Utils;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
@@ -23,7 +21,6 @@ import java.net.SocketTimeoutException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static caseyellow.client.common.Mapper.USER_INTERRUPT_CODE;
 import static caseyellow.client.common.Utils.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
@@ -220,6 +217,7 @@ public class BrowserServiceImpl implements BrowserService {
         Point point;
         OcrResponse ocrResponse = ocrService.parseImage(takeScreenSnapshot());
         checkNotNull(ocrResponse, "Ocr response is null");
+
         DescriptionMatch matchDescription = textAnalyzer.isDescriptionExist(textIdentifiers, ocrResponse.getTextAnnotations());
         checkNotNull(matchDescription, "Match Description is null");
         checkNotNull(matchDescription.getDescriptionLocation(), "Match Description location is null");

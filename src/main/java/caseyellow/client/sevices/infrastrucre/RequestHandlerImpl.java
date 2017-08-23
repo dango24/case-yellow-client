@@ -28,7 +28,7 @@ public class RequestHandlerImpl implements RequestHandler {
                 currentRequest.cancel();
             }
         } catch (Exception e) {
-            System.out.println("dango");
+            logger.error("Failed to cancel request, " + e.getMessage(), e);
         }
     }
 
