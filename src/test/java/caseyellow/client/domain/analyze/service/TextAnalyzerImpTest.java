@@ -13,7 +13,7 @@ import java.util.Set;
 
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TextAnalyzerImpTest {
 
     private TextAnalyzerService textAnalyzerService;

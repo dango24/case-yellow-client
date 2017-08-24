@@ -31,14 +31,8 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     private Mapper mapper;
     private SystemService systemService;
     private URLToFileService urlToFileService;
-    private MessagesService messagesService;
 
     // Setters
-
-    @Autowired
-    public void setMessagesService(MessagesService messagesService) {
-        this.messagesService = messagesService;
-    }
 
     @Autowired
     public void setMapper(Mapper mapper) {
@@ -73,7 +67,6 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
             String message = "Start measuring and downloading file: " + fileName + ", from url: " + urlStr;
             logger.info(message);
-            messagesService.showMessage(message);
 
             long startDownloadingTime = System.currentTimeMillis();
             urlToFileService.copyURLToFile(url, tmpFile);
@@ -92,7 +85,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
         } catch (IOException e) {
-            messagesService.showMessage("Failed to download file, " + e.getMessage());
+//            messagesService.showMessage("Failed to download file, " + e.getMessage());
             logger.error("Failed to download file, " + e.getMessage(), e);
             throw new FileDownloadInfoException(e.getMessage());
         }

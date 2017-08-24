@@ -1,6 +1,7 @@
 package caseyellow.client;
 
 import caseyellow.client.domain.test.service.TestGenerator;
+import caseyellow.client.infrastructre.MessageServiceImp;
 import caseyellow.client.presentation.MainForm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,7 @@ import javax.swing.*;
 import java.net.UnknownHostException;
 
 import static caseyellow.client.common.Messages.churchillSpeech;
-import static caseyellow.client.infrastructre.AppBootInitializer.initAppPieRequirements;
+import static caseyellow.client.infrastructre.AppBootInitializer.initAppPreRequirements;
 import static caseyellow.client.infrastructre.AppBootInitializer.initForkJoinCommonPool;
 
 /**
@@ -26,14 +27,14 @@ import static caseyellow.client.infrastructre.AppBootInitializer.initForkJoinCom
 public class App {
 
     public final static Logger logger = Logger.getLogger(App.class);
+
     private static MainForm mainForm;
 
-    // Functions
-
     public static void main(String[] args) throws UnknownHostException {
-        logger.info(churchillSpeech());
         initView();
-        startApp(args);
+        initForkJoinCommonPool();
+        initAppPreRequirements(args);
+        initApplicationContext(args);
     }
 
     private static void initView() {
@@ -41,13 +42,15 @@ public class App {
         mainForm.view();
     }
 
-    private static void startApp(String[] args) {
+    private static void initApplicationContext(String[] args) {
 
         try {
-            initForkJoinCommonPool();
-            initAppPieRequirements(args);
             ApplicationContext ctx = SpringApplication.run(App.class, args);
+
             TestGenerator testService = (TestGenerator)ctx.getBean("testGenerator");
+            MessageServiceImp messagesService = (MessageServiceImp)ctx.getBean("messageServiceImp");
+
+            messagesService.setPresentationMessagesService(mainForm);
             mainForm.setStartProducingTestsCommand(testService);
             mainForm.setStopProducingTestsCommand(testService);
             mainForm.enableApp();

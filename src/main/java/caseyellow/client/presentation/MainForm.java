@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Messages.churchillSpeech;
 
 /**
  * Created by Dan on 7/7/2017.
  */
-@Component
 public class MainForm implements MessagesService {
 
     // Constants
@@ -66,7 +66,7 @@ public class MainForm implements MessagesService {
     private void buildEditorScrollPane() {
         editorPane = new JEditorPane();
         editorPane.setEditable(false);
-        editorPane.setText(LOADING_APP_MESSAGE); //churchillSpeech());
+        showMessage(LOADING_APP_MESSAGE);
         editorScrollPane = new JScrollPane(editorPane);
         editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         editorScrollPane.setPreferredSize(new Dimension(250, 145));
@@ -86,7 +86,7 @@ public class MainForm implements MessagesService {
 
     @Override
     public void showMessage(String message) {
-        editorPane.setText(message);
+        SwingUtilities.invokeLater( () -> editorPane.setText(message));
     }
 
     public void view() {
@@ -95,8 +95,7 @@ public class MainForm implements MessagesService {
 
     public void enableApp() {
         startButton.setEnabled(true);
-//        stopButton.setEnabled(true);
-        editorPane.setText(churchillSpeech());
+        showMessage(churchillSpeech());
     }
 
     public void disableApp() {

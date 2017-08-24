@@ -16,8 +16,7 @@ import java.util.List;
 /**
  * Created by dango on 6/28/17.
  */
-@Component
-@Profile({"beta", "test"})
+@Component("stubDataService")
 public class DataAccessServiceStub implements DataAccessService {
 
     private Logger logger = Logger.getLogger(DataAccessServiceStub.class);

@@ -21,9 +21,8 @@ import static java.util.stream.Collectors.toMap;
 public class AppBootInitializer {
 
 
-    public static void initAppPieRequirements(String[] bootArgs) throws IOException {
+    public static void initAppPreRequirements(String[] bootArgs) {
         Map<String, String> argsMap = buildArgsKeyValueParis(bootArgs);
-        updateLog4jConfiguration(argsMap.get("logFilePath"));
     }
 
     private static Map<String, String> buildArgsKeyValueParis(String[] bootArgs) {
@@ -36,35 +35,6 @@ public class AppBootInitializer {
                      .filter(argKeyValuePair -> argKeyValuePair.length == 2) // validate schema
                      .collect(toMap(argKeyValuePair -> argKeyValuePair[0],
                                     argKeyValuePair -> argKeyValuePair[1]));
-    }
-
-    private static void updateLog4jConfiguration(String logFile) {
-        Properties props = new Properties();
-
-        if (logFile == null || logFile.isEmpty()) {
-            logFile = createDefaultLoggingFile();
-        }
-
-        try (InputStream configStream = Mapper.class.getResourceAsStream( "/log4j.properties")) {
-            props.load(configStream);
-
-        } catch (IOException e) {
-            System.out.println("Error: failed to load log4j configuration file");
-        }
-
-        props.setProperty("log4j.appender.file.File", logFile);
-        LogManager.resetConfiguration();
-        PropertyConfigurator.configure(props);
-    }
-
-    private static String createDefaultLoggingFile() {
-        File logDir = new File(System.getProperty("user.home"), "case-yellow-logs");
-
-        if (!logDir.exists()) {
-            logDir.mkdir();
-        }
-
-        return new File(logDir, "logging.log").toString();
     }
 
     // ForkJoinCommonPool is lazy initialized, there for at app boot make a dummy

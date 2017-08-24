@@ -2,7 +2,7 @@ package caseyellow.client.exceptions;
 
 import static caseyellow.client.common.Mapper.USER_INTERRUPT_CODE;
 
-public class RequestFailureException extends Exception {
+public class RequestFailureException extends RuntimeException {
 
     private int errorCode;
 

@@ -1,5 +1,6 @@
 package caseyellow.client.domain.website.service;
 
+import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
@@ -27,20 +28,21 @@ import static caseyellow.client.common.Utils.takeScreenSnapshot;
 public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     public static final int DELAY_TIME_BEFORE_SNAPSHOT = 1000;
-    // Logger
+
     private Logger logger = Logger.getLogger(WebSiteServiceImpl.class);
 
-    // Fields
     private BrowserService browserService;
-
-    // Setters
+    private MessagesService messagesService;
 
     @Autowired
     public void setBrowserService(BrowserService browserService) {
         this.browserService = browserService;
     }
 
-    // Methods
+    @Autowired
+    public void setMessagesService(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
 
     @Override
     public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) throws UserInterruptException, ConnectionException {
@@ -48,6 +50,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         long startMeasuringTimestamp;
 
         try {
+            messagesService.showMessage("dango");
             browserService.openBrowser(speedTestWebsite.webSiteUrl());
             browserService.centralizedWebPage(speedTestWebsite.centralized());
 

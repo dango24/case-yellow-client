@@ -34,7 +34,6 @@ public class DownloadFileServiceImplTest {
         downloadFileService = new DownloadFileServiceImpl();
         downloadFileService.setSystemService(systemService);
         downloadFileService.setMapper(mapper);
-        downloadFileService.setMessagesService(messagesService);
     }
 
     @Test

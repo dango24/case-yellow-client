@@ -6,8 +6,20 @@ wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2
 wait-For-Finish-identifier : 10000
 chromeDriverExecutorPath : drivers/chromedriver.exe
+
 google_vision_url : https://vision.googleapis.com/
 google_vision_key : AIzaSyBrkKNc_7vNBvlY6P83atDavKvZGJKQTms
+gateway_url : https://requestb.in/
+
+logging:
+  level:
+    org.springframework.web: ERROR
+    caseyellow.client: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
+  file: logs\\client_log.log
+
 
 config:
   app-name: Gateway
