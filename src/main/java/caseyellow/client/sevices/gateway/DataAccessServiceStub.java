@@ -33,6 +33,11 @@ public class DataAccessServiceStub implements DataAccessService {
     }
 
     @Override
+    public void sendErrorMessage(String errorMessage) {
+        logger.error(errorMessage);
+    }
+
+    @Override
     public void saveTest(Test test) {
         System.out.println("save test at stub mode" + test);
     }

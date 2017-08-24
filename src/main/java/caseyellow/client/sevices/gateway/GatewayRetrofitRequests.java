@@ -13,11 +13,15 @@ public interface GatewayRetrofitRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @POST("save-test")
+    @POST("rc9s21rc")
     Call<Void> saveTest(@Body Test test);
 
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @POST("rc9s21rc")
-    Call<Void> printToShekerServer(@Body String message);
+    Call<Void> sendMessage(@Body String message);
 
     @Headers({
             "Accept: application/json",

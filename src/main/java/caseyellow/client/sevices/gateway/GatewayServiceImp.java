@@ -6,8 +6,6 @@ import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,13 +48,13 @@ public class GatewayServiceImp implements DataAccessService {
     }
 
     @Override
+    public void sendErrorMessage(String errorMessage) {
+        requestHandler.execute(gatewayRetrofitRequests.sendMessage(errorMessage));
+    }
+
+    @Override
     public void saveTest(Test test) throws RequestFailureException {
-        try {
-            String indented = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(test);
-            requestHandler.execute(gatewayRetrofitRequests.printToShekerServer(indented));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        requestHandler.execute(gatewayRetrofitRequests.saveTest(test));
     }
 
     @Override

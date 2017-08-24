@@ -1,5 +1,6 @@
 package caseyellow.client.domain.website.service;
 
+import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
@@ -33,6 +34,12 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     private BrowserService browserService;
     private MessagesService messagesService;
+    private DataAccessService dataAccessService;
+
+    @Autowired
+    public void setDataAccessService(DataAccessService dataAccessService) {
+        this.dataAccessService = dataAccessService;
+    }
 
     @Autowired
     public void setBrowserService(BrowserService browserService) {
@@ -50,7 +57,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         long startMeasuringTimestamp;
 
         try {
-            messagesService.showMessage("dango");
+            messagesService.showMessage("Testing web site: " + speedTestWebsite.webSiteUrl());
             browserService.openBrowser(speedTestWebsite.webSiteUrl());
             browserService.centralizedWebPage(speedTestWebsite.centralized());
 
@@ -72,20 +79,22 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                                    .build();
 
         } catch (BrowserFailedException e) {
-            logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
+            handleError("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
             return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                                    .setFailure()
                                                    .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
                                                    .build();
 
         } catch (WebDriverException | InterruptedException e) {
+            handleError(e.getMessage(), e);
             throw new UserInterruptException(e.getMessage(), e);
 
         } catch (UnknownHostException e) {
+            handleError(e.getMessage(), e);
             throw new ConnectionException(e.getMessage(), e);
 
         } catch(Exception e) {
-            logger.error(e.getMessage(), e);
+            handleError(e.getMessage(), e);
             throw new WebSiteDownloadInfoException(e.getMessage());
 
         } finally {
@@ -114,5 +123,10 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     @Override
     public void close() throws IOException {
         browserService.closeBrowser();
+    }
+
+    private void handleError(String errorMessage, Exception e) {
+        dataAccessService.sendErrorMessage(errorMessage);
+        logger.error(errorMessage, e);
     }
 }

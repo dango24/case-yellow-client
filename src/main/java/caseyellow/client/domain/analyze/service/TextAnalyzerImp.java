@@ -7,7 +7,7 @@ import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.exceptions.AnalyzeException;
 import caseyellow.client.exceptions.InternalFailureException;
-import caseyellow.client.infrastructre.image.recognition.WordData;
+import caseyellow.client.domain.analyze.model.WordData;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 

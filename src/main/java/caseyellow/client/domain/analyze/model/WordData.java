@@ -1,4 +1,4 @@
-package caseyellow.client.infrastructre.image.recognition;
+package caseyellow.client.domain.analyze.model;
 
 
 public class WordData {

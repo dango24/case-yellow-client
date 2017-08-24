@@ -54,7 +54,7 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public void copyURLToFile(URL source, File destination) throws IOException {
-//        FileUtils.copyURLToFile(source, destination);
+        FileUtils.copyURLToFile(source, destination);
     }
 
     @Override

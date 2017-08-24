@@ -4,9 +4,10 @@ import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
+import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.exceptions.*;
-import caseyellow.client.infrastructre.image.recognition.*;
 import caseyellow.client.domain.interfaces.OcrService;
+import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -51,6 +52,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     private WebDriver webDriver;
     private OcrService ocrService;
+    private DataAccessService dataAccessService;
     private TextAnalyzerService textAnalyzer;
 
     @PostConstruct
@@ -73,6 +75,11 @@ public class BrowserServiceImpl implements BrowserService {
     @Autowired
     public void setTextAnalyzer(TextAnalyzerService textAnalyzer) {
         this.textAnalyzer = textAnalyzer;
+    }
+
+    @Autowired
+    public void setDataAccessService(DataAccessService dataAccessService) {
+        this.dataAccessService = dataAccessService;
     }
 
     @Override
@@ -139,11 +146,11 @@ public class BrowserServiceImpl implements BrowserService {
             waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false);
 
         } catch (WebDriverException e) {
-            logger.error(e.getMessage());
+            handleError(e.getMessage(), e);
             throw new UserInterruptException(e.getMessage(), e);
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            handleError(e.getMessage(), e);
             throw new BrowserFailedException(e.getMessage(), e);
         }
     }
@@ -170,7 +177,9 @@ public class BrowserServiceImpl implements BrowserService {
 
     private By getByIdentifier(String identifier) {
         String[] identifiers = identifier.split("=");
-        return identifiers[0].equals("id") ? By.id(identifiers[1]) : By.className(identifiers[1]);
+
+        return identifiers[0].equals("id") ? By.id(identifiers[1]) :
+                                             By.className(identifiers[1]);
     }
 
     private void checkBrowser() throws BrowserFailedException {
@@ -201,16 +210,21 @@ public class BrowserServiceImpl implements BrowserService {
                 }
 
             } catch (SocketTimeoutException e) {
-                logger.error("Reached socket timeout, try new attempt, " + e.getMessage(), e);
+                handleError("Reached socket timeout, try new attempt, " + e.getMessage(), e);
             } catch (AnalyzeException e) {
-                logger.error("Analyze failed, try new attempt, " + e.getMessage(), e);
+                handleError("Analyze failed, try new attempt, " + e.getMessage(), e);
             } catch (OcrParsingException e) {
-                logger.error("OCR parsing failed, try new attempt, " + e.getMessage(), e);
+                handleError("OCR parsing failed, try new attempt, " + e.getMessage(), e);
             }
 
         } while (++currentAttempt < numOfAttempts);
 
         throw new BrowserFailedException("Failure to find finish test identifiers: " + textIdentifiers);
+    }
+
+    private void handleError(String errorMessage, Exception e) {
+        dataAccessService.sendErrorMessage(errorMessage);
+        logger.error(errorMessage, e);
     }
 
     private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException, RequestFailureException {

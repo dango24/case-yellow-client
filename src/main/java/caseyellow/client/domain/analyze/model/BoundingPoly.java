@@ -1,4 +1,4 @@
-package caseyellow.client.infrastructre.image.recognition;
+package caseyellow.client.domain.analyze.model;
 
 import caseyellow.client.domain.analyze.model.Point;
 

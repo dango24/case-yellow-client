@@ -1,4 +1,6 @@
-package caseyellow.client.infrastructre.image.recognition;
+package caseyellow.client.sevices.googlevision.model;
+
+import caseyellow.client.domain.analyze.model.WordData;
 
 import java.util.List;
 

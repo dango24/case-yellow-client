@@ -2,6 +2,7 @@ package caseyellow.client.domain.file.service;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
+import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.interfaces.URLToFileService;
@@ -24,15 +25,18 @@ import static caseyellow.client.common.Utils.createTmpDir;
 @Profile("beta")
 public class DownloadFileServiceImpl implements DownloadFileService {
 
-    // Logger
     private Logger logger = Logger.getLogger(DownloadFileServiceImpl.class);
 
-    // Fields
     private Mapper mapper;
     private SystemService systemService;
     private URLToFileService urlToFileService;
+    private DataAccessService dataAccessService;
+    private MessagesService messagesService;
 
-    // Setters
+    @Autowired
+    public void setMessagesService(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
 
     @Autowired
     public void setMapper(Mapper mapper) {
@@ -49,7 +53,10 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         this.systemService = systemService;
     }
 
-    // Methods
+    @Autowired
+    public void setDataAccessService(DataAccessService dataAccessService) {
+        this.dataAccessService = dataAccessService;
+    }
 
     @Override
     public FileDownloadInfo generateFileDownloadInfo(String urlStr) throws FileDownloadInfoException {
@@ -67,6 +74,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
             String message = "Start measuring and downloading file: " + fileName + ", from url: " + urlStr;
             logger.info(message);
+            messagesService.showMessage(message);
 
             long startDownloadingTime = System.currentTimeMillis();
             urlToFileService.copyURLToFile(url, tmpFile);
@@ -85,7 +93,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
         } catch (IOException e) {
-//            messagesService.showMessage("Failed to download file, " + e.getMessage());
+            dataAccessService.sendErrorMessage(e.getMessage());
             logger.error("Failed to download file, " + e.getMessage(), e);
             throw new FileDownloadInfoException(e.getMessage());
         }

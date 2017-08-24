@@ -65,7 +65,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
             produceTests();
 
         } catch (Exception e) {
-            logger.error("Produce tests failed, currently stop creating nre test until user interaction" + e.getMessage(), e);
+            handleError("Produce tests failed, currently stop creating nre test until user interaction" + e.getMessage(), e);
         }
     }
 
@@ -89,16 +89,21 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                 }
 
             } catch (ConnectionException e) {
-                logger.error("Connection with host failed, " + e.getMessage(), e);
+                handleError("Connection with host failed, " + e.getMessage(), e);
                 handleLostConnection();
 
             } catch (UserInterruptException e) {
-                logger.info("Stop to produce test, user interrupt action" + e.getMessage(), e);
+                handleError("Stop to produce test, user interrupt action" + e.getMessage(), e);
 
             } catch (Exception e) {
-                logger.error("Failed to produce test, " + e.getMessage(), e);
+                handleError("Failed to produce test, " + e.getMessage(), e);
             }
         }
+    }
+
+    private void handleError(String errorMessage, Exception e) {
+        dataAccessService.sendErrorMessage(errorMessage);
+        logger.error(errorMessage, e);
     }
 
     private void handleLostConnection() throws InterruptedException {
@@ -166,7 +171,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
             downloadFileService.close();
 
         } catch (Exception e) {
-            logger.warn("Error occurred while user cancel request, " + e.getMessage(), e);
+            handleError("Error occurred while user cancel request, " + e.getMessage(), e);
         }
     }
 

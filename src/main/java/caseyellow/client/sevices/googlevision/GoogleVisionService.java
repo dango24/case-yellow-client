@@ -2,7 +2,7 @@ package caseyellow.client.sevices.googlevision;
 
 import caseyellow.client.exceptions.OcrParsingException;
 import caseyellow.client.exceptions.RequestFailureException;
-import caseyellow.client.infrastructre.image.recognition.OcrResponse;
+import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import caseyellow.client.domain.interfaces.OcrService;
 import caseyellow.client.sevices.googlevision.model.GoogleVisionRequest;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
