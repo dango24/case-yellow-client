@@ -93,7 +93,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                 handleLostConnection();
 
             } catch (UserInterruptException e) {
-                handleError("Stop to produce test, user interrupt action" + e.getMessage(), e);
+                logger.info("Stop to produce test, user interrupt action" + e.getMessage(), e);
 
             } catch (Exception e) {
                 handleError("Failed to produce test, " + e.getMessage(), e);

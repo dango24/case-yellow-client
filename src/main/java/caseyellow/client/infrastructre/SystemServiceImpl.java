@@ -4,6 +4,7 @@ import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
 import caseyellow.client.exceptions.InternalFailureException;
+import caseyellow.client.exceptions.UserInterruptException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -22,7 +24,10 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.concurrent.*;
 import java.util.stream.Stream;
+
+import static java.util.Objects.nonNull;
 
 /**
  * Created by dango on 6/3/17.
@@ -31,11 +36,17 @@ import java.util.stream.Stream;
 @Profile("beta")
 public class SystemServiceImpl implements SystemService {
 
-    // Constants
     private static final String ETHERNET_IDENTIFIER = "eth";
 
-    // Logger
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
+
+    private Future<?> copyURLToFileTask;
+    private ExecutorService copyURLToFileService;
+
+    @PostConstruct
+    public void init() {
+        copyURLToFileService = Executors.newSingleThreadExecutor();
+    }
 
     @Override
     public SystemInfo getSystemInfo() {
@@ -54,12 +65,31 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public void copyURLToFile(URL source, File destination) throws IOException {
-        FileUtils.copyURLToFile(source, destination);
+        try {
+            copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
+            copyURLToFileTask.get();
+
+        } catch (InterruptedException | CancellationException e) {
+            throw new UserInterruptException("User cancel download file request, " + e.getMessage(), e);
+        } catch (ExecutionException e) {
+            throw new InternalFailureException("Failed to download file, " + e.getMessage(), e);
+        }
+    }
+
+    private void executeCopyURLToFile(URL source, File destination) {
+        try {
+            FileUtils.copyURLToFile(source, destination);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     @Override
     public void close() throws IOException {
-        // todo dango
+
+        if (nonNull(copyURLToFileTask) && !copyURLToFileTask.isCancelled()) {
+            copyURLToFileTask.cancel(true);
+        }
     }
 
     @Override
