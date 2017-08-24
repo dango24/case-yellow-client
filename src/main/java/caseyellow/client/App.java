@@ -6,18 +6,15 @@ import caseyellow.client.presentation.MainForm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 import org.apache.log4j.Logger;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.net.UnknownHostException;
+import java.util.concurrent.CompletableFuture;
 
-import static caseyellow.client.common.Messages.churchillSpeech;
-import static caseyellow.client.infrastructre.AppBootInitializer.initAppPreRequirements;
-import static caseyellow.client.infrastructre.AppBootInitializer.initForkJoinCommonPool;
 
 /**
  * Created by dango on 6/2/17.
@@ -26,20 +23,26 @@ import static caseyellow.client.infrastructre.AppBootInitializer.initForkJoinCom
                                   WebMvcAutoConfiguration.class})
 public class App {
 
-    public final static Logger logger = Logger.getLogger(App.class);
+    private final static Logger logger = Logger.getLogger(App.class);
 
     private static MainForm mainForm;
 
     public static void main(String[] args) throws UnknownHostException {
         initView();
         initForkJoinCommonPool();
-        initAppPreRequirements(args);
         initApplicationContext(args);
     }
 
     private static void initView() {
         mainForm = new MainForm();
         mainForm.view();
+    }
+
+    // ForkJoinCommonPool is lazy initialized, there for at app boot make a dummy
+    // request for ForkJoinCommonPool initialization
+    private static void initForkJoinCommonPool() {
+        CompletableFuture.supplyAsync(() -> "Init ForkJoinCommonPool at start-up")
+                         .thenAccept(output -> App.logger.info(output));
     }
 
     private static void initApplicationContext(String[] args) {

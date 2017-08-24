@@ -1,6 +1,6 @@
 package caseyellow.client.infrastructre.image.recognition;
 
-import caseyellow.client.common.Point;
+import caseyellow.client.domain.analyze.model.Point;
 
 import java.util.List;
 

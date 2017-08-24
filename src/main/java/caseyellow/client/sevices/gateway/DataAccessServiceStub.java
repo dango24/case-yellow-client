@@ -1,4 +1,4 @@
-package caseyellow.client.persistence.service;
+package caseyellow.client.sevices.gateway;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.test.model.Test;
@@ -7,7 +7,6 @@ import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;

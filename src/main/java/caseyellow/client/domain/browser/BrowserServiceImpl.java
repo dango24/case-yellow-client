@@ -1,6 +1,6 @@
 package caseyellow.client.domain.browser;
 
-import caseyellow.client.common.Point;
+import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;

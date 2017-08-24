@@ -1,6 +1,6 @@
 package caseyellow.client.domain.analyze.service;
 
-import caseyellow.client.common.Point;
+import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.common.Utils;
 import caseyellow.client.domain.analyze.model.DescriptionLocation;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;

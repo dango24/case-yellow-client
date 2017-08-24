@@ -1,4 +1,4 @@
-package caseyellow.client.common;
+package caseyellow.client.domain.analyze.model;
 
 public class Point {
 

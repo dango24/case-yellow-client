@@ -1,7 +1,5 @@
 package caseyellow.client.domain.analyze.model;
 
-import caseyellow.client.common.Point;
-
 public class DescriptionMatch {
 
     private boolean isMatchedDescription;

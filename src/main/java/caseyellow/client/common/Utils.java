@@ -1,5 +1,6 @@
 package caseyellow.client.common;
 
+import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.exceptions.InternalFailureException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -157,34 +158,34 @@ public class Utils {
         }
     }
 
-    public static Point getCenter(List<Point> vertices) {
+    public static caseyellow.client.domain.analyze.model.Point getCenter(List<caseyellow.client.domain.analyze.model.Point> vertices) {
         int minX = Utils.getMinX(vertices);
         int minY = Utils.getMinY(vertices);
         int maxX = Utils.getMaxX(vertices);
         int maxY = Utils.getMaxY(vertices);
 
-        Point center = new Point( (minX + maxX)/2, (minY + maxY)/2);
+        caseyellow.client.domain.analyze.model.Point center = new caseyellow.client.domain.analyze.model.Point( (minX + maxX)/2, (minY + maxY)/2);
 
         return center;
     }
 
-    public static int getMinX(List<Point> vertices) {
-        return getMin(Point::getX, vertices);
+    public static int getMinX(List<caseyellow.client.domain.analyze.model.Point> vertices) {
+        return getMin(caseyellow.client.domain.analyze.model.Point::getX, vertices);
     }
 
-    public static int getMinY(List<Point> vertices) {
-        return getMin(Point::getY, vertices);
+    public static int getMinY(List<caseyellow.client.domain.analyze.model.Point> vertices) {
+        return getMin(caseyellow.client.domain.analyze.model.Point::getY, vertices);
     }
 
-    public static int getMaxX(List<Point> vertices) {
-        return getMax(Point::getX, vertices);
+    public static int getMaxX(List<caseyellow.client.domain.analyze.model.Point> vertices) {
+        return getMax(caseyellow.client.domain.analyze.model.Point::getX, vertices);
     }
 
-    public static int getMaxY(List<Point> vertices) {
-        return getMax(Point::getY, vertices);
+    public static int getMaxY(List<caseyellow.client.domain.analyze.model.Point> vertices) {
+        return getMax(caseyellow.client.domain.analyze.model.Point::getY, vertices);
     }
 
-    private static int getMin(ToIntFunction<? super Point> intMinFunction, List<Point> points) {
+    private static int getMin(ToIntFunction<? super caseyellow.client.domain.analyze.model.Point> intMinFunction, List<caseyellow.client.domain.analyze.model.Point> points) {
 
         return points.stream()
                      .mapToInt(intMinFunction)
@@ -192,7 +193,7 @@ public class Utils {
                      .orElseThrow(() -> new InternalFailureException("There is no min point in points: " + points));
     }
 
-    private static int getMax(ToIntFunction<? super Point> intMaxFunction, List<Point> points) {
+    private static int getMax(ToIntFunction<? super caseyellow.client.domain.analyze.model.Point> intMaxFunction, List<Point> points) {
 
         return points.stream()
                      .mapToInt(intMaxFunction)
