@@ -1,8 +1,7 @@
-package caseyellow.client.presistance.service;
+package caseyellow.client.persistence.service;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedOfSpeedTestWebSite;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
@@ -10,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;

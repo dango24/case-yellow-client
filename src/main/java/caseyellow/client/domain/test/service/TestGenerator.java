@@ -57,28 +57,6 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    // Setters
-
-    @Autowired
-    public void setWebSiteService(WebSiteService webSiteService) {
-        this.webSiteService = webSiteService;
-    }
-
-    @Autowired
-    public void setDataAccessService(DataAccessService dataAccessService) {
-        this.dataAccessService = dataAccessService;
-    }
-
-    @Autowired
-    public void setDownloadFileService(DownloadFileService downloadFileService) {
-        this.downloadFileService = downloadFileService;
-    }
-
-    @Autowired
-    public void setSystemService(SystemService systemService) {
-        this.systemService = systemService;
-    }
-
     // Methods
 
     @Override
@@ -90,6 +68,12 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
             logger.error("Produce tests failed, currently stop creating nre test until user interaction" + e.getMessage(), e);
         }
     }
+
+    @Override
+    public void stop() {
+        toProduceTests.set(false);
+    }
+
 
     private void produceTests() throws InterruptedException {
         Test test;
@@ -108,7 +92,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                 logger.error("Connection with host failed, " + e.getMessage(), e);
                 handleLostConnection();
 
-            } catch(UserInterruptException e) {
+            } catch (UserInterruptException e) {
                 logger.info("Stop to produce test, user interrupt action" + e.getMessage(), e);
 
             } catch (Exception e) {
@@ -120,11 +104,6 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     private void handleLostConnection() throws InterruptedException {
         logger.info("Wait for 20 seconds before new attempt to produce new test");
         TimeUnit.SECONDS.sleep(20);
-    }
-
-    @Override
-    public void stop() {
-        toProduceTests.set(false);
     }
 
     private Test generateNewTest() throws UserInterruptException {
@@ -182,13 +161,35 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     @Override
     public void executeStopProducingCommand() {
         try {
-            toProduceTests.set(false);
+            stop();
             webSiteService.close();
             downloadFileService.close();
 
         } catch (Exception e) {
-            logger.warn("Error accrued while user cancel request, " + e.getMessage(), e);
+            logger.warn("Error occurred while user cancel request, " + e.getMessage(), e);
         }
+    }
+
+    // Setters
+
+    @Autowired
+    public void setWebSiteService(WebSiteService webSiteService) {
+        this.webSiteService = webSiteService;
+    }
+
+    @Autowired
+    public void setDataAccessService(DataAccessService dataAccessService) {
+        this.dataAccessService = dataAccessService;
+    }
+
+    @Autowired
+    public void setDownloadFileService(DownloadFileService downloadFileService) {
+        this.downloadFileService = downloadFileService;
+    }
+
+    @Autowired
+    public void setSystemService(SystemService systemService) {
+        this.systemService = systemService;
     }
 
 }

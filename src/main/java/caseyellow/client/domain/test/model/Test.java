@@ -7,13 +7,11 @@ import java.util.List;
  */
 public class Test {
 
-    // Fields
     private String testID;
     private SystemInfo systemInfo;
     private String speedTestWebsiteIdentifier;
     private List<ComparisonInfo> comparisonInfoTests;
 
-    // Constructor
     private Test(TestBuilder testBuilder) {
         this.testID = testBuilder.testID;
         this.systemInfo = testBuilder.systemInfo;
@@ -21,7 +19,6 @@ public class Test {
         this.comparisonInfoTests = testBuilder.comparisonInfoTests;
     }
 
-    // Methods
 
     public String getTestID() {
         return testID;

@@ -8,17 +8,13 @@ import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
  */
 public class ComparisonInfo {
 
-    // Fields
     private SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo;
     private FileDownloadInfo fileDownloadInfo;
 
-    // Constructor
     public ComparisonInfo(SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo, FileDownloadInfo fileDownloadInfo) {
         this.speedTestWebSiteDownloadInfo = speedTestWebSiteDownloadInfo;
         this.fileDownloadInfo = fileDownloadInfo;
     }
-
-    // Methods
 
     public SpeedTestWebSiteDownloadInfo getSpeedTestWebSiteDownloadInfo() {
         return speedTestWebSiteDownloadInfo;

@@ -5,7 +5,6 @@ package caseyellow.client.domain.file.model;
  */
 public class FileDownloadInfo {
 
-    // Fields
     private String fileName;
     private String fileURL;
     private long   fileSizeInBytes;
@@ -13,7 +12,6 @@ public class FileDownloadInfo {
     private long   fileDownloadedDurationTimeInMs;
     private long   startDownloadingTimestamp;
 
-    //Constructors
     public FileDownloadInfo() {}
 
     public FileDownloadInfo(String url) {
@@ -28,8 +26,6 @@ public class FileDownloadInfo {
         fileDownloadedDurationTimeInMs = fileDownloadInfoBuilder.fileDownloadedDurationTimeInMs;
         startDownloadingTimestamp = fileDownloadInfoBuilder.startDownloadingTimestamp;
     }
-
-    // Methods
 
     public String getFileURL() {
         return fileURL;
@@ -71,6 +67,10 @@ public class FileDownloadInfo {
 
     public void setFileDownloadRateKBPerSec(double fileDownloadRateKBPerSec) {
         this.fileDownloadRateKBPerSec = fileDownloadRateKBPerSec;
+    }
+
+    public static FileDownloadInfo emptyFileDownloadInfo() {
+        return new FileDownloadInfo();
     }
 
     @Override
