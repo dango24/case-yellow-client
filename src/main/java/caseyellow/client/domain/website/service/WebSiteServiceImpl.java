@@ -95,7 +95,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
         } catch(Exception e) {
             handleError(e.getMessage(), e);
-            throw new WebSiteDownloadInfoException(e.getMessage());
+            throw new WebSiteDownloadInfoException(e.getMessage(), e);
 
         } finally {
             browserService.closeBrowser();

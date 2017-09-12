@@ -8,4 +8,8 @@ public class WebSiteDownloadInfoException extends RuntimeException {
     public WebSiteDownloadInfoException(String message) {
         super(message);
     }
+
+    public WebSiteDownloadInfoException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
 }

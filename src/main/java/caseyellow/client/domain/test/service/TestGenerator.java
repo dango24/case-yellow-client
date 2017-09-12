@@ -113,14 +113,11 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
     private Test generateNewTest() throws UserInterruptException {
         Test test;
-        SystemInfo systemInfo;
-        SpeedTestWebSite speedTestWebSite;
-        List<String> urls;
         List<ComparisonInfo> comparisonInfoList;
 
-        systemInfo = systemService.getSystemInfo();
-        speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        urls = dataAccessService.getNextUrls(numOfComparisonPerTest);
+        SystemInfo systemInfo = systemService.getSystemInfo();
+        SpeedTestWebSite speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
+        List<String> urls = dataAccessService.getNextUrls(numOfComparisonPerTest);
 
         comparisonInfoList = urls.stream()
                                  .map(url -> generateComparisonInfo(speedTestWebSite, url))
