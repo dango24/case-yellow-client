@@ -1,5 +1,7 @@
 package caseyellow.client.sevices.infrastrucre;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -20,6 +22,7 @@ public class RetrofitBuilder {
                                                 .client(okHttpClient)
                                                 .baseUrl(url);
 
+//        Gson gson = new GsonBuilder().setLenient().create();
         retrofit.addConverterFactory(JacksonConverterFactory.create());
 
         return retrofit;
