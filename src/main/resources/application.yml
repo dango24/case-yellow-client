@@ -14,7 +14,7 @@ gateway_url : https://requestb.in/
 logging:
   level:
     org.springframework.web: ERROR
-    caseyellow.client: ERROR
+    caseyellow.client: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
