@@ -3,6 +3,7 @@ package caseyellow.client.presentation;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ import static caseyellow.client.common.Messages.churchillSpeech;
  * Created by Dan on 7/7/2017.
  */
 public class MainForm implements MessagesService {
+
+    private Logger logger = Logger.getLogger(MainForm.class);
 
     // Constants
     private static final String LOADING_APP_MESSAGE = "loading app...  Please wait";
@@ -86,6 +89,7 @@ public class MainForm implements MessagesService {
 
     @Override
     public void showMessage(String message) {
+        logger.info("Message show to the user: " + message);
         SwingUtilities.invokeLater( () -> editorPane.setText(message));
     }
 
@@ -105,6 +109,7 @@ public class MainForm implements MessagesService {
     }
 
     private void startProducingTests() {
+        logger.info("Start button pressed");
         showMessage("Start producing tests");
         SwingUtilities.invokeLater(startProducingTestsCommand::executeStartProducingTestsCommand);
         startButton.setEnabled(false);
@@ -112,6 +117,7 @@ public class MainForm implements MessagesService {
     }
 
     private void stopProducingTests() {
+        logger.info("Stop button pressed");
         showMessage("App halt, stop production tests");
         SwingUtilities.invokeLater(stopProducingTestsCommand::executeStopProducingCommand);
         startButton.setEnabled(true);
@@ -122,4 +128,3 @@ public class MainForm implements MessagesService {
         frame.dispose();
     }
 }
-

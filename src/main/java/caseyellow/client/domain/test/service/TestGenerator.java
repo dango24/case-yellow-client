@@ -3,6 +3,7 @@ package caseyellow.client.domain.test.service;
 import caseyellow.client.common.Validator;
 import caseyellow.client.domain.file.service.DownloadFileService;
 import caseyellow.client.domain.interfaces.DataAccessService;
+import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
@@ -50,6 +51,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     private DataAccessService dataAccessService;
     private DownloadFileService downloadFileService;
     private ExecutorService executorService;
+    private MessagesService messagesService;
 
     // Constructor
     public TestGenerator() {
@@ -65,7 +67,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
             produceTests();
 
         } catch (Exception e) {
-            handleError("Produce tests failed, currently stop creating nre test until user interaction" + e.getMessage(), e);
+            logger.error("Produce tests failed, currently stop creating nre test until user interaction" + e.getMessage(), e);
         }
     }
 
@@ -93,7 +95,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                 handleLostConnection();
 
             } catch (UserInterruptException e) {
-                logger.info("Stop to produce test, user interrupt action" + e.getMessage(), e);
+                handleError("Stop to produce test, user interrupt action" + e.getMessage(), e);
 
             } catch (Exception e) {
                 handleError("Failed to produce test, " + e.getMessage(), e);
@@ -138,6 +140,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
             fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
+            messagesService.showMessage(fileDownloadInfo.getFileName() + " finish download, rate: " + fileDownloadInfo.getFileDownloadRateKBPerSec() + "KB per sec");
         }
 
         return new ComparisonInfo(speedTestWebSiteDownloadInfo, fileDownloadInfo);
@@ -194,4 +197,8 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         this.systemService = systemService;
     }
 
+    @Autowired
+    public void setMessagesService(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
 }
