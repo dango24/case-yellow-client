@@ -1,6 +1,5 @@
 package caseyellow.client.domain.website.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 /**
