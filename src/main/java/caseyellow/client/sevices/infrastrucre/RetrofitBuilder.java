@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,8 +22,8 @@ public class RetrofitBuilder {
                                                 .client(okHttpClient)
                                                 .baseUrl(url);
 
-//        Gson gson = new GsonBuilder().setLenient().create();
-        retrofit.addConverterFactory(JacksonConverterFactory.create());
+        Gson gson = new GsonBuilder().setLenient().create();
+        retrofit.addConverterFactory(GsonConverterFactory.create(gson));
 
         return retrofit;
     }
