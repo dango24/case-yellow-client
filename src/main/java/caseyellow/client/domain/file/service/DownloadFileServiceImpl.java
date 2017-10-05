@@ -7,6 +7,7 @@ import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.interfaces.URLToFileService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
+import caseyellow.client.exceptions.InternalFailureException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -92,7 +93,8 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addFileDownloadedDurationTimeInMs(fileDownloadedDurationTimeInMs)
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
-        } catch (IOException e) {
+
+        } catch (IOException | InternalFailureException e) {
             dataAccessService.sendErrorMessage(e.getMessage());
             logger.error("Failed to download file, " + e.getMessage(), e);
             throw new FileDownloadInfoException(e.getMessage());

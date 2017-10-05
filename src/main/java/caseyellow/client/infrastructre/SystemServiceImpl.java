@@ -64,29 +64,41 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public void copyURLToFile(URL source, File destination) throws IOException {
+    public void copyURLToFile(URL source, File destination) throws IOException, InternalFailureException {
         try {
             copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
-            copyURLToFileTask.get();
+            copyURLToFileTask.get(30, TimeUnit.MINUTES);
 
         } catch (InterruptedException | CancellationException e) {
             throw new UserInterruptException("User cancel download file request, " + e.getMessage(), e);
+
         } catch (ExecutionException e) {
             throw new InternalFailureException("Failed to download file, " + e.getMessage(), e);
+
+        } catch (TimeoutException e) {
+            log.error("Reach timeout of 30 minutes for url: " + source.toString());
+            throw new InternalFailureException("Failed to download file, reach timeout of 30 minutes for url: " + source.toString() +
+                                               "cause: " + e.getMessage(), e);
         }
     }
 
     private void executeCopyURLToFile(URL source, File destination) {
+        String threadOriginalName = Thread.currentThread().getName();
+
         try {
+            Thread.currentThread().setName("copy url to file thread");
             FileUtils.copyURLToFile(source, destination);
+            log.info("finish downloading file from: " + source.toString());
+
         } catch (IOException e) {
             log.error(e.getMessage(), e);
+        } finally {
+            Thread.currentThread().setName(threadOriginalName);
         }
     }
 
     @Override
     public void close() throws IOException {
-
         if (nonNull(copyURLToFileTask) && !copyURLToFileTask.isCancelled()) {
             copyURLToFileTask.cancel(true);
         }

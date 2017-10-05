@@ -113,7 +113,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         TimeUnit.SECONDS.sleep(20);
     }
 
-    private Test generateNewTest() throws UserInterruptException {
+    private Test generateNewTest() throws UserInterruptException, FileDownloadInfoException {
         Test test;
         List<ComparisonInfo> comparisonInfoList;
 
