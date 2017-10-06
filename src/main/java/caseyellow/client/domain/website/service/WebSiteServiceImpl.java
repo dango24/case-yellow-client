@@ -2,11 +2,11 @@ package caseyellow.client.domain.website.service;
 
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.MessagesService;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.browser.BrowserService;
 import caseyellow.client.exceptions.BrowserFailedException;
 import org.apache.log4j.Logger;
@@ -52,16 +52,16 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     }
 
     @Override
-    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestWebSite speedTestWebsite) throws UserInterruptException, ConnectionException {
+    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
         try {
-            messagesService.showMessage("Testing web site: " + speedTestWebsite.webSiteUrl());
-            browserService.openBrowser(speedTestWebsite.webSiteUrl());
-            browserService.centralizedWebPage(speedTestWebsite.centralized());
+            messagesService.showMessage("Testing web site: " + speedTestWebsite.getWebSiteUrl());
+            browserService.openBrowser(speedTestWebsite.getWebSiteUrl());
+            browserService.centralizedWebPage(speedTestWebsite.getCentralized());
 
-            if (speedTestWebsite.haveStartButton()) {
+            if (speedTestWebsite.isHaveStartButton()) {
                 clickStartTestButton(speedTestWebsite);
                 moveMouseToStartingPoint();
             }
@@ -102,21 +102,21 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         }
     }
 
-    private void clickStartTestButton(SpeedTestWebSite speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException {
+    private void clickStartTestButton(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
-            browserService.pressFlashStartTestButton(speedTestWebsite.buttonIds());
+            browserService.pressFlashStartTestButton(speedTestWebsite.getButtonIds());
         } else {
-            browserService.pressStartButtonById(speedTestWebsite.buttonId());
+            browserService.pressStartButtonById(speedTestWebsite.getButtonId());
         }
     }
 
 
-    private void waitForTestToFinish(SpeedTestWebSite speedTestWebsite) throws BrowserFailedException, InterruptedException {
+    private void waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
-            browserService.waitForFlashTestToFinish(speedTestWebsite.finishIdentifiers());
+            browserService.waitForFlashTestToFinish(speedTestWebsite.getFinishIdentifiers());
         } else {
-            browserService.waitForTestToFinishByText(speedTestWebsite.finishIdentifier(),
-                                                     speedTestWebsite.finishTextIdentifier());
+            browserService.waitForTestToFinishByText(speedTestWebsite.getFinishIdentifier(),
+                                                     speedTestWebsite.getFinishTextIdentifier());
         }
     }
 

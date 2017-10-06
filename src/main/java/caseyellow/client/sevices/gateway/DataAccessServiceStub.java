@@ -2,7 +2,7 @@ package caseyellow.client.sevices.gateway;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import org.apache.log4j.Logger;
@@ -48,9 +48,9 @@ public class DataAccessServiceStub implements DataAccessService {
     }
 
     @Override
-    public SpeedTestWebSite getNextSpeedTestWebSite() {
+    public SpeedTestMetaData getNextSpeedTestWebSite() {
         currentWebTest++;
-        return speedTestWebSiteFactory.createSpeedTestWebSiteFromIdentifier(websiteIdentifiers.get(currentWebTest %websiteIdentifiers.size()));
+        return speedTestWebSiteFactory.getSpeedTestWebSiteFromIdentifier(websiteIdentifiers.get(currentWebTest %websiteIdentifiers.size()));
     }
 
     @Override

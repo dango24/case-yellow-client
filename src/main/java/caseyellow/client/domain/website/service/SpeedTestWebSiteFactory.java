@@ -1,38 +1,53 @@
 package caseyellow.client.domain.website.service;
 
-import caseyellow.client.common.Mapper;
-import caseyellow.client.domain.website.model.HotSpeedTestWebSite;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-/**
- * Created by dango on 6/27/17.
- */
 @Component
 public class SpeedTestWebSiteFactory {
 
-    private final Logger logger = Logger.getLogger(SpeedTestWebSiteFactory.class);
-    private final Mapper mapper;
+    private final String SPEED_TEST_METADATA_LOCATION = "/speed_test_meta_data.json";
 
-    @Autowired
-    public SpeedTestWebSiteFactory(Mapper mapper) {
-        this.mapper = mapper;
+    private Map<String, SpeedTestMetaData> speedTestDTOMap;
+
+    @PostConstruct
+    private void init() throws URISyntaxException, IOException {
+        Path speedTestMetaData = Paths.get(SpeedTestWebSiteFactory.class.getResource(SPEED_TEST_METADATA_LOCATION).toURI());
+        SpeedTestMetaDataWrapper speedTestMetaDataWrapper = new ObjectMapper().readValue(speedTestMetaData.toFile(), SpeedTestMetaDataWrapper.class);
+
+        speedTestDTOMap = speedTestMetaDataWrapper.getSpeedTestMetaData()
+                                                  .stream()
+                                                  .collect(Collectors.toMap(SpeedTestMetaData::getIdentifier, Function.identity()));
     }
 
-    public SpeedTestWebSite createSpeedTestWebSiteFromIdentifier(String identifier) {
+    public SpeedTestMetaData getSpeedTestWebSiteFromIdentifier(String identifier) {
+        return speedTestDTOMap.get(identifier);
+    }
 
-        try {
-            Class<?> speedTestWebSiteClass = Class.forName(mapper.getWebSiteClassFromIdentifier(identifier));
-            SpeedTestWebSite speedTestWebSite = (SpeedTestWebSite)speedTestWebSiteClass.newInstance();
+    private static class SpeedTestMetaDataWrapper {
 
-            return speedTestWebSite;
+        private List<SpeedTestMetaData> speedTestMetaData;
 
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            logger.error(e.getMessage());
-            return new HotSpeedTestWebSite(); // If failed send 'HOT' speed test web site as default
+        public SpeedTestMetaDataWrapper() {
+        }
+
+        public List<SpeedTestMetaData> getSpeedTestMetaData() {
+            return speedTestMetaData;
+        }
+
+        public void setSpeedTestMetaData(List<SpeedTestMetaData> speedTestMetaData) {
+            this.speedTestMetaData = speedTestMetaData;
         }
     }
 }

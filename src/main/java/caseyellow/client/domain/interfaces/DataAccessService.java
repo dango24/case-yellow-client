@@ -1,7 +1,7 @@
 package caseyellow.client.domain.interfaces;
 
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.RequestFailureException;
 
 import java.util.List;
@@ -13,6 +13,6 @@ public interface DataAccessService {
     void sendErrorMessage(String errorMessage);
     void saveTest(Test test) throws RequestFailureException;
     int additionalTimeForWebTestToFinishInSec();
-    SpeedTestWebSite getNextSpeedTestWebSite();
+    SpeedTestMetaData getNextSpeedTestWebSite();
     List<String> getNextUrls(int numOfComparisonPerTest);
 }

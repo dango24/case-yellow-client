@@ -1,7 +1,7 @@
 package caseyellow.client.sevices.gateway;
 
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -35,7 +35,7 @@ public interface GatewayRetrofitRequests {
             "Content-Type: application/json"
     })
     @GET("next-test-website")
-    SpeedTestWebSite getNextSpeedTestWebSite();
+    SpeedTestMetaData getNextSpeedTestWebSite();
 
     @Headers({
             "Accept: application/json",

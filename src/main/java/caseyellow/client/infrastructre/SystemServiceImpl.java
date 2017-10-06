@@ -44,7 +44,7 @@ public class SystemServiceImpl implements SystemService {
     private ExecutorService copyURLToFileService;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         copyURLToFileService = Executors.newSingleThreadExecutor();
     }
 

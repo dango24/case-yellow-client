@@ -1,0 +1,103 @@
+{ "speedTestMetaData" :
+  [
+    {
+      "webSiteUrl": "http://www.hot.net.il/heb/Internet/speed/",
+      "identifier": "hot",
+      "buttonId": null,
+      "finishIdentifier": null,
+      "finishTextIdentifier": null,
+      "centralized": 250,
+      "flashAble": true,
+      "haveStartButton": true,
+      "buttonIds": [{
+        "identifier": "GO",
+        "count": 1
+      }],
+      "finishIdentifiers": [{
+        "identifier": "Mbps",
+        "count": 2
+      }, {
+        "identifier": "AGAIN",
+        "count": 1
+      }]
+    },
+    {
+      "webSiteUrl": "http://speedtest.att.com/speedtest/",
+      "identifier": "atnt",
+      "buttonId": "DRWidgetInitiate",
+      "finishIdentifier": "class=Resultstitle",
+      "finishTextIdentifier": "Your Test Results",
+      "centralized": 100,
+      "flashAble": false,
+      "haveStartButton": true,
+      "buttonIds": null,
+      "finishIdentifiers": null
+    },
+    {
+      "webSiteUrl": "http://www.bezeq.co.il/internetandphone/internet/speedtest/",
+      "identifier": "bezeq",
+      "buttonId": null,
+      "finishIdentifier": null,
+      "finishTextIdentifier": null,
+      "centralized": 0,
+      "flashAble": true,
+      "haveStartButton": false,
+      "buttonIds": null,
+      "finishIdentifiers": [{
+        "identifier": "בדוק",
+        "count": 1
+      }, {
+        "identifier": "שוב",
+        "count": 1
+      }]
+    },
+    {
+      "webSiteUrl": "https://www.fast.com/",
+      "identifier": "fast",
+      "buttonId": null,
+      "finishIdentifier": "class=compare-ookla-text",
+      "finishTextIdentifier": "Compare on\nSPEEDTEST.NET",
+      "centralized": 0,
+      "flashAble": false,
+      "haveStartButton": false,
+      "buttonIds": null,
+      "finishIdentifiers": null
+    },
+    {
+      "webSiteUrl": "http://www.speedtest.net/",
+      "identifier": "ookla",
+      "buttonId": null,
+      "finishIdentifier": null,
+      "finishTextIdentifier": null,
+      "centralized": 0,
+      "flashAble": true,
+      "haveStartButton": true,
+      "buttonIds": [{
+        "identifier": "BEGIN",
+        "count": 1
+      }, {
+        "identifier": "TEST",
+        "count": 1
+      }],
+      "finishIdentifiers": [{
+        "identifier": "AGAIN",
+        "count": 1
+      }, {
+        "identifier": "TEST",
+        "count": 1
+      }]
+    },
+    {
+      "webSiteUrl": "http://www.speedof.me/",
+      "identifier": "speedof",
+      "buttonId": "btnStart",
+      "finishIdentifier": "id=msgContainer3",
+      "finishTextIdentifier": "Click 'Share' to share this result",
+      "centralized": 0,
+      "flashAble": false,
+      "haveStartButton": true,
+      "buttonIds": null,
+      "finishIdentifiers": null
+    }
+  ]
+}

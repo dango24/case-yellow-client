@@ -2,7 +2,7 @@ package caseyellow.client.sevices.gateway;
 
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
@@ -63,7 +63,7 @@ public class GatewayServiceImp implements DataAccessService {
     }
 
     @Override
-    public SpeedTestWebSite getNextSpeedTestWebSite() {
+    public SpeedTestMetaData getNextSpeedTestWebSite() {
         return service.getNextSpeedTestWebSite();
     }
 
