@@ -33,6 +33,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!--Retrofit Jackson Converter-->
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
         <!--Converter Gson-->
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>

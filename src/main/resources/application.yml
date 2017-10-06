@@ -1,6 +1,6 @@
 msg: Lets go hang out on cloud
 speedTestWebSitePackage : caseyellow.client.domain.website.model.
-numOfComparisonPerTest : 3
+numOfComparisonPerTest : 1
 wait-for-test-to-finish-in-sec : 110
 wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2
@@ -37,9 +37,9 @@ urlInfo :
     https://secure-appldnld.apple.com/itunes12/031-69284-20160802-7E7B2D20-552B-11E6-B2B9-696CECD541CE/iTunes64Setup.exe : itunes
 
 websiteInfo :
-  atnt : ATNTSpeedTestWebSite
-  bezeq : BezeqSpeedTestWebSite
-  fast : FastSpeedTestWebSite
+#  atnt : ATNTSpeedTestWebSite
+#  bezeq : BezeqSpeedTestWebSite
+#  fast : FastSpeedTestWebSite
   hot : HotSpeedTestWebSite
   ookla : OoklaSpeedTestWebSite
-  speedof : SpeedOfSpeedTestWebSite
+#  speedof : SpeedOfSpeedTestWebSite
