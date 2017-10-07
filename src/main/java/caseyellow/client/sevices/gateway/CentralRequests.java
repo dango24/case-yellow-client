@@ -1,26 +1,27 @@
 package caseyellow.client.sevices.gateway;
 
+import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedTestMetaData;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import retrofit2.Call;
 import retrofit2.http.*;
 
 import java.util.List;
 
-public interface GatewayRetrofitRequests {
+public interface CentralRequests {
 
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @POST("rc9s21rc")
+    @POST("save-tests")
     Call<Void> saveTest(@Body Test test);
 
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @POST("rc9s21rc")
+    @POST("send-message")
     Call<Void> sendMessage(@Body String message);
 
     @Headers({
@@ -35,12 +36,12 @@ public interface GatewayRetrofitRequests {
             "Content-Type: application/json"
     })
     @GET("next-test-website")
-    SpeedTestMetaData getNextSpeedTestWebSite();
+    Call<SpeedTestWebSite> getNextSpeedTestWebSite();
 
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"
     })
     @GET("next-urls")
-    List<String> getNextUrls(@Query("num_of_comparison_per_test") int numOfComparisonPerTest);
+    Call<List<FileDownloadMetaData>> getNextUrls(@Query("num_of_comparison_per_test") int numOfComparisonPerTest);
 }

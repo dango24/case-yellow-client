@@ -1,28 +1,33 @@
 package caseyellow.client.sevices.gateway;
 
 import caseyellow.client.common.Mapper;
+import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by dango on 6/28/17.
  */
-@Component("stubDataService")
+@Component
+@Profile("dev")
 public class DataAccessServiceStub implements DataAccessService {
 
     private Logger logger = Logger.getLogger(DataAccessServiceStub.class);
+
+    private int currentWebTest;
     private Mapper mapper;
     private SpeedTestWebSiteFactory speedTestWebSiteFactory;
     private List<String> websiteIdentifiers;
-    private int currentWebTest;
 
     @Autowired
     public DataAccessServiceStub(Mapper mapper, SpeedTestWebSiteFactory speedTestWebSiteFactory) {
@@ -54,10 +59,13 @@ public class DataAccessServiceStub implements DataAccessService {
     }
 
     @Override
-    public List<String> getNextUrls(int numOfComparisonPerTest) {
+    public List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest) {
         List<String> urls = mapper.getUrls();
         Collections.shuffle(urls);
 
-        return urls.subList(0, numOfComparisonPerTest);
+        return urls.subList(0, numOfComparisonPerTest)
+                   .stream()
+                   .map(url -> new FileDownloadMetaData(mapper.getFileNameFromUrl(url), url))
+                   .collect(Collectors.toList());
     }
 }

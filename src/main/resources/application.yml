@@ -9,7 +9,7 @@ chromeDriverExecutorPath : drivers/chromedriver.exe
 
 google_vision_url : https://vision.googleapis.com/
 google_vision_key : AIzaSyBrkKNc_7vNBvlY6P83atDavKvZGJKQTms
-gateway_url : https://requestb.in/
+central_url : https://requestb.in/
 
 logging:
   level:

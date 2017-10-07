@@ -1,6 +1,7 @@
 package caseyellow.client.domain.test.service;
 
 import caseyellow.client.common.Validator;
+import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.file.service.DownloadFileService;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.MessagesService;
@@ -9,8 +10,8 @@ import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.test.model.ComparisonInfo;
-import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.WebSiteService;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.FileDownloadInfoException;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -112,17 +114,18 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         TimeUnit.SECONDS.sleep(20);
     }
 
-    private Test generateNewTest() throws UserInterruptException, FileDownloadInfoException {
+    private Test generateNewTest() throws UserInterruptException {
         Test test;
         List<ComparisonInfo> comparisonInfoList;
 
         SystemInfo systemInfo = systemService.getSystemInfo();
-        SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        List<String> urls = dataAccessService.getNextUrls(numOfComparisonPerTest);
+        SpeedTestWebSite speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
+        List<FileDownloadMetaData> fileDownloadMetaData = dataAccessService.getNextUrls(numOfComparisonPerTest);
 
-        comparisonInfoList = urls.stream()
-                                 .map(url -> generateComparisonInfo(speedTestWebSite, url))
-                                 .collect(toList());
+        comparisonInfoList =
+                fileDownloadMetaData.stream()
+                                    .map(url -> generateComparisonInfo(speedTestWebSite, url))
+                                    .collect(toList());
 
         test = new Test.TestBuilder(generateUniqueID())
                        .addSpeedTestWebsite(speedTestWebSite.getIdentifier())
@@ -133,12 +136,12 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         return test;
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestWebSite, String url) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
+    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo = null;
         SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
-            fileDownloadInfo = downloadFileService.generateFileDownloadInfo(url);
+            fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadMetaData);
             messagesService.showMessage(fileDownloadInfo.getFileName() + " finish download, rate: " + fileDownloadInfo.getFileDownloadRateKBPerSec() + "KB per sec");
         }
 

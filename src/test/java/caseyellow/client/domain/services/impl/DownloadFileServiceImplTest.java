@@ -2,6 +2,7 @@ package caseyellow.client.domain.services.impl;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
+import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.file.service.DownloadFileServiceImpl;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
@@ -22,6 +23,7 @@ public class DownloadFileServiceImplTest {
 
     // Constants
     private final String FIREFOX_URL = "https://ftp.mozilla.org/pub/firefox/releases/37.0b1/win32/en-US/Firefox%20Setup%2037.0b1.exe";
+    private final String FIREFOX = "firefox";
     private DownloadFileServiceImpl downloadFileService;
 
     @Before
@@ -29,7 +31,7 @@ public class DownloadFileServiceImplTest {
         SystemService systemService = new SystemServiceImpl();
         Mapper mapper = mock(Mapper.class);
         MessagesService messagesService = mock(MessagesService.class);
-        when(mapper.getFileNameFromUrl(FIREFOX_URL)).thenReturn("firefox");
+        when(mapper.getFileNameFromUrl(FIREFOX_URL)).thenReturn(FIREFOX);
         downloadFileService = new DownloadFileServiceImpl();
         downloadFileService.setSystemService(systemService);
         downloadFileService.setMapper(mapper);
@@ -40,7 +42,7 @@ public class DownloadFileServiceImplTest {
         URLToFileService urlToFileService = mock(URLToFileService.class);
         downloadFileService.setUrlToFileService(urlToFileService);
 
-        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(FIREFOX_URL);
+        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(new FileDownloadMetaData(FIREFOX, FIREFOX_URL));
         assertNotNull(fileDownloadInfo);
     }
 
@@ -49,7 +51,7 @@ public class DownloadFileServiceImplTest {
         URLToFileService urlToFileService = new SystemServiceImpl();
         downloadFileService.setUrlToFileService(urlToFileService);
 
-        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(FIREFOX_URL);
+        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(new FileDownloadMetaData(FIREFOX, FIREFOX_URL));
         assertNotNull(fileDownloadInfo);
         assertNotNull(fileDownloadInfo.getFileName());
         assertNotNull(fileDownloadInfo.getFileURL());

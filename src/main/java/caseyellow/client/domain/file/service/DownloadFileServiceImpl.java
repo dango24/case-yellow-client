@@ -2,6 +2,7 @@ package caseyellow.client.domain.file.service;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
+import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
@@ -23,7 +24,7 @@ import static caseyellow.client.common.Utils.createTmpDir;
  * Created by dango on 6/3/17.
  */
 @Service
-@Profile("beta")
+@Profile({"prod", "integration"})
 public class DownloadFileServiceImpl implements DownloadFileService {
 
     private Logger logger = Logger.getLogger(DownloadFileServiceImpl.class);
@@ -60,20 +61,18 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     }
 
     @Override
-    public FileDownloadInfo generateFileDownloadInfo(String urlStr) throws FileDownloadInfoException {
+    public FileDownloadInfo generateFileDownloadInfo(FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException {
         URL url;
         File tmpFile;
         long fileSizeInBytes;
         long fileDownloadedDurationTimeInMs;
         double fileDownloadRateKBPerSec;
-        String fileName;
 
         try {
-            fileName = mapper.getFileNameFromUrl(urlStr);
-            url = new URL(urlStr);
-            tmpFile = new File(createTmpDir(), fileName);
+            url = new URL(fileDownloadMetaData.getFileURL());
+            tmpFile = new File(createTmpDir(), fileDownloadMetaData.getFileName());
 
-            String message = "Start measuring and downloading file: " + fileName + ", from url: " + urlStr;
+            String message = "Start measuring and downloading file: " + fileDownloadMetaData.getFileName() + ", from url: " + fileDownloadMetaData.getFileURL();
             logger.info(message);
             messagesService.showMessage(message);
 
@@ -86,7 +85,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
             systemService.deleteDirectory(tmpFile.getParentFile());
 
-            return new FileDownloadInfo.FileDownloadInfoBuilder(fileName)
+            return new FileDownloadInfo.FileDownloadInfoBuilder(fileDownloadMetaData.getFileName())
                                        .addFileURL(url.toString())
                                        .addFileSizeInBytes(fileSizeInBytes)
                                        .addFileDownloadRateKBPerSec(fileDownloadRateKBPerSec)

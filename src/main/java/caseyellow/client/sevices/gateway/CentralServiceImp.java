@@ -1,8 +1,9 @@
 package caseyellow.client.sevices.gateway;
 
+import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedTestMetaData;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 
@@ -17,23 +19,21 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
-@Primary
-public class GatewayServiceImp implements DataAccessService {
+@Profile({"prod", "integration"})
+public class CentralServiceImp implements DataAccessService {
 
-    private DataAccessService service;
-
-    @Value("${gateway_url}")
-    private String gatewayUrl;
+    @Value("${central_url}")
+    private String centralUrl;
 
     private RequestHandler requestHandler;
-    private GatewayRetrofitRequests gatewayRetrofitRequests;
+    private CentralRequests centralRequests;
 
     @PostConstruct
     public void init() {
-        Retrofit retrofit = RetrofitBuilder.Retrofit(gatewayUrl)
-                                           .build();
+        Retrofit retrofit = RetrofitBuilder.Retrofit(centralUrl)
+                .build();
 
-        gatewayRetrofitRequests = retrofit.create(GatewayRetrofitRequests.class);
+        centralRequests = retrofit.create(CentralRequests.class);
     }
 
     @Autowired
@@ -41,34 +41,28 @@ public class GatewayServiceImp implements DataAccessService {
         this.requestHandler = requestHandler;
     }
 
-    @Autowired
-    @Qualifier("stubDataService")
-    public void setService(DataAccessService service) {
-        this.service = service;
-    }
-
     @Override
     public void sendErrorMessage(String errorMessage) {
-        requestHandler.execute(gatewayRetrofitRequests.sendMessage(errorMessage));
+        requestHandler.execute(centralRequests.sendMessage(errorMessage));
     }
 
     @Override
     public void saveTest(Test test) throws RequestFailureException {
-        requestHandler.execute(gatewayRetrofitRequests.saveTest(test));
+        requestHandler.execute(centralRequests.saveTest(test));
     }
 
     @Override
     public int additionalTimeForWebTestToFinishInSec() {
-        return service.additionalTimeForWebTestToFinishInSec();
+        return requestHandler.execute(centralRequests.additionalTimeForWebTestToFinishInSec());
     }
 
     @Override
-    public SpeedTestMetaData getNextSpeedTestWebSite() {
-        return service.getNextSpeedTestWebSite();
+    public SpeedTestWebSite getNextSpeedTestWebSite() {
+        return requestHandler.execute(centralRequests.getNextSpeedTestWebSite());
     }
 
     @Override
-    public List<String> getNextUrls(int numOfComparisonPerTest) {
-        return service.getNextUrls(numOfComparisonPerTest);
+    public List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest) {
+        return requestHandler.execute(centralRequests.getNextUrls(numOfComparisonPerTest));
     }
 }
