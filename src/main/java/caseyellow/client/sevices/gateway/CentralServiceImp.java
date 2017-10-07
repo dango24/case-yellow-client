@@ -5,6 +5,7 @@ import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
@@ -87,8 +88,8 @@ public class CentralServiceImp implements DataAccessService {
         Map<Integer, String> snapshotMap =
             test.getComparisonInfoTests()
                 .stream()
-                .map(comparisonInfo -> comparisonInfo.getSpeedTestWebSite().getWebSiteDownloadInfoSnapshot())
-                .collect(toMap(String::hashCode, Function.identity()));
+                .map(comparisonInfo -> comparisonInfo.getSpeedTestWebSite())
+                .collect(toMap(SpeedTestWebSite::getKey, SpeedTestWebSite::getWebSiteDownloadInfoSnapshot));
 
         List<MultipartBody.Part> parts =
             snapshotMap.entrySet()

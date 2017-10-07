@@ -58,6 +58,14 @@ public class SpeedTestWebSite {
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
     }
 
+    public int getKey() {
+        return key;
+    }
+
+    public void setKey(int key) {
+        this.key = key;
+    }
+
     @Override
     public String toString() {
         return "SpeedTestWebSite{" +
