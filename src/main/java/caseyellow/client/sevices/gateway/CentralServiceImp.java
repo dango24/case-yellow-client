@@ -3,14 +3,12 @@ package caseyellow.client.sevices.gateway;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
@@ -57,7 +55,7 @@ public class CentralServiceImp implements DataAccessService {
     }
 
     @Override
-    public SpeedTestWebSite getNextSpeedTestWebSite() {
+    public SpeedTestMetaData getNextSpeedTestWebSite() {
         return requestHandler.execute(centralRequests.getNextSpeedTestWebSite());
     }
 

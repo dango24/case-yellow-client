@@ -10,8 +10,8 @@ import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.test.model.ComparisonInfo;
+import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.WebSiteService;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.FileDownloadInfoException;
@@ -115,28 +115,24 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     }
 
     private Test generateNewTest() throws UserInterruptException {
-        Test test;
-        List<ComparisonInfo> comparisonInfoList;
 
         SystemInfo systemInfo = systemService.getSystemInfo();
-        SpeedTestWebSite speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
+        SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
         List<FileDownloadMetaData> fileDownloadMetaData = dataAccessService.getNextUrls(numOfComparisonPerTest);
 
-        comparisonInfoList =
+        List<ComparisonInfo> comparisonInfoList =
                 fileDownloadMetaData.stream()
                                     .map(url -> generateComparisonInfo(speedTestWebSite, url))
                                     .collect(toList());
 
-        test = new Test.TestBuilder(generateUniqueID())
+        return new Test.TestBuilder(generateUniqueID())
                        .addSpeedTestWebsite(speedTestWebSite.getIdentifier())
                        .addComparisonInfoTests(comparisonInfoList)
                        .addSystemInfo(systemInfo)
                        .build();
-
-        return test;
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestWebSite speedTestWebSite, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
+    private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestWebSite, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo = null;
         SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
 
