@@ -3,6 +3,8 @@ package caseyellow.client.sevices.gateway;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -44,4 +46,11 @@ public interface CentralRequests {
     })
     @GET("next-urls")
     Call<List<FileDownloadMetaData>> getNextUrls(@Query("num_of_comparison_per_test") int numOfComparisonPerTest);
+
+    @Multipart
+    @POST("upload")
+    Call<String> upload(
+            @Part("payload") RequestBody message,
+            @Part List<MultipartBody.Part> files
+    );
 }

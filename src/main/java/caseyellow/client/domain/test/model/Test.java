@@ -12,6 +12,9 @@ public class Test {
     private String speedTestWebsiteIdentifier;
     private List<ComparisonInfo> comparisonInfoTests;
 
+    public Test() {
+    }
+
     private Test(TestBuilder testBuilder) {
         this.testID = testBuilder.testID;
         this.systemInfo = testBuilder.systemInfo;

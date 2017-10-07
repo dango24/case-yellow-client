@@ -1,22 +1,29 @@
 package caseyellow.client.domain.website.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Created by Dan on 12/10/2016.
  */
-public class SpeedTestWebSiteDownloadInfo {
+public class SpeedTestWebSite {
 
+    private int key;
     private boolean succeed;
     private String speedTestIdentifier;
     private long startMeasuringTimestamp;
+
+    @JsonIgnore
     private String webSiteDownloadInfoSnapshot;
 
-    public SpeedTestWebSiteDownloadInfo(String speedTestIdentifier, boolean succeed, long startDownloadingTime, String webSiteDownloadInfoSnapshot) {
+    public SpeedTestWebSite() {
+    }
+
+    public SpeedTestWebSite(String speedTestIdentifier, boolean succeed, long startDownloadingTime, String webSiteDownloadInfoSnapshot) {
         this.succeed = succeed;
         this.speedTestIdentifier = speedTestIdentifier;
         this.startMeasuringTimestamp = startDownloadingTime;
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
+        this.key = webSiteDownloadInfoSnapshot.hashCode();
     }
 
     public boolean isSucceed() {
@@ -53,7 +60,7 @@ public class SpeedTestWebSiteDownloadInfo {
 
     @Override
     public String toString() {
-        return "SpeedTestWebSiteDownloadInfo{" +
+        return "SpeedTestWebSite{" +
                 "succeed=" + succeed +
                 ", speedTestIdentifier='" + speedTestIdentifier + '\'' +
                 ", startMeasuringTimestamp=" + startMeasuringTimestamp +
@@ -93,8 +100,8 @@ public class SpeedTestWebSiteDownloadInfo {
             return this;
         }
 
-        public SpeedTestWebSiteDownloadInfo build() {
-            return new SpeedTestWebSiteDownloadInfo(speedTestIdentifier, succeed, startDownloadingTime, webSiteDownloadInfoSnapshot);
+        public SpeedTestWebSite build() {
+            return new SpeedTestWebSite(speedTestIdentifier, succeed, startDownloadingTime, webSiteDownloadInfoSnapshot);
         }
 
     }

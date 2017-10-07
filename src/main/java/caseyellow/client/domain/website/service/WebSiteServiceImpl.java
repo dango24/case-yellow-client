@@ -6,7 +6,7 @@ import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
-import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.browser.BrowserService;
 import caseyellow.client.exceptions.BrowserFailedException;
 import org.apache.log4j.Logger;
@@ -52,7 +52,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     }
 
     @Override
-    public SpeedTestWebSiteDownloadInfo produceSpeedTestWebSiteDownloadInfo(SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
+    public SpeedTestWebSite produceSpeedTestWebSiteDownloadInfo(SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
@@ -72,7 +72,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             TimeUnit.MILLISECONDS.sleep(DELAY_TIME_BEFORE_SNAPSHOT);
             websiteSnapshot = takeScreenSnapshot();
 
-            return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
+            return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                                    .setSucceed()
                                                    .setStartDownloadingTimeSnapshot(startMeasuringTimestamp)
                                                    .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
@@ -80,7 +80,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
         } catch (BrowserFailedException e) {
             handleError("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
-            return new SpeedTestWebSiteDownloadInfo.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
+            return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                                    .setFailure()
                                                    .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
                                                    .build();

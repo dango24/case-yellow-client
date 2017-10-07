@@ -1,23 +1,26 @@
 package caseyellow.client.domain.test.model;
 
 import caseyellow.client.domain.file.model.FileDownloadInfo;
-import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 
 /**
  * Created by Dan on 12/10/2016.
  */
 public class ComparisonInfo {
 
-    private SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo;
+    private SpeedTestWebSite speedTestWebSite;
     private FileDownloadInfo fileDownloadInfo;
 
-    public ComparisonInfo(SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo, FileDownloadInfo fileDownloadInfo) {
-        this.speedTestWebSiteDownloadInfo = speedTestWebSiteDownloadInfo;
+    public ComparisonInfo() {
+    }
+
+    public ComparisonInfo(SpeedTestWebSite speedTestWebSiteDownloadInfo, FileDownloadInfo fileDownloadInfo) {
+        this.speedTestWebSite = speedTestWebSiteDownloadInfo;
         this.fileDownloadInfo = fileDownloadInfo;
     }
 
-    public SpeedTestWebSiteDownloadInfo getSpeedTestWebSiteDownloadInfo() {
-        return speedTestWebSiteDownloadInfo;
+    public SpeedTestWebSite getSpeedTestWebSite() {
+        return speedTestWebSite;
     }
 
     public FileDownloadInfo getFileDownloadInfo() {

@@ -11,7 +11,7 @@ import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
-import caseyellow.client.domain.website.model.SpeedTestWebSiteDownloadInfo;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.WebSiteService;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.FileDownloadInfoException;
@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -134,7 +133,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
     private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestWebSite, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo = null;
-        SpeedTestWebSiteDownloadInfo speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
+        SpeedTestWebSite speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
             fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadMetaData);
