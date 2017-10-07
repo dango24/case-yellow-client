@@ -14,7 +14,7 @@ public interface CentralRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @POST("save-tests")
+    @POST("save-test")
     Call<Void> saveTest(@Body Test test);
 
     @Headers({
@@ -35,7 +35,7 @@ public interface CentralRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @GET("next-test-website")
+    @GET("next-web-site")
     Call<SpeedTestWebSite> getNextSpeedTestWebSite();
 
     @Headers({
