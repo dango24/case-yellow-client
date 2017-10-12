@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toMap;
+
 @Component
 public class SpeedTestWebSiteFactory {
 
@@ -28,7 +30,7 @@ public class SpeedTestWebSiteFactory {
 
         speedTestDTOMap = speedTestMetaDataWrapper.getSpeedTestMetaData()
                                                   .stream()
-                                                  .collect(Collectors.toMap(SpeedTestMetaData::getIdentifier, Function.identity()));
+                                                  .collect(toMap(SpeedTestMetaData::getIdentifier, Function.identity()));
     }
 
     public SpeedTestMetaData getSpeedTestWebSiteFromIdentifier(String identifier) {

@@ -65,6 +65,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         URL url;
         File tmpFile;
         long fileSizeInBytes;
+        long startDownloadingTime;
         long fileDownloadedDurationTimeInMs;
         double fileDownloadRateKBPerSec;
 
@@ -76,10 +77,8 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             logger.info(message);
             messagesService.showMessage(message);
 
-            long startDownloadingTime = System.currentTimeMillis();
-            urlToFileService.copyURLToFile(url, tmpFile);
-            fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
-
+            startDownloadingTime = System.currentTimeMillis();
+            fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(url, tmpFile);
             fileSizeInBytes = tmpFile.length();
             fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedDurationTimeInMs, fileSizeInBytes);
 

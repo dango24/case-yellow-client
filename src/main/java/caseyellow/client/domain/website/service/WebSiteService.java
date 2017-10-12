@@ -11,5 +11,5 @@ import java.io.Closeable;
  * Created by dango on 6/3/17.
  */
 public interface WebSiteService extends Closeable {
-    SpeedTestWebSite produceSpeedTestWebSiteDownloadInfo(SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException;
+    SpeedTestWebSite produceSpeedTestWebSite(SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException;
 }

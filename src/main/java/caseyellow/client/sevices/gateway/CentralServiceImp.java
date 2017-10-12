@@ -55,7 +55,7 @@ public class CentralServiceImp implements DataAccessService {
 
     @Override
     public void sendErrorMessage(String errorMessage) {
-        requestHandler.execute(centralRequests.sendMessage(errorMessage));
+//        requestHandler.execute(centralRequests.sendMessage(errorMessage));
     }
 
     @Override

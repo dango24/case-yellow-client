@@ -3,6 +3,7 @@ package caseyellow.client.infrastructre;
 import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
+import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.exceptions.InternalFailureException;
 import caseyellow.client.exceptions.UserInterruptException;
 import org.apache.commons.codec.binary.Hex;
@@ -40,7 +41,7 @@ public class SystemServiceImpl implements SystemService {
 
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
 
-    private Future<?> copyURLToFileTask;
+    private Future<Long> copyURLToFileTask;
     private ExecutorService copyURLToFileService;
 
     @PostConstruct
@@ -64,10 +65,10 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public void copyURLToFile(URL source, File destination) throws IOException, InternalFailureException {
+    public long copyURLToFile(URL source, File destination) throws IOException, InternalFailureException {
         try {
             copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
-            copyURLToFileTask.get(30, TimeUnit.MINUTES);
+            return copyURLToFileTask.get(30, TimeUnit.MINUTES);
 
         } catch (InterruptedException | CancellationException e) {
             throw new UserInterruptException("User cancel download file request, " + e.getMessage(), e);
@@ -82,16 +83,21 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
-    private void executeCopyURLToFile(URL source, File destination) {
+    private long executeCopyURLToFile(URL source, File destination) {
         String threadOriginalName = Thread.currentThread().getName();
+        Thread.currentThread().setName("copy url to file thread");
 
         try {
-            Thread.currentThread().setName("copy url to file thread");
+            long startDownloadingTime = System.currentTimeMillis();
             FileUtils.copyURLToFile(source, destination);
+            long fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
             log.info("finish downloading file from: " + source.toString());
 
+            return fileDownloadedDurationTimeInMs;
+
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
+            log.error("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage(), e);
+            throw new FileDownloadInfoException("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage());
         } finally {
             Thread.currentThread().setName(threadOriginalName);
         }
@@ -188,9 +194,7 @@ public class SystemServiceImpl implements SystemService {
                      .filter(Objects::nonNull)
                      .map(NetworkInterface::getName)
                      .filter(Objects::nonNull)
-                     .map(connectionName -> connectionName.contains(ETHERNET_IDENTIFIER))
-                     .findFirst()
-                     .orElse(false);
+                     .anyMatch(connectionName -> connectionName.contains(ETHERNET_IDENTIFIER));
     }
 
     private String getBrowser() {

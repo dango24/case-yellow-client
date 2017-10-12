@@ -11,5 +11,5 @@ import java.net.URL;
  * Created by Dan on 6/24/2017.
  */
 public interface URLToFileService extends Closeable {
-    void copyURLToFile(URL source, File destination) throws IOException, InternalFailureException;
+    long copyURLToFile(URL source, File destination) throws IOException, InternalFailureException;
 }

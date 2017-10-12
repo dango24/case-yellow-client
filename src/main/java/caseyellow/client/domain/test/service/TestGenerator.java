@@ -103,26 +103,16 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         }
     }
 
-    private void handleError(String errorMessage, Exception e) {
-        dataAccessService.sendErrorMessage(errorMessage);
-        logger.error(errorMessage, e);
-    }
-
-    private void handleLostConnection() throws InterruptedException {
-        logger.info("Wait for 20 seconds before new attempt to produce new test");
-        TimeUnit.SECONDS.sleep(20);
-    }
-
     private Test generateNewTest() throws UserInterruptException {
 
         SystemInfo systemInfo = systemService.getSystemInfo();
         SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        List<FileDownloadMetaData> fileDownloadMetaData = dataAccessService.getNextUrls(numOfComparisonPerTest);
+        List<FileDownloadMetaData> filesDownloadMetaData = dataAccessService.getNextUrls(numOfComparisonPerTest);
 
         List<ComparisonInfo> comparisonInfoList =
-                fileDownloadMetaData.stream()
-                                    .map(url -> generateComparisonInfo(speedTestWebSite, url))
-                                    .collect(toList());
+                filesDownloadMetaData.stream()
+                                     .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
+                                     .collect(toList());
 
         return new Test.TestBuilder(generateUniqueID())
                        .addSpeedTestWebsite(speedTestWebSite.getIdentifier())
@@ -131,9 +121,9 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                        .build();
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestWebSite, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
+    private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestMetaData, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo = null;
-        SpeedTestWebSite speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSiteDownloadInfo(speedTestWebSite);
+        SpeedTestWebSite speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSite(speedTestMetaData);
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
             fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadMetaData);
@@ -152,6 +142,16 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     private Test saveTestExceptionHandler(Throwable e) {
         logger.error("Failed to save urls, " + e.getMessage(), e);
         return null;
+    }
+
+    private void handleError(String errorMessage, Exception e) {
+        dataAccessService.sendErrorMessage(errorMessage);
+        logger.error(errorMessage, e);
+    }
+
+    private void handleLostConnection() throws InterruptedException {
+        logger.info("Wait for 20 seconds before new attempt to produce new test");
+        TimeUnit.SECONDS.sleep(20);
     }
 
     @Override

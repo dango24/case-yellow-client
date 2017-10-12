@@ -39,7 +39,7 @@ public class TextAnalyzerImp implements TextAnalyzerService {
         if (textIdentifiers.isEmpty() || words.isEmpty()) {
             return DescriptionMatch.notFound();
         } else if (textIdentifiers.size() > 2) {
-            throw new InternalFailureException("Not supported in matching description longer then two words");
+            throw new InternalFailureException("Not supported more than two words for matching description");
         }
 
         matchWordsInText = findMatchingWords(textIdentifiers, words);

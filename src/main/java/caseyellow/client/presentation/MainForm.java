@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Messages.churchillSpeech;
@@ -18,6 +20,7 @@ import static caseyellow.client.common.Messages.churchillSpeech;
  */
 public class MainForm implements MessagesService {
 
+    private final String dateFormatter = "HH:mm:ss";
     private Logger logger = Logger.getLogger(MainForm.class);
 
     // Constants
@@ -89,7 +92,12 @@ public class MainForm implements MessagesService {
 
     @Override
     public void showMessage(String message) {
-        logger.info("Message show to the user: " + message);
+        message = new SimpleDateFormat(dateFormatter).format(new Date()) + ": " + message;
+        logger.info("Message show to the user: " + message)
+        ;showMessageToUser(message);
+    }
+
+    private void showMessageToUser(String message) {
         SwingUtilities.invokeLater( () -> editorPane.setText(message));
     }
 
