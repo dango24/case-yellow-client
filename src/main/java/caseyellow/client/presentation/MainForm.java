@@ -92,9 +92,9 @@ public class MainForm implements MessagesService {
 
     @Override
     public void showMessage(String message) {
-        message = new SimpleDateFormat(dateFormatter).format(new Date()) + ": " + message;
-        logger.info("Message show to the user: " + message)
-        ;showMessageToUser(message);
+        message = new SimpleDateFormat(dateFormatter).format(new Date()) + " - " + message;
+        logger.info("Message show to the user: " + message);
+        showMessageToUser(message);
     }
 
     private void showMessageToUser(String message) {

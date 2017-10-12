@@ -1,6 +1,7 @@
 package caseyellow.client.domain.website.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.Expose;
 
 /**
  * Created by Dan on 12/10/2016.
@@ -12,7 +13,7 @@ public class SpeedTestWebSite {
     private String speedTestIdentifier;
     private long startMeasuringTimestamp;
 
-    @JsonIgnore
+    @Expose
     private String webSiteDownloadInfoSnapshot;
 
     public SpeedTestWebSite() {
@@ -57,6 +58,8 @@ public class SpeedTestWebSite {
     public void setWebSiteDownloadInfoSnapshot(String webSiteDownloadInfoSnapshot) {
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
     }
+
+
 
     public int getKey() {
         return key;

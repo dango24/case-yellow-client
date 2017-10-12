@@ -1,4 +1,4 @@
-package caseyellow.client.sevices.gateway;
+package caseyellow.client.sevices.central;
 
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.test.model.Test;
@@ -48,8 +48,8 @@ public interface CentralRequests {
     Call<List<FileDownloadMetaData>> getNextUrls(@Query("num_of_comparison_per_test") int numOfComparisonPerTest);
 
     @Multipart
-    @POST("upload")
-    Call<String> upload(
+    @POST("save-test")
+    Call<Void> upload(
             @Part("payload") RequestBody message,
             @Part List<MultipartBody.Part> files
     );

@@ -1,8 +1,7 @@
-package caseyellow.client.sevices.gateway;
+package caseyellow.client.sevices.central;
 
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.interfaces.DataAccessService;
-import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
@@ -23,8 +22,6 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;

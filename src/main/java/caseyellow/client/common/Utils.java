@@ -115,7 +115,7 @@ public class Utils {
         try {
             Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
             BufferedImage capture = new Robot().createScreenCapture(screenRect);
-            File screenshotFile = new File(Utils.createTmpDir(), "temp_screenshot.png");
+            File screenshotFile = new File(Utils.createTmpDir(), "screenshot.png");
             ImageIO.write(capture, "png", screenshotFile);
 
             return screenshotFile.getAbsolutePath();

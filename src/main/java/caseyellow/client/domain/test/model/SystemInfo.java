@@ -13,6 +13,9 @@ public class SystemInfo {
     private String publicIP;
     private String connection; // LAN / Wifi connection
 
+    public SystemInfo() {
+    }
+
     public SystemInfo(String operatingSystem, String browser, String publicIP, String connection) {
         this.operatingSystem = operatingSystem;
         this.browser = browser;

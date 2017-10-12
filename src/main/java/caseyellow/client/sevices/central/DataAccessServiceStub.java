@@ -1,4 +1,4 @@
-package caseyellow.client.sevices.gateway;
+package caseyellow.client.sevices.central;
 
 import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
