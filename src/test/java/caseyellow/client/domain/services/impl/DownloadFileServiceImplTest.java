@@ -9,6 +9,7 @@ import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.interfaces.URLToFileService;
 import caseyellow.client.infrastructre.SystemServiceImpl;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -37,6 +38,7 @@ public class DownloadFileServiceImplTest {
         downloadFileService.setMapper(mapper);
     }
 
+    @Ignore
     @Test
     public void generateFileDownloadInfoDummy() throws Exception {
         URLToFileService urlToFileService = mock(URLToFileService.class);
@@ -46,18 +48,4 @@ public class DownloadFileServiceImplTest {
         assertNotNull(fileDownloadInfo);
     }
 
-    @Test
-    public void generateFileDownloadInfoKodi() throws Exception {
-        URLToFileService urlToFileService = new SystemServiceImpl();
-        downloadFileService.setUrlToFileService(urlToFileService);
-
-        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(new FileDownloadMetaData(FIREFOX, FIREFOX_URL));
-        assertNotNull(fileDownloadInfo);
-        assertNotNull(fileDownloadInfo.getFileName());
-        assertNotNull(fileDownloadInfo.getFileURL());
-        assertTrue(fileDownloadInfo.getFileDownloadedDurationTimeInMs() > 0);
-        assertTrue(fileDownloadInfo.getFileDownloadRateKBPerSec() > 0);
-        assertTrue(fileDownloadInfo.getFileSizeInBytes() > 0);
-        assertTrue(fileDownloadInfo.getStartDownloadingTimestamp() < System.currentTimeMillis());
-    }
 }

@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 
@@ -33,8 +34,11 @@ public class Utils {
     private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
     public static final String RESOLUTION_SEPARATOR = ";";
 
+    private static ReentrantLock mouseEventLock;
+
     static {
         tmpDirPath = createRootTmpDir();
+        mouseEventLock = new ReentrantLock();
     }
 
     private static String createRootTmpDir() {
@@ -137,6 +141,7 @@ public class Utils {
 
     private static void clickImage(int x, int y) {
         try {
+            mouseEventLock.lock();
             Robot bot = new Robot();
             bot.mouseMove(x, y);
             bot.mousePress(InputEvent.BUTTON1_MASK);
@@ -145,17 +150,26 @@ public class Utils {
 
         } catch (AWTException | InterruptedException e) {
             throw new InternalFailureException(e.getMessage());
+        } finally {
+            mouseEventLock.unlock();
+        }
+    }
+
+    public static void moveMouseTo(int x,int y) {
+        try {
+            mouseEventLock.lock();
+            Robot bot = new Robot();
+            bot.mouseMove(x, y);
+
+        } catch (AWTException e) {
+            throw new InternalFailureException(e.getMessage());
+        } finally {
+            mouseEventLock.unlock();
         }
     }
 
     public static void moveMouseToStartingPoint() {
-        try {
-            Robot bot = new Robot();
-            bot.mouseMove(0, 0);
-
-        } catch (AWTException e) {
-            throw new InternalFailureException(e.getMessage());
-        }
+        moveMouseTo(0,0);
     }
 
     public static caseyellow.client.domain.analyze.model.Point getCenter(List<caseyellow.client.domain.analyze.model.Point> vertices) {

@@ -7,6 +7,7 @@ import caseyellow.client.domain.test.model.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,7 @@ public class CentralServiceImpTest {
     @Autowired
     private DataAccessService dataAccessService;
 
+    @Ignore
     @org.junit.Test
     public void saveTest() throws Exception {
         Path testPath = Paths.get(CentralServiceImpTest.class.getResource(DUMMY_TEST_LOCATION).toURI());
