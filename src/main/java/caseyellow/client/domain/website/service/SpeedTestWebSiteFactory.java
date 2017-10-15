@@ -2,13 +2,13 @@ package caseyellow.client.domain.website.service;
 
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,8 +25,8 @@ public class SpeedTestWebSiteFactory {
 
     @PostConstruct
     private void init() throws URISyntaxException, IOException {
-        Path speedTestMetaData = Paths.get(SpeedTestWebSiteFactory.class.getResource(SPEED_TEST_METADATA_LOCATION).toURI());
-        SpeedTestMetaDataWrapper speedTestMetaDataWrapper = new ObjectMapper().readValue(speedTestMetaData.toFile(), SpeedTestMetaDataWrapper.class);
+        String speedTestMetaData = IOUtils.toString(SpeedTestWebSiteFactory.class.getResourceAsStream(SPEED_TEST_METADATA_LOCATION), Charset.forName("UTF-8"));
+        SpeedTestMetaDataWrapper speedTestMetaDataWrapper = new ObjectMapper().readValue(speedTestMetaData, SpeedTestMetaDataWrapper.class);
 
         speedTestDTOMap = speedTestMetaDataWrapper.getSpeedTestMetaData()
                                                   .stream()
