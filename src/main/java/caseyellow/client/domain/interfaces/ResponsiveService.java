@@ -1,6 +1,7 @@
 package caseyellow.client.domain.interfaces;
 
-public interface ResponsiveService {
+import java.io.Closeable;
+
+public interface ResponsiveService extends Closeable{
     void keepAlive();
-    void sleep();
 }

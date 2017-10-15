@@ -5,6 +5,7 @@ import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.file.service.DownloadFileService;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.MessagesService;
+import caseyellow.client.domain.interfaces.ResponsiveService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
@@ -37,14 +38,11 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class TestGenerator implements TestService, StartProducingTestsCommand, StopProducingTestsCommand {
 
-    // Logger
     private Logger logger = Logger.getLogger(TestGenerator.class);
 
-    // Constants
     @Value("${numOfComparisonPerTest}")
     private int numOfComparisonPerTest;
 
-    // Fields
     private AtomicBoolean toProduceTests;
     private SystemService systemService;
     private WebSiteService webSiteService;
@@ -52,14 +50,12 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     private DownloadFileService downloadFileService;
     private ExecutorService executorService;
     private MessagesService messagesService;
+    private ResponsiveService responsiveService;
 
-    // Constructor
     public TestGenerator() {
         this.toProduceTests = new AtomicBoolean(false);
         executorService = Executors.newSingleThreadExecutor();
     }
-
-    // Methods
 
     @Override
     public void start() {
@@ -75,7 +71,6 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     public void stop() {
         toProduceTests.set(false);
     }
-
 
     private void produceTests() throws InterruptedException {
         Test test;
@@ -158,6 +153,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     public void executeStartProducingTestsCommand() {
         toProduceTests.set(true);
         executorService.submit(this::start);
+        responsiveService.keepAlive();
     }
 
     @Override
@@ -166,6 +162,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
             stop();
             webSiteService.close();
             downloadFileService.close();
+            responsiveService.close();
 
         } catch (Exception e) {
             handleError("Error occurred while user cancel request, " + e.getMessage(), e);
@@ -197,5 +194,10 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     @Autowired
     public void setMessagesService(MessagesService messagesService) {
         this.messagesService = messagesService;
+    }
+
+    @Autowired
+    public void setResponsiveService(ResponsiveService responsiveService) {
+        this.responsiveService = responsiveService;
     }
 }
