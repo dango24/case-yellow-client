@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
@@ -139,14 +140,34 @@ public class SystemServiceImpl implements SystemService {
 
     private String getPublicIPAddress() {
 
+        return IntStream.range(0, 10)
+                        .mapToObj(i -> getPublicIPAddressFromAWS())
+                        .filter(ipAddress -> !ipAddress.equals(UNKNOWN_CONNECTION))
+                        .findFirst()
+                        .orElse(UNKNOWN_CONNECTION);
+    }
+
+    private String getPublicIPAddressFromAWS() {
+        String ipAddress;
+
         try {
             URL amazonAwsCheckIP = new URL("http://checkip.amazonaws.com");
-            return IOUtils.toString(amazonAwsCheckIP, "UTF-8").replace("\n", "");
+            ipAddress = IOUtils.toString(amazonAwsCheckIP, "UTF-8").replace("\n", "");
 
         } catch (IOException e) {
             log.error("Failed to retrieve public IP address " + e.getMessage());
-            return UNKNOWN_CONNECTION;
+            ipAddress = UNKNOWN_CONNECTION;
         }
+
+        if (ipAddress.equals(UNKNOWN_CONNECTION)) {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                throw new UserInterruptException("Sleep interrupt while retrieving ip address");
+            }
+        }
+
+        return ipAddress;
     }
 
     private String getConnection() {

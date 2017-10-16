@@ -52,7 +52,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     }
 
     @Override
-    public SpeedTestWebSite produceSpeedTestWebSite(SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
+    public SpeedTestWebSite produceSpeedTestWebSite(final SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
