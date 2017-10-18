@@ -9,6 +9,7 @@ public class SpeedTestWebSite {
 
     private int key;
     private boolean succeed;
+    private String urlAddress;
     private String speedTestIdentifier;
     private long startMeasuringTimestamp;
 
@@ -18,11 +19,17 @@ public class SpeedTestWebSite {
     public SpeedTestWebSite() {
     }
 
-    public SpeedTestWebSite(String speedTestIdentifier, boolean succeed, long startDownloadingTime, String webSiteDownloadInfoSnapshot) {
+    public SpeedTestWebSite(String speedTestIdentifier,
+                            boolean succeed,
+                            long startDownloadingTime,
+                            String webSiteDownloadInfoSnapshot,
+                            String urlAddress) {
+
         this.succeed = succeed;
         this.speedTestIdentifier = speedTestIdentifier;
         this.startMeasuringTimestamp = startDownloadingTime;
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
+        this.urlAddress = urlAddress;
         this.key = webSiteDownloadInfoSnapshot.hashCode();
     }
 
@@ -58,7 +65,13 @@ public class SpeedTestWebSite {
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
     }
 
+    public String getUrlAddress() {
+        return urlAddress;
+    }
 
+    public void setUrlAddress(String urlAddress) {
+        this.urlAddress = urlAddress;
+    }
 
     public int getKey() {
         return key;
@@ -84,6 +97,7 @@ public class SpeedTestWebSite {
         private String speedTestIdentifier;
         private boolean succeed;
         private long startDownloadingTime;
+        private String urlAddress;
         private String webSiteDownloadInfoSnapshot;
 
         public SpeedTestWebSiteDownloadInfoBuilder(String speedTestIdentifier) {
@@ -100,6 +114,11 @@ public class SpeedTestWebSite {
             return this;
         }
 
+        public SpeedTestWebSiteDownloadInfoBuilder setURL(String urlAddress) {
+            this.urlAddress = urlAddress;
+            return this;
+        }
+
         public SpeedTestWebSiteDownloadInfoBuilder setStartDownloadingTimeSnapshot(long startDownloadingTime) {
             this.startDownloadingTime = startDownloadingTime;
             return this;
@@ -111,7 +130,7 @@ public class SpeedTestWebSite {
         }
 
         public SpeedTestWebSite build() {
-            return new SpeedTestWebSite(speedTestIdentifier, succeed, startDownloadingTime, webSiteDownloadInfoSnapshot);
+            return new SpeedTestWebSite(speedTestIdentifier, succeed, startDownloadingTime, webSiteDownloadInfoSnapshot, urlAddress);
         }
 
     }

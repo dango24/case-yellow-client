@@ -73,17 +73,18 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             websiteSnapshot = takeScreenSnapshot();
 
             return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
-                                                   .setSucceed()
-                                                   .setStartDownloadingTimeSnapshot(startMeasuringTimestamp)
-                                                   .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
-                                                   .build();
+                                       .setSucceed()
+                                       .setStartDownloadingTimeSnapshot(startMeasuringTimestamp)
+                                       .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
+                                       .setURL(speedTestWebsite.getWebSiteUrl())
+                                       .build();
 
         } catch (BrowserFailedException e) {
             handleError("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
             return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
-                                                   .setFailure()
-                                                   .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
-                                                   .build();
+                                       .setFailure()
+                                       .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
+                                       .build();
 
         } catch (WebDriverException | InterruptedException e) {
             handleError(e.getMessage(), e);
