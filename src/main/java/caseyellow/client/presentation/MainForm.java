@@ -102,7 +102,7 @@ public class MainForm implements MessagesService {
     }
 
     public void view() {
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(() -> frame.setVisible(true));
     }
 
     public void enableApp() {
