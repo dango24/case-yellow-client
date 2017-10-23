@@ -1,103 +1,124 @@
 { "speedTestMetaData" :
-  [
-    {
-      "webSiteUrl": "http://www.hot.net.il/heb/Internet/speed/",
-      "identifier": "hot",
-      "buttonId": null,
-      "finishIdentifier": null,
-      "finishTextIdentifier": null,
-      "centralized": 250,
-      "flashAble": true,
-      "haveStartButton": true,
+[
+  {
+    "webSiteUrl": "http://www.hot.net.il/heb/Internet/speed/",
+    "identifier": "hot",
+    "centralized": 250,
+    "flashAble": true,
+    "haveStartButton": true,
+    "speedTestNonFlashMetaData": null,
+    "speedTestFlashMetaData" : {
       "buttonIds": [{
-        "identifier": "GO",
+        "identifier": "התחל",
+        "count": 1
+      }, {
+        "identifier": "בדיקה",
         "count": 1
       }],
       "finishIdentifiers": [{
         "identifier": "Mbps",
         "count": 2
       }, {
-        "identifier": "AGAIN",
-        "count": 1
+        "identifier": "גרף קישוריות",
+        "count": -1
       }]
-    },
-    {
-      "webSiteUrl": "http://speedtest.att.com/speedtest/",
-      "identifier": "atnt",
+    }
+  },
+  {
+    "webSiteUrl": "http://speedtest.att.com/speedtest/",
+    "identifier": "atnt",
+    "centralized": 100,
+    "flashAble": false,
+    "haveStartButton": true,
+    "speedTestFlashMetaData" : null,
+    "speedTestNonFlashMetaData": {
       "buttonId": "DRWidgetInitiate",
       "finishIdentifier": "class=Resultstitle",
       "finishTextIdentifier": "Your Test Results",
-      "centralized": 100,
-      "flashAble": false,
-      "haveStartButton": true,
+      "resultLocation": null,
+      "resultAttribute": null
+    }
+  },
+  {
+    "webSiteUrl": "http://www.bezeq.co.il/internetandphone/internet/speedtest/",
+    "identifier": "bezeq",
+    "centralized": 0,
+    "flashAble": true,
+    "haveStartButton": false,
+    "speedTestNonFlashMetaData": null,
+    "speedTestFlashMetaData" : {
       "buttonIds": null,
-      "finishIdentifiers": null
-    },
-    {
-      "webSiteUrl": "http://www.bezeq.co.il/internetandphone/internet/speedtest/",
-      "identifier": "bezeq",
-      "buttonId": null,
-      "finishIdentifier": null,
-      "finishTextIdentifier": null,
-      "centralized": 0,
-      "flashAble": true,
-      "haveStartButton": false,
-      "buttonIds": null,
-      "finishIdentifiers": [{
-        "identifier": "בדוק",
-        "count": 1
-      }, {
-        "identifier": "שוב",
-        "count": 1
-      }]
-    },
-    {
-      "webSiteUrl": "https://www.fast.com/",
-      "identifier": "fast",
+      "finishIdentifiers": [
+        {
+          "identifier": "בדוק",
+          "count": 1
+        },
+        {
+          "identifier": "שוב",
+          "count": 1
+        }
+      ]
+    }
+  },
+  {
+    "webSiteUrl": "https://www.fast.com/",
+    "identifier": "fast",
+    "centralized": 0,
+    "flashAble": false,
+    "haveStartButton": false,
+    "speedTestFlashMetaData" : null,
+    "speedTestNonFlashMetaData": {
       "buttonId": null,
       "finishIdentifier": "class=compare-ookla-text",
       "finishTextIdentifier": "Compare on\nSPEEDTEST.NET",
-      "centralized": 0,
-      "flashAble": false,
-      "haveStartButton": false,
-      "buttonIds": null,
-      "finishIdentifiers": null
-    },
-    {
-      "webSiteUrl": "http://www.speedtest.net/",
-      "identifier": "ookla",
-      "buttonId": null,
-      "finishIdentifier": null,
-      "finishTextIdentifier": null,
-      "centralized": 0,
-      "flashAble": true,
-      "haveStartButton": true,
-      "buttonIds": [{
-        "identifier": "BEGIN",
-        "count": 1
-      }, {
-        "identifier": "TEST",
-        "count": 1
-      }],
-      "finishIdentifiers": [{
-        "identifier": "AGAIN",
-        "count": 1
-      }, {
-        "identifier": "TEST",
-        "count": 1
-      }]
-    },
-    {
-      "webSiteUrl": "http://www.speedof.me/",
-      "identifier": "speedof",
-      "buttonId": "btnStart",
-      "finishIdentifier": "id=msgContainer3",
-      "finishTextIdentifier": "Click 'Share' to share this result",
-      "centralized": 0,
-      "flashAble": false,
-      "haveStartButton": true,
-      "buttonIds": null,
-      "finishIdentifiers": null
+      "resultLocation": null,
+      "resultAttribute": null
     }
-  ]
+  },
+  {
+    "webSiteUrl": "http://www.speedtest.net/",
+    "identifier": "ookla",
+    "centralized": 0,
+    "flashAble": true,
+    "haveStartButton": true,
+    "speedTestNonFlashMetaData": null,
+    "speedTestFlashMetaData" : {
+      "buttonIds": [
+        {
+          "identifier": "BEGIN",
+          "count": 1
+        },
+        {
+          "identifier": "TEST",
+          "count": 1
+        }
+      ],
+      "finishIdentifiers": [
+        {
+          "identifier": "AGAIN",
+          "count": 1
+        },
+        {
+          "identifier": "TEST",
+          "count": 1
+        }
+      ]
+    }
+  },
+  {
+    "webSiteUrl": "http://www.speedof.me/",
+    "identifier": "speedof",
+    "centralized": 0,
+    "flashAble": false,
+    "haveStartButton": true,
+    "speedTestFlashMetaData" : null,
+    "speedTestNonFlashMetaData": {
+      "buttonId": "startBtn",
+      "finishIdentifier": "id=container3",
+      "finishTextIdentifier": "Click 'Share' to share this result",
+      "resultLocation": null,
+      "resultAttribute": null
+    }
+  }
+]
 }

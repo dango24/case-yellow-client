@@ -1,22 +1,15 @@
 package caseyellow.client.domain.website.model;
 
 
-import caseyellow.client.domain.analyze.model.WordIdentifier;
-
-import java.util.Set;
-
 public class SpeedTestMetaData {
 
     private String webSiteUrl;
     private String identifier;
-    private String buttonId;
-    private String finishIdentifier;
-    private String finishTextIdentifier;
     private int centralized;
     private boolean flashAble;
     private boolean haveStartButton;
-    private Set<WordIdentifier> buttonIds;
-    private Set<WordIdentifier> finishIdentifiers;
+    private SpeedTestFlashMetaData speedTestFlashMetaData;
+    private SpeedTestNonFlashMetaData speedTestNonFlashMetaData;
 
     public SpeedTestMetaData() {
     }
@@ -35,30 +28,6 @@ public class SpeedTestMetaData {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
-    }
-
-    public String getButtonId() {
-        return buttonId;
-    }
-
-    public void setButtonId(String buttonId) {
-        this.buttonId = buttonId;
-    }
-
-    public String getFinishIdentifier() {
-        return finishIdentifier;
-    }
-
-    public void setFinishIdentifier(String finishIdentifier) {
-        this.finishIdentifier = finishIdentifier;
-    }
-
-    public String getFinishTextIdentifier() {
-        return finishTextIdentifier;
-    }
-
-    public void setFinishTextIdentifier(String finishTextIdentifier) {
-        this.finishTextIdentifier = finishTextIdentifier;
     }
 
     public int getCentralized() {
@@ -85,19 +54,19 @@ public class SpeedTestMetaData {
         this.haveStartButton = haveStartButton;
     }
 
-    public Set<WordIdentifier> getButtonIds() {
-        return buttonIds;
+    public SpeedTestFlashMetaData getSpeedTestFlashMetaData() {
+        return speedTestFlashMetaData;
     }
 
-    public void setButtonIds(Set<WordIdentifier> buttonIds) {
-        this.buttonIds = buttonIds;
+    public void setSpeedTestFlashMetaData(SpeedTestFlashMetaData speedTestFlashMetaData) {
+        this.speedTestFlashMetaData = speedTestFlashMetaData;
     }
 
-    public Set<WordIdentifier> getFinishIdentifiers() {
-        return finishIdentifiers;
+    public SpeedTestNonFlashMetaData getSpeedTestNonFlashMetaData() {
+        return speedTestNonFlashMetaData;
     }
 
-    public void setFinishIdentifiers(Set<WordIdentifier> finishIdentifiers) {
-        this.finishIdentifiers = finishIdentifiers;
+    public void setSpeedTestNonFlashMetaData(SpeedTestNonFlashMetaData speedTestNonFlashMetaData) {
+        this.speedTestNonFlashMetaData = speedTestNonFlashMetaData;
     }
 }
