@@ -11,6 +11,7 @@ public class SpeedTestWebSite {
     private boolean succeed;
     private String urlAddress;
     private String speedTestIdentifier;
+    private String nonFlashResult;
     private long startMeasuringTimestamp;
 
     @Expose
@@ -23,13 +24,15 @@ public class SpeedTestWebSite {
                             boolean succeed,
                             long startDownloadingTime,
                             String webSiteDownloadInfoSnapshot,
-                            String urlAddress) {
+                            String urlAddress,
+                            String result) {
 
         this.succeed = succeed;
         this.speedTestIdentifier = speedTestIdentifier;
         this.startMeasuringTimestamp = startDownloadingTime;
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
         this.urlAddress = urlAddress;
+        this.nonFlashResult = result;
         this.key = webSiteDownloadInfoSnapshot.hashCode();
     }
 
@@ -81,6 +84,14 @@ public class SpeedTestWebSite {
         this.key = key;
     }
 
+    public String getNonFlashResult() {
+        return nonFlashResult;
+    }
+
+    public void setNonFlashResult(String nonFlashResult) {
+        this.nonFlashResult = nonFlashResult;
+    }
+
     @Override
     public String toString() {
         return "SpeedTestWebSite{" +
@@ -94,10 +105,11 @@ public class SpeedTestWebSite {
 
     public static class SpeedTestWebSiteDownloadInfoBuilder {
 
-        private String speedTestIdentifier;
         private boolean succeed;
         private long startDownloadingTime;
+        private String speedTestIdentifier;
         private String urlAddress;
+        private String nonFlashResult;
         private String webSiteDownloadInfoSnapshot;
 
         public SpeedTestWebSiteDownloadInfoBuilder(String speedTestIdentifier) {
@@ -129,8 +141,15 @@ public class SpeedTestWebSite {
             return this;
         }
 
+        public SpeedTestWebSiteDownloadInfoBuilder setNonFlashResult(String result) {
+            this.nonFlashResult = result;
+            return this;
+        }
+
         public SpeedTestWebSite build() {
-            return new SpeedTestWebSite(speedTestIdentifier, succeed, startDownloadingTime, webSiteDownloadInfoSnapshot, urlAddress);
+            return new SpeedTestWebSite(speedTestIdentifier, succeed,
+                                        startDownloadingTime, webSiteDownloadInfoSnapshot,
+                                        urlAddress, nonFlashResult);
         }
 
     }
