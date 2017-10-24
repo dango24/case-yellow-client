@@ -5,6 +5,7 @@ import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
 import caseyellow.client.domain.interfaces.DataAccessService;
+import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.interfaces.OcrService;
 import caseyellow.client.sevices.googlevision.model.OcrResponse;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import static caseyellow.client.common.Utils.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
+import static java.util.Objects.nonNull;
 
 /**
  * Created by Dan on 6/30/2017.
@@ -136,14 +138,18 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
+    public String waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
         checkBrowser();
 
         try {
             int waitForTestToFinishInterval = getWaitForTestToFinishInSec(waitForFinishIdentifier);
             int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
 
-            waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false);
+            if (waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false)) {
+                return "SUCCESS";
+            } else {
+                return "FAILURE";
+            }
 
         } catch (WebDriverException e) {
             handleError(e.getMessage(), e);
@@ -156,7 +162,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public boolean waitForTestToFinishByText(String identifier, String finishTextIdentifier) throws BrowserFailedException, InterruptedException {
+    public String waitForTestToFinishByText(String identifier, SpeedTestNonFlashMetaData speedTestNonFlashMetaData) throws BrowserFailedException, InterruptedException {
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
         By by = getByIdentifier(identifier);
@@ -164,15 +170,25 @@ public class BrowserServiceImpl implements BrowserService {
         do {
             checkBrowser();
 
-            if (webDriver.findElement(by).getText().equals(finishTextIdentifier)) {
-                return true;
+            if (webDriver.findElement(by).getText().equals(speedTestNonFlashMetaData.getFinishTextIdentifier())) {
+                return retrieveNonFlashResult(speedTestNonFlashMetaData);
             }
 
             TimeUnit.MILLISECONDS.sleep(waitForFinishIdentifier);
 
         } while (++currentAttempt < numOfAttempts);
 
-        throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + finishTextIdentifier);
+        throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + speedTestNonFlashMetaData.getFinishTextIdentifier());
+    }
+
+    private String retrieveNonFlashResult(SpeedTestNonFlashMetaData speedTestNonFlashMetaData) {
+        By by = getByIdentifier(speedTestNonFlashMetaData.getResultLocation());
+
+        if (nonNull(speedTestNonFlashMetaData.getResultAttribute())) {
+            return webDriver.findElement(by).getAttribute(speedTestNonFlashMetaData.getResultAttribute());
+        }
+
+        return webDriver.findElement(by).getText();
     }
 
     private By getByIdentifier(String identifier) {

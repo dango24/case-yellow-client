@@ -1,8 +1,8 @@
 package caseyellow.client.domain.browser;
 
 import caseyellow.client.domain.analyze.model.WordIdentifier;
+import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.exceptions.BrowserFailedException;
-import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.exceptions.UserInterruptException;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public interface BrowserService {
     void closeBrowser();
     void centralizedWebPage(int centralized) throws InterruptedException, BrowserFailedException;
     void pressFlashStartTestButton(Set<WordIdentifier> btnImageIdentifiers) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException;
-    void waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException;
-    boolean waitForTestToFinishByText(String identifier, String finishTextIdentifier) throws BrowserFailedException, InterruptedException;
+    String waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException;
+    String waitForTestToFinishByText(String identifier, SpeedTestNonFlashMetaData speedTestNonFlashMetaData) throws BrowserFailedException, InterruptedException;
     void pressStartButtonById(String btnId) throws BrowserFailedException;
 }

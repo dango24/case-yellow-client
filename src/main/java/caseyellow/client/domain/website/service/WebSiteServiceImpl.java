@@ -53,6 +53,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     @Override
     public SpeedTestWebSite produceSpeedTestWebSite(final SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
+        String result;
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
@@ -68,7 +69,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
             logger.info("Start '" + speedTestWebsite.getIdentifier() + "' speed test");
             startMeasuringTimestamp = System.currentTimeMillis();
-            waitForTestToFinish(speedTestWebsite);
+            result = waitForTestToFinish(speedTestWebsite);
             TimeUnit.MILLISECONDS.sleep(DELAY_TIME_BEFORE_SNAPSHOT);
             websiteSnapshot = takeScreenSnapshot();
 
@@ -77,6 +78,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .setStartDownloadingTimeSnapshot(startMeasuringTimestamp)
                                        .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
                                        .setURL(speedTestWebsite.getWebSiteUrl())
+                                       .setNonFlashResult(result)
                                        .build();
 
         } catch (BrowserFailedException e) {
@@ -112,12 +114,12 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     }
 
 
-    private void waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
+    private String waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
-            browserService.waitForFlashTestToFinish(speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifiers());
+            return browserService.waitForFlashTestToFinish(speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifiers());
         } else {
-            browserService.waitForTestToFinishByText(speedTestWebsite.getSpeedTestNonFlashMetaData().getFinishIdentifier(),
-                                                     speedTestWebsite.getSpeedTestNonFlashMetaData().getFinishTextIdentifier());
+            return browserService.waitForTestToFinishByText(speedTestWebsite.getSpeedTestNonFlashMetaData().getFinishIdentifier(),
+                                                            speedTestWebsite.getSpeedTestNonFlashMetaData());
         }
     }
 
