@@ -18,10 +18,13 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.Objects;
@@ -69,7 +72,7 @@ public class SystemServiceImpl implements SystemService {
     public long copyURLToFile(URL source, File destination) throws IOException, InternalFailureException {
         try {
             copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
-            return copyURLToFileTask.get(30, TimeUnit.MINUTES);
+            return copyURLToFileTask.get(120, TimeUnit.MINUTES);
 
         } catch (InterruptedException | CancellationException e) {
             throw new UserInterruptException("User cancel download file request, " + e.getMessage(), e);
@@ -80,11 +83,33 @@ public class SystemServiceImpl implements SystemService {
         } catch (TimeoutException e) {
             log.error("Reach timeout of 30 minutes for url: " + source.toString());
             throw new InternalFailureException("Failed to download file, reach timeout of 30 minutes for url: " + source.toString() +
-                                               "cause: " + e.getMessage(), e);
+                                               " cause: " + e.getMessage(), e);
         }
     }
 
     private long executeCopyURLToFile(URL source, File destination) {
+        String threadOriginalName = Thread.currentThread().getName();
+        Thread.currentThread().setName("copy url to file thread");
+
+        try (FileOutputStream fos = new FileOutputStream(destination);
+            ReadableByteChannel rbc = Channels.newChannel(source.openStream())){
+
+            long startDownloadingTime = System.currentTimeMillis();
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            long fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
+            log.info("finish downloading file from: " + source.toString());
+
+            return fileDownloadedDurationTimeInMs;
+
+        } catch (IOException e) {
+            log.error("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage(), e);
+            throw new FileDownloadInfoException("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage());
+        } finally {
+            Thread.currentThread().setName(threadOriginalName);
+        }
+    }
+
+    private long executeCopyURLToFile2(URL source, File destination) {
         String threadOriginalName = Thread.currentThread().getName();
         Thread.currentThread().setName("copy url to file thread");
 

@@ -1,6 +1,6 @@
 msg: Lets go hang out on cloud
 speedTestWebSitePackage : caseyellow.client.domain.website.model.
-numOfComparisonPerTest : 2
+numOfComparisonPerTest : 3
 wait-for-test-to-finish-in-sec : 110
 wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2
@@ -10,7 +10,7 @@ sleep_interval_in_seconds: 10
 
 google_vision_url : https://vision.googleapis.com/
 google_vision_key : AIzaSyBrkKNc_7vNBvlY6P83atDavKvZGJKQTms
-central_url : http://ec2-35-156-136-73.eu-central-1.compute.amazonaws.com:8080/central/
+central_url : http://localhost:8080/central/
 
 logging:
   level:
