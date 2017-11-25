@@ -38,7 +38,6 @@ import static java.util.Objects.nonNull;
  * Created by dango on 6/3/17.
  */
 @Service
-@Profile({"prod", "integration"})
 public class SystemServiceImpl implements SystemService {
 
     private static final String ETHERNET_IDENTIFIER = "eth";
