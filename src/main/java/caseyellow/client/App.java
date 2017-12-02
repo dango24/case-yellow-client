@@ -2,6 +2,7 @@ package caseyellow.client;
 
 import caseyellow.client.domain.test.service.TestGenerator;
 import caseyellow.client.infrastructre.MessageServiceImp;
+import caseyellow.client.presentation.LoginForm;
 import caseyellow.client.presentation.MainForm;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,9 +29,10 @@ public class App {
     private static MainForm mainForm;
 
     public static void main(String[] args) throws UnknownHostException {
-        initView();
-        initForkJoinCommonPool();
-        initApplicationContext(args);
+        LoginForm frame = new LoginForm("Login");
+        //        initView();
+//        initForkJoinCommonPool();
+//        initApplicationContext(args);
     }
 
     private static void initView() {
