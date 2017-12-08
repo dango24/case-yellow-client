@@ -3,7 +3,7 @@ package caseyellow.client.infrastructre;
 import caseyellow.client.domain.interfaces.MessagesService;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("messageServiceImp")
 public class MessageServiceImp implements MessagesService {
 
     private MessagesService presentationMessagesService;

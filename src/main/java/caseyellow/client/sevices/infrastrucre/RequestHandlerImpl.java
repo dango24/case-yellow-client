@@ -1,18 +1,17 @@
 package caseyellow.client.sevices.infrastrucre;
 
-
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.exceptions.UserInterruptException;
+import okhttp3.Headers;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
-
-import static caseyellow.client.common.Mapper.USER_INTERRUPT_CODE;
 
 @Component
 public class RequestHandlerImpl implements RequestHandler {
@@ -62,4 +61,24 @@ public class RequestHandlerImpl implements RequestHandler {
             throw new RequestFailureException(response.errorBody().string(), response.code());
         }
     }
+
+    @Override
+    public <T> Map<String, String> getResponseHeaders(Call<T> request) throws RequestFailureException, IOException {
+        Map<String, String> headers;
+        Response<T> response = request.execute();
+
+        if (response.isSuccessful()) {
+            return createHeadersMap(response.headers());
+
+        } else {
+            throw new RequestFailureException(response.errorBody().string(), response.code());
+        }
+    }
+
+    private Map<String,String> createHeadersMap(Headers headers) {
+        System.out.println(headers.names());
+
+        return Collections.emptyMap();
+    }
+
 }

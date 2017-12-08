@@ -3,57 +3,43 @@ package caseyellow.client.presentation;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
+import caseyellow.client.sevices.gateway.services.GatewayService;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Messages.churchillSpeech;
 
 /**
  * Created by Dan on 7/7/2017.
  */
-public class MainForm implements MessagesService {
+public class MainFormImpl implements MessagesService, MainFrame {
 
     private final String dateFormatter = "HH:mm:ss";
-    private Logger logger = Logger.getLogger(MainForm.class);
+    private Logger logger = Logger.getLogger(MainFormImpl.class);
 
     // Constants
     private static final String LOADING_APP_MESSAGE = "loading app...  Please wait";
 
     // Fields
-    private JFrame frame;
+    private JFrame mainFrame;
+    private LoginForm loginForm;
     private JButton startButton;
     private JButton stopButton;
     private JEditorPane editorPane;
     private JScrollPane editorScrollPane;
     private StartProducingTestsCommand startProducingTestsCommand;
     private StopProducingTestsCommand stopProducingTestsCommand;
+    private GatewayService gatewayService;
 
     // Constructor
-    public MainForm() {
-        frame = new JFrame("Case Yellow");
+    public MainFormImpl() {
+        mainFrame = new JFrame("Case Yellow");
         buildComponents();
     }
-
-    // Setters
-
-    @Autowired
-    public void setStartProducingTestsCommand(StartProducingTestsCommand startProducingTestsCommand) {
-        this.startProducingTestsCommand = startProducingTestsCommand;
-    }
-
-    @Autowired
-    public void setStopProducingTestsCommand(StopProducingTestsCommand stopProducingTestsCommand) {
-        this.stopProducingTestsCommand = stopProducingTestsCommand;
-    }
-
-    // Methods
 
     private void buildComponents() {
         JPanel panel = new JPanel();
@@ -64,9 +50,10 @@ public class MainForm implements MessagesService {
         panel.add(startButton);
         panel.add(stopButton);
         panel.add(editorScrollPane);
-        frame.add(panel);
-        frame.setSize(350, 260);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.add(panel);
+        mainFrame.setSize(350, 260);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        loginForm = new LoginFormImpl(this);
     }
 
     private void buildEditorScrollPane() {
@@ -102,11 +89,11 @@ public class MainForm implements MessagesService {
     }
 
     public void view() {
-        SwingUtilities.invokeLater(() -> frame.setVisible(true));
+        SwingUtilities.invokeLater(() -> mainFrame.setVisible(true));
     }
 
     public void enableApp() {
-        startButton.setEnabled(true);
+        loginForm.view();
         showMessage(churchillSpeech());
     }
 
@@ -133,6 +120,24 @@ public class MainForm implements MessagesService {
     }
 
     public void terminate() {
-        frame.dispose();
+        mainFrame.dispose();
+    }
+
+
+    public void setStartProducingTestsCommand(StartProducingTestsCommand startProducingTestsCommand) {
+        this.startProducingTestsCommand = startProducingTestsCommand;
+    }
+
+    public void setStopProducingTestsCommand(StopProducingTestsCommand stopProducingTestsCommand) {
+        this.stopProducingTestsCommand = stopProducingTestsCommand;
+    }
+
+    public void setGatewayService(GatewayService gatewayService) {
+        this.gatewayService = gatewayService;
+    }
+
+    @Override
+    public void login(String userName, String password) {
+        JOptionPane.showMessageDialog(null, "Login - user: " + userName + ", password: " + password);
     }
 }

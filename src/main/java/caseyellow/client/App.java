@@ -2,8 +2,8 @@ package caseyellow.client;
 
 import caseyellow.client.domain.test.service.TestGenerator;
 import caseyellow.client.infrastructre.MessageServiceImp;
-import caseyellow.client.presentation.LoginForm;
-import caseyellow.client.presentation.MainForm;
+import caseyellow.client.presentation.MainFormImpl;
+import caseyellow.client.sevices.gateway.services.GatewayService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -21,22 +21,21 @@ import java.util.concurrent.CompletableFuture;
  * Created by dango on 6/2/17.
  */
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class,
-                                  WebMvcAutoConfiguration.class})
+        WebMvcAutoConfiguration.class})
 public class App {
 
     private final static Logger logger = Logger.getLogger(App.class);
 
-    private static MainForm mainForm;
+    private static MainFormImpl mainForm;
 
     public static void main(String[] args) throws UnknownHostException {
-        LoginForm frame = new LoginForm("Login");
-        //        initView();
-//        initForkJoinCommonPool();
-//        initApplicationContext(args);
+        initView();
+        initForkJoinCommonPool();
+        initApplicationContext(args);
     }
 
     private static void initView() {
-        mainForm = new MainForm();
+        mainForm = new MainFormImpl();
         mainForm.view();
     }
 
@@ -52,12 +51,14 @@ public class App {
         try {
             ApplicationContext ctx = SpringApplication.run(App.class, args);
 
-            TestGenerator testService = (TestGenerator)ctx.getBean("testGenerator");
-            MessageServiceImp messagesService = (MessageServiceImp)ctx.getBean("messageServiceImp");
+            TestGenerator testService = (TestGenerator) ctx.getBean("testGenerator");
+            MessageServiceImp messagesService = (MessageServiceImp) ctx.getBean("messageServiceImp");
+            GatewayService gatewayService = (GatewayService) ctx.getBean("gatewayService");
 
             messagesService.setPresentationMessagesService(mainForm);
             mainForm.setStartProducingTestsCommand(testService);
             mainForm.setStopProducingTestsCommand(testService);
+            mainForm.setGatewayService(gatewayService);
             mainForm.enableApp();
 
         } catch (Exception e) {

@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by dango on 6/3/17.
  */
-@Component
+@Component("testGenerator")
 public class TestGenerator implements TestService, StartProducingTestsCommand, StopProducingTestsCommand {
 
     private Logger logger = Logger.getLogger(TestGenerator.class);
