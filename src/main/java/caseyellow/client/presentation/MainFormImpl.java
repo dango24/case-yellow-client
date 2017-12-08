@@ -3,11 +3,14 @@ package caseyellow.client.presentation;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
+import caseyellow.client.exceptions.LoginException;
+import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.services.GatewayService;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -106,17 +109,17 @@ public class MainFormImpl implements MessagesService, MainFrame {
     private void startProducingTests() {
         logger.info("Start button pressed");
         showMessage("Start producing tests");
+        SwingUtilities.invokeLater(() -> startButton.setEnabled(false));
+        SwingUtilities.invokeLater(() -> stopButton.setEnabled(true));
         SwingUtilities.invokeLater(startProducingTestsCommand::executeStartProducingTestsCommand);
-        startButton.setEnabled(false);
-        stopButton.setEnabled(true);
     }
 
     private void stopProducingTests() {
         logger.info("Stop button pressed");
         showMessage("App halt, stop production tests");
+        SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
+        SwingUtilities.invokeLater(() -> stopButton.setEnabled(false));
         SwingUtilities.invokeLater(stopProducingTestsCommand::executeStopProducingCommand);
-        startButton.setEnabled(true);
-        stopButton.setEnabled(false);
     }
 
     public void terminate() {
@@ -137,7 +140,13 @@ public class MainFormImpl implements MessagesService, MainFrame {
     }
 
     @Override
-    public void login(String userName, String password) {
-        JOptionPane.showMessageDialog(null, "Login - user: " + userName + ", password: " + password);
+    public void login(String userName, String password) throws IOException, LoginException {
+        boolean loginSucceed = gatewayService.login(new AccountCredentials(userName, password));
+
+        if (loginSucceed) {
+            JOptionPane.showMessageDialog(null, "Login succeed");
+            SwingUtilities.invokeLater(() -> loginForm.close());
+            SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
+        }
     }
 }

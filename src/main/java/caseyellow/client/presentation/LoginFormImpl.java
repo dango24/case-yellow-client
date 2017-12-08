@@ -1,5 +1,6 @@
 package caseyellow.client.presentation;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.stream.Stream;
@@ -67,8 +68,16 @@ public class LoginFormImpl extends JFrame implements LoginForm {
         String password = Stream.of(passwordArray).map(String::valueOf).collect(joining());
 
         if (validateInput(userName, password)) {
-//            JOptionPane.showMessageDialog(null, "Login - user: " + userName + ", password: " + password);
+            login(userName, password);
+        }
+    }
+
+    private void login(String userName, String password) {
+        try {
             mainFrame.login(userName, password);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Failed to login, " + e.getMessage());
         }
     }
 
@@ -94,5 +103,11 @@ public class LoginFormImpl extends JFrame implements LoginForm {
     @Override
     public void view() {
         this.setVisible(true);
+    }
+
+    @Override
+    public void close() {
+        setVisible(false);
+        dispose();
     }
 }

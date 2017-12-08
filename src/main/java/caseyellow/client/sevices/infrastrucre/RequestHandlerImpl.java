@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 @Component
 public class RequestHandlerImpl implements RequestHandler {
@@ -76,9 +79,10 @@ public class RequestHandlerImpl implements RequestHandler {
     }
 
     private Map<String,String> createHeadersMap(Headers headers) {
-        System.out.println(headers.names());
 
-        return Collections.emptyMap();
+        return headers.names()
+                      .stream()
+                      .collect(toMap(Function.identity(), name -> headers.values(name).get(0)));
     }
 
 }

@@ -11,7 +11,7 @@ sleep_interval_in_seconds: 10
 google_vision_url : https://vision.googleapis.com/
 google_vision_key : AIzaSyBrkKNc_7vNBvlY6P83atDavKvZGJKQTms
 central_url : http://ec2-35-156-136-73.eu-central-1.compute.amazonaws.com:8080/central/
-gateway_url : http://loclahost.com:8888/
+gateway_url : http://localhost:8888/
 
 logging:
   level:
