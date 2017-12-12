@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,9 +27,7 @@ import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -118,7 +116,38 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
                             .collect(toMap(Function.identity(), key -> generatePreSignedUrl(test.getSystemInfo().getPublicIP(), String.valueOf(key))));
 
         preSignedUrls.entrySet()
-                     .forEach(entry -> uploadFile(entry.getValue().getPreSignedUrl(), snapshotMap.get(entry.getKey())));
+                     .forEach(entry -> uploadObject(entry.getValue().getPreSignedUrl(), snapshotMap.get(entry.getKey())));
+    }
+
+    private void uploadObject(URL url, String fileToUploadPath) {
+        try {
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("PUT");
+
+            uploadObject(connection, new File(fileToUploadPath));
+
+        } catch (IOException e) {
+            logger.error("Failed to upload file, " + e.getMessage(), e);
+            throw new RequestFailureException("Failed to upload file, " + e.getMessage(), e);
+        }
+    }
+
+    private void uploadObject(HttpURLConnection connection, File fileToUpload) {
+        int responseCode;
+
+        try (DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream())) {
+            dataStream.write(IOUtils.toByteArray(new FileInputStream(fileToUpload)));
+            responseCode = connection.getResponseCode();
+
+            if (responseCode >= 200 && responseCode < 300) {
+                logger.info("Service returned response code " + responseCode);
+            }
+
+        } catch (IOException e) {
+            logger.error("Failed to upload file, " + e.getMessage(), e);
+            throw new RequestFailureException("Failed to upload file, " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -191,17 +220,6 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
         tokenHeader.put(TOKEN_HEADER, token);
 
         return tokenHeader;
-    }
-
-
-    private void uploadFile(URL url, String path) {
-        try {
-            File destination = new File(path);
-            // Copy bytes from the URL to the destination file.
-            FileUtils.copyURLToFile(url, destination);
-        } catch (IOException e) {
-            logger.error("Failed to upload file, " + e.getMessage(), e);
-        }
     }
 
     private static class UploadTest {
