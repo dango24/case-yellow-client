@@ -7,6 +7,7 @@ import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.RequestFailureException;
+import caseyellow.client.sevices.gateway.model.PreSignedUrl;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
 import com.google.gson.Gson;
@@ -15,8 +16,6 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 import retrofit2.Retrofit;
 
 import javax.annotation.PostConstruct;
@@ -28,8 +27,8 @@ import java.util.stream.Collectors;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 
-@Service
-@Profile({"prod", "integration"})
+//@Service
+//@Profile("prod")
 public class CentralServiceImp implements DataAccessService {
 
     @Value("${central_url}")
@@ -41,7 +40,7 @@ public class CentralServiceImp implements DataAccessService {
     @PostConstruct
     public void init() {
         Retrofit retrofit = RetrofitBuilder.Retrofit(centralUrl)
-                .build();
+                                           .build();
 
         centralRequests = retrofit.create(CentralRequests.class);
     }
@@ -79,6 +78,11 @@ public class CentralServiceImp implements DataAccessService {
     @Override
     public List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest) {
         return requestHandler.execute(centralRequests.getNextUrls(numOfComparisonPerTest));
+    }
+
+    @Override
+    public PreSignedUrl generatePreSignedUrl(String userIP, String fileName) {
+        return new PreSignedUrl(null);
     }
 
     private UploadTest createUploadTest(Test test) {

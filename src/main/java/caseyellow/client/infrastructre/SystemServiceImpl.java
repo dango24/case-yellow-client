@@ -94,7 +94,7 @@ public class SystemServiceImpl implements SystemService {
             ReadableByteChannel rbc = Channels.newChannel(source.openStream())){
 
             long startDownloadingTime = System.currentTimeMillis();
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+//            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE); // TODO dangooooooooooooooooooo removeeeee
             long fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
             log.info("finish downloading file from: " + source.toString());
 

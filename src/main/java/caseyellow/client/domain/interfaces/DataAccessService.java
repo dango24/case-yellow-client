@@ -4,6 +4,7 @@ import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.RequestFailureException;
+import caseyellow.client.sevices.gateway.model.PreSignedUrl;
 
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface DataAccessService {
     int additionalTimeForWebTestToFinishInSec();
     SpeedTestMetaData getNextSpeedTestWebSite();
     List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest);
+    PreSignedUrl generatePreSignedUrl(String userIP, String fileName);
 }

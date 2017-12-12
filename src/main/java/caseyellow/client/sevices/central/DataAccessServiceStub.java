@@ -6,11 +6,13 @@ import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.service.SpeedTestWebSiteFactory;
 import caseyellow.client.domain.interfaces.DataAccessService;
+import caseyellow.client.sevices.gateway.model.PreSignedUrl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,5 +69,10 @@ public class DataAccessServiceStub implements DataAccessService {
                    .stream()
                    .map(url -> new FileDownloadMetaData(mapper.getFileNameFromUrl(url), url))
                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public PreSignedUrl generatePreSignedUrl(String userIP, String fileName) {
+        return new PreSignedUrl(null);
     }
 }

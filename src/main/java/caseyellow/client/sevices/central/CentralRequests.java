@@ -16,20 +16,6 @@ public interface CentralRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @POST("save-test")
-    Call<Void> saveTest(@Body Test test);
-
-    @Headers({
-            "Accept: application/json",
-            "Content-Type: application/json"
-    })
-    @POST("send-message")
-    Call<Void> sendMessage(@Body String message);
-
-    @Headers({
-            "Accept: application/json",
-            "Content-Type: application/json"
-    })
     @GET("additional-time")
     Call<Integer> additionalTimeForWebTestToFinishInSec();
 
