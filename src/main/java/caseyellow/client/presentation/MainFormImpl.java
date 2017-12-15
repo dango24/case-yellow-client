@@ -144,7 +144,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
         boolean loginSucceed = gatewayService.login(new AccountCredentials(userName, password));
 
         if (loginSucceed) {
-            JOptionPane.showMessageDialog(null, "Login succeed");
+            JOptionPane.showMessageDialog(null, "Justice will be served");
             SwingUtilities.invokeLater(() -> loginForm.close());
             SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         }

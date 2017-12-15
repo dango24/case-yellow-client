@@ -87,7 +87,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
 
     @Override
     public String googleVisionKey() {
-        return requestHandler.execute(gatewayRequests.googleVisionKey(createTokenHeader()));
+        return requestHandler.execute(gatewayRequests.googleVisionKey(createTokenHeader())).getGoogleVisionKey();
     }
 
     @Override

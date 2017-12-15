@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static caseyellow.client.common.Utils.*;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -34,6 +36,7 @@ import static java.util.Objects.nonNull;
 @Component
 public class BrowserServiceImpl implements BrowserService {
 
+    private static final String GET_HTML_JS = "return document.getElementsByTagName('html')[0].innerHTML";
     private Logger logger = Logger.getLogger(BrowserServiceImpl.class);
 
     @Value("${wait-for-start-test-button-to-appear-in-sec}")
@@ -106,12 +109,12 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressStartButtonById(String btnId) throws BrowserFailedException {
+    public void pressStartButtonById(String btnIdentifier) throws BrowserFailedException {
         checkBrowser();
-
         try {
             TimeUnit.MILLISECONDS.sleep(900);
-            webDriver.findElement(By.id(btnId)).click();
+            By by = getByIdentifier(btnIdentifier);
+            webDriver.findElement(by).click();
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);
@@ -163,15 +166,16 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public String waitForTestToFinishByText(String identifier, SpeedTestNonFlashMetaData speedTestNonFlashMetaData) throws BrowserFailedException, InterruptedException {
+        String result;
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
-        By by = getByIdentifier(identifier);
 
         do {
             checkBrowser();
+            result = retrieveResultFromHtml(speedTestNonFlashMetaData.getFinishTextIdentifier(), 1);
 
-            if (webDriver.findElement(by).getText().equals(speedTestNonFlashMetaData.getFinishTextIdentifier())) {
-                return retrieveNonFlashResult(speedTestNonFlashMetaData);
+            if (nonNull(result)) {
+                return result;
             }
 
             TimeUnit.MILLISECONDS.sleep(waitForFinishIdentifier);
@@ -280,5 +284,19 @@ public class BrowserServiceImpl implements BrowserService {
     private void scrollDown(int scrollDownPixel) {
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
+    }
+
+    private String retrieveResultFromHtml(String regex, int groupNumber) {
+        JavascriptExecutor jse = (JavascriptExecutor)webDriver;
+        String htmlPayload = String.valueOf(jse.executeScript(GET_HTML_JS));
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(htmlPayload);
+
+        if (matcher.find()) {
+            return matcher.group(groupNumber); // regex matcher result
+        }
+
+        return null;
     }
 }

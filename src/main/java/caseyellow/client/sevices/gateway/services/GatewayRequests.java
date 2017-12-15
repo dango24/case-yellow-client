@@ -3,6 +3,7 @@ package caseyellow.client.sevices.gateway.services;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
+import caseyellow.client.sevices.gateway.model.GoogleVisionKey;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -65,5 +66,5 @@ public interface GatewayRequests {
             "Content-Type: application/json"
     })
     @GET("central/google-vision-key")
-    Call<String> googleVisionKey(@HeaderMap Map<String, String> headers);
+    Call<GoogleVisionKey> googleVisionKey(@HeaderMap Map<String, String> headers);
 }
