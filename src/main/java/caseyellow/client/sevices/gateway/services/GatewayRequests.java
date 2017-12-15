@@ -59,4 +59,11 @@ public interface GatewayRequests {
             @Part("payload") RequestBody message,
             @Part List<MultipartBody.Part> files
     );
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET("central/google-vision-key")
+    Call<String> googleVisionKey(@HeaderMap Map<String, String> headers);
 }

@@ -7,4 +7,5 @@ import java.io.IOException;
 
 public interface GatewayService {
     boolean login(AccountCredentials accountCredentials) throws IOException, LoginException;
+    String googleVisionKey();
 }

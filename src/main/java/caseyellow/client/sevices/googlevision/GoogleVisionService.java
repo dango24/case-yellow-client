@@ -2,6 +2,7 @@ package caseyellow.client.sevices.googlevision;
 
 import caseyellow.client.exceptions.OcrParsingException;
 import caseyellow.client.exceptions.RequestFailureException;
+import caseyellow.client.sevices.gateway.services.GatewayService;
 import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import caseyellow.client.domain.interfaces.OcrService;
 import caseyellow.client.sevices.googlevision.model.GoogleVisionRequest;
@@ -23,11 +24,15 @@ public class GoogleVisionService implements OcrService {
     @Value("${google_vision_url}")
     private String googleVisionUrl;
 
-    @Value("${google_vision_key}")
-    private String googleVisionKey;
-
     private RequestHandler requestHandler;
+    private GatewayService gatewayService;
     private GoogleVisionRetrofitRequests googleVisionRetrofitRequests;
+
+    @Autowired
+    public GoogleVisionService(RequestHandler requestHandler, GatewayService gatewayService) {
+        this.requestHandler = requestHandler;
+        this.gatewayService = gatewayService;
+    }
 
     @PostConstruct
     public void init() {
@@ -46,7 +51,7 @@ public class GoogleVisionService implements OcrService {
     public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException, RequestFailureException {
 
         GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
-        JsonNode response = requestHandler.execute(googleVisionRetrofitRequests.ocrRequest(googleVisionKey, googleVisionRequest));
+        JsonNode response = requestHandler.execute(googleVisionRetrofitRequests.ocrRequest(gatewayService.googleVisionKey(), googleVisionRequest));
         OcrResponse ocrData = parseResponse(response);
 
         return ocrData;
@@ -57,10 +62,5 @@ public class GoogleVisionService implements OcrService {
         String wordsData = "{ \"textAnnotations\" : " + textAnnotations.toString() + "}";
 
         return new ObjectMapper().readValue(wordsData, OcrResponse.class);
-    }
-
-    @Autowired
-    public void setRequestHandler(RequestHandler requestHandler) {
-        this.requestHandler = requestHandler;
     }
 }
