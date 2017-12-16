@@ -12,6 +12,7 @@ import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -69,7 +72,17 @@ public class BrowserServiceImpl implements BrowserService {
     private void initWebDriver() throws IOException {
         String chromeDriver = getTempFileFromResources("drivers/chromedriver.exe").getAbsolutePath();
         System.setProperty("webdriver.chrome.driver", chromeDriver);
-        this.webDriver = new ChromeDriver();
+
+        this.webDriver = new ChromeDriver(generateChromeOptions());
+    }
+
+    private ChromeOptions generateChromeOptions() {
+        ChromeOptions options = new ChromeOptions();
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
+        options.setExperimentalOption("prefs", prefs);
+
+        return options;
     }
 
     @Autowired
@@ -99,6 +112,10 @@ public class BrowserServiceImpl implements BrowserService {
             webDriver.get(url);
         }
 
+        maximizeBrowserWindow();
+    }
+
+    private void maximizeBrowserWindow() {
         webDriver.manage().window().maximize();
     }
 

@@ -58,7 +58,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         long startMeasuringTimestamp;
 
         try {
-            messagesService.showMessage("Testing web site: " + speedTestWebsite.getWebSiteUrl());
+            messagesService.showMessage("Start testing web site: " + speedTestWebsite.getWebSiteUrl());
             browserService.openBrowser(speedTestWebsite.getWebSiteUrl());
             browserService.centralizedWebPage(speedTestWebsite.getCentralized());
 
