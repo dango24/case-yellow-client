@@ -1,5 +1,6 @@
 package caseyellow.client.domain.browser;
 
+import caseyellow.client.common.Utils;
 import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
@@ -19,8 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +43,7 @@ import static java.util.Objects.nonNull;
 public class BrowserServiceImpl implements BrowserService {
 
     private static final String GET_HTML_JS = "return document.getElementsByTagName('html')[0].innerHTML";
+
     private Logger logger = Logger.getLogger(BrowserServiceImpl.class);
 
     @Value("${wait-for-start-test-button-to-appear-in-sec}")
@@ -55,9 +59,7 @@ public class BrowserServiceImpl implements BrowserService {
     @Value("${wait-For-Finish-identifier}")
     private final int waitForFinishIdentifier = 10_000;
 
-    @Value("${chromeDriverExecutorPath}")
-    private String chromeDriverExecutorPath;
-
+    private String logPath;
     private WebDriver webDriver;
     private OcrService ocrService;
     private DataAccessService dataAccessService;
@@ -78,6 +80,11 @@ public class BrowserServiceImpl implements BrowserService {
 
     private ChromeOptions generateChromeOptions() {
         ChromeOptions options = new ChromeOptions();
+
+        logPath = new File(Utils.createTmpDir(), "log_net").getAbsolutePath();
+        String log_flag = "--log-net-log=" + logPath;
+        options.addArguments(log_flag);
+
         Map<String, Object> prefs = new HashMap<>();
         prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
         options.setExperimentalOption("prefs", prefs);
@@ -158,27 +165,27 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public String waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
-        checkBrowser();
-
+    public String waitForFlashTestToFinish(String identifier) throws InterruptedException {
+        String logPayload;
+        long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
         try {
-            int waitForTestToFinishInterval = getWaitForTestToFinishInSec(waitForFinishIdentifier);
-            int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
+            do {
+                TimeUnit.MILLISECONDS.sleep(800);
+                logPayload = Utils.readFile(logPath);
 
-            if (waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false)) {
-                return "SUCCESS";
-            } else {
-                return "FAILURE";
-            }
+                if (System.currentTimeMillis() > timeout) {
+                    throw new InterruptedException("Reached timeout, failed to find indicator: " + identifier + " in file: " + logPath);
+                }
 
-        } catch (WebDriverException e) {
-            handleError(e.getMessage(), e);
-            throw new UserInterruptException(e.getMessage(), e);
+            } while (!logPayload.contains(identifier));
 
-        } catch (Exception e) {
-            handleError(e.getMessage(), e);
-            throw new BrowserFailedException(e.getMessage(), e);
+            return "SUCCESS";
+
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
         }
+
+        return "FAILURE";
     }
 
     @Override
@@ -200,16 +207,6 @@ public class BrowserServiceImpl implements BrowserService {
         } while (++currentAttempt < numOfAttempts);
 
         throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + speedTestNonFlashMetaData.getFinishTextIdentifier());
-    }
-
-    private String retrieveNonFlashResult(SpeedTestNonFlashMetaData speedTestNonFlashMetaData) {
-        By by = getByIdentifier(speedTestNonFlashMetaData.getResultLocation());
-
-        if (nonNull(speedTestNonFlashMetaData.getResultAttribute())) {
-            return webDriver.findElement(by).getAttribute(speedTestNonFlashMetaData.getResultAttribute());
-        }
-
-        return webDriver.findElement(by).getText();
     }
 
     private By getByIdentifier(String identifier) {

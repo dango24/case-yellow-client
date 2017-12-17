@@ -10,5 +10,6 @@ public class BrowserFailedException extends Exception {
     }
 
     public BrowserFailedException(String message, Exception e) {
+        super(message, e);
     }
 }

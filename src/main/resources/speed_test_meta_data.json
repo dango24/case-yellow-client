@@ -15,13 +15,7 @@
         "identifier": "בדיקה",
         "count": 1
       }],
-      "finishIdentifiers": [{
-        "identifier": "Mbps",
-        "count": 2
-      }, {
-        "identifier": "גרף קישוריות",
-        "count": -1
-      }]
+      "finishIdentifier": "resultHandler"
     }
   },
   {
@@ -32,11 +26,11 @@
     "haveStartButton": true,
     "speedTestFlashMetaData" : null,
     "speedTestNonFlashMetaData": {
-      "buttonId": "DRWidgetInitiate",
+      "buttonId": "id=DRWidgetInitiate",
       "finishIdentifier": "class=Resultstitle",
-      "finishTextIdentifier": "Your Test Results",
-      "resultLocation": null,
-      "resultAttribute": null
+      "finishTextIdentifier": "Your Download speed is (\\d+(?:\\.\\d+)?) Mega bits",
+      "resultLocation": "id=DR-ELE-results",
+      "resultAttribute": "title"
     }
   },
   {
@@ -48,16 +42,7 @@
     "speedTestNonFlashMetaData": null,
     "speedTestFlashMetaData" : {
       "buttonIds": null,
-      "finishIdentifiers": [
-        {
-          "identifier": "בדוק",
-          "count": 1
-        },
-        {
-          "identifier": "שוב",
-          "count": 1
-        }
-      ]
+      "finishIdentifier": "SpeedTetsAddDiagnostic"
     }
   },
   {
@@ -69,9 +54,9 @@
     "speedTestFlashMetaData" : null,
     "speedTestNonFlashMetaData": {
       "buttonId": null,
-      "finishIdentifier": "class=compare-ookla-text",
-      "finishTextIdentifier": "Compare on\nSPEEDTEST.NET",
-      "resultLocation": null,
+      "finishIdentifier": "",
+      "finishTextIdentifier": "class=\"speed-results-container succeeded\" id=\"speed-value\">(\\d+(?:\\.\\d+)?)<",
+      "resultLocation": "id=speed-value",
       "resultAttribute": null
     }
   },
@@ -79,9 +64,15 @@
     "webSiteUrl": "http://www.speedtest.net/",
     "identifier": "ookla",
     "centralized": 0,
-    "flashAble": true,
+    "flashAble": false,
     "haveStartButton": true,
-    "speedTestNonFlashMetaData": null,
+    "speedTestNonFlashMetaData": {
+      "buttonId": "class=js-start-test",
+      "finishIdentifier": "id=startBtn",
+      "finishTextIdentifier": "class=\"result-data-large number result-data-value download-speed\">(\\d+(?:\\.\\d+)?)<",
+      "resultLocation": "id=chartContainer",
+      "resultAttribute": null
+    },
     "speedTestFlashMetaData" : {
       "buttonIds": [
         {
@@ -93,16 +84,7 @@
           "count": 1
         }
       ],
-      "finishIdentifiers": [
-        {
-          "identifier": "AGAIN",
-          "count": 1
-        },
-        {
-          "identifier": "TEST",
-          "count": 1
-        }
-      ]
+      "finishIdentifier": "www.speedtest.net/api/api.php"
     }
   },
   {
@@ -113,10 +95,10 @@
     "haveStartButton": true,
     "speedTestFlashMetaData" : null,
     "speedTestNonFlashMetaData": {
-      "buttonId": "startBtn",
-      "finishIdentifier": "id=container3",
-      "finishTextIdentifier": "Click 'Share' to share this result",
-      "resultLocation": null,
+      "buttonId": "id=startBtn",
+      "finishIdentifier": "id=startBtn",
+      "finishTextIdentifier": "Download:.+?(\\d+(?:\\.\\d+)?)\\s+?Mbps",
+      "resultLocation": "id=chartContainer",
       "resultAttribute": null
     }
   }

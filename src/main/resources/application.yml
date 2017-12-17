@@ -1,6 +1,6 @@
 msg: Lets go hang out on cloud
 speedTestWebSitePackage : caseyellow.client.domain.website.model.
-numOfComparisonPerTest : 3
+numOfComparisonPerTest : 2
 wait-for-test-to-finish-in-sec : 110
 wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -105,6 +106,10 @@ public class Utils {
         tmpDir.mkdir();
 
         return tmpDir;
+    }
+
+    public static String readFile(String path) throws IOException {
+        return FileUtils.readFileToString(new File(path), Charset.forName("UTF-8"));
     }
 
     public static String getScreenResolution() {

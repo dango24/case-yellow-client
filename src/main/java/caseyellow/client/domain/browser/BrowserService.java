@@ -17,6 +17,6 @@ public interface BrowserService {
     void centralizedWebPage(int centralized) throws InterruptedException, BrowserFailedException;
     void pressFlashStartTestButton(Set<WordIdentifier> btnImageIdentifiers) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException;
     void pressStartButtonById(String btnId) throws BrowserFailedException;
-    String waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException;
+    String waitForFlashTestToFinish(String identifier) throws BrowserFailedException, UserInterruptException, InterruptedException;
     String waitForTestToFinishByText(String identifier, SpeedTestNonFlashMetaData speedTestNonFlashMetaData) throws BrowserFailedException, InterruptedException;
 }
