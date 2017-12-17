@@ -56,9 +56,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
 
     @PostConstruct
     public void init() {
-        Retrofit retrofit = RetrofitBuilder.Retrofit(gatewayUrl)
-                .build();
-
+        Retrofit retrofit = RetrofitBuilder.Retrofit(gatewayUrl).build();
         gatewayRequests = retrofit.create(GatewayRequests.class);
     }
 
@@ -76,7 +74,10 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
                 throw new LoginException("There is no authentication header at the login request");
             }
 
-            token = headers.get(TOKEN_HEADER).replaceAll(TOKEN_PREFIX, "").trim();
+            token = headers.get(TOKEN_HEADER)
+                           .replaceAll(TOKEN_PREFIX, "")
+                           .trim();
+
             return true;
 
         } catch (RequestFailureException e) {
@@ -110,14 +111,14 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
     private void letsPlay(Test test) {
         Map<Integer, String> snapshotMap =
                 test.getComparisonInfoTests()
-                        .stream()
-                        .map(ComparisonInfo::getSpeedTestWebSite)
-                        .collect(toMap(SpeedTestWebSite::getKey, SpeedTestWebSite::getWebSiteDownloadInfoSnapshot));
+                    .stream()
+                    .map(ComparisonInfo::getSpeedTestWebSite)
+                    .collect(toMap(SpeedTestWebSite::getKey, SpeedTestWebSite::getWebSiteDownloadInfoSnapshot));
 
         Map<Integer, PreSignedUrl> preSignedUrls =
                 snapshotMap.keySet()
                            .stream()
-                            .collect(toMap(Function.identity(), key -> generatePreSignedUrl(test.getSystemInfo().getPublicIP(), String.valueOf(key))));
+                           .collect(toMap(Function.identity(), key -> generatePreSignedUrl(test.getSystemInfo().getPublicIP(), String.valueOf(key))));
 
         preSignedUrls.entrySet()
                      .forEach(entry -> uploadObject(entry.getValue().getPreSignedUrl(), snapshotMap.get(entry.getKey())));
@@ -142,16 +143,23 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
 
         try (DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream())) {
             dataStream.write(IOUtils.toByteArray(new FileInputStream(fileToUpload)));
-            responseCode = connection.getResponseCode();
+            responseCode = connection.getResponseCode(); // Invoke request
 
-            if (responseCode >= 200 && responseCode < 300) {
+            if (isRequestSuccessful(responseCode)) {
                 logger.info("Service returned response code " + responseCode);
+            } else {
+                logger.error("Failed to upload file, responseCode is " + responseCode);
+                throw new RequestFailureException("Failed to upload file, responseCode is " + responseCode);
             }
 
         } catch (IOException e) {
             logger.error("Failed to upload file, " + e.getMessage(), e);
             throw new RequestFailureException("Failed to upload file, " + e.getMessage(), e);
         }
+    }
+
+    private boolean isRequestSuccessful(int responseCode) {
+        return responseCode >= 200 && responseCode < 300;
     }
 
     @Override

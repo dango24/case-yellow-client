@@ -9,6 +9,10 @@ public class RequestFailureException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    public RequestFailureException(String message) {
+        this(message, -1);
+    }
+
     public RequestFailureException(String message, int errorCode) {
         super(message);
         this.errorCode = errorCode;
