@@ -1,5 +1,9 @@
-msg: Lets go hang out on cloud
-speedTestWebSitePackage : caseyellow.client.domain.website.model.
+# App properties
+spring.main.web-environment: false
+
+# Profiles: prod, integration, dev
+spring.profiles.active: prod
+
 numOfComparisonPerTest : 2
 wait-for-test-to-finish-in-sec : 110
 wait-for-start-test-button-to-appear-in-sec : 20
@@ -9,7 +13,6 @@ chromeDriverExecutorPath : drivers/chromedriver.exe
 sleep_interval_in_seconds: 10
 
 google_vision_url : https://vision.googleapis.com/
-google_vision_key : AIzaSyBrkKNc_7vNBvlY6P83atDavKvZGJKQTms
 central_url : http://ec2-35-156-136-73.eu-central-1.compute.amazonaws.com:8080/central/
 gateway_url : http://localhost:8888/
 
@@ -21,14 +24,6 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
   file: logs\\client_log.log
-
-
-config:
-  app-name: Gateway
-  app-description: ${app-name} is the the handler from user requests
-  first-name: Dan
-  last-name: Golan
-  email: caseyellow22@gmail.com
 
 urlInfo :
     https://ftp.mozilla.org/pub/firefox/releases/37.0b1/win32/en-US/Firefox%20Setup%2037.0b1.exe : firefox

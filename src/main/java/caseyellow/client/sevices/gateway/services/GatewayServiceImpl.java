@@ -98,17 +98,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
 
     @Override
     public void saveTest(Test test) throws RequestFailureException {
-        UploadTest uploadTest;
-
-        letsPlay(test);
-        /*
-        if (nonNull(test)) {
-            uploadTest = createUploadTest(test);
-            requestHandler.execute(gatewayRequests.upload(createTokenHeader(), uploadTest.getPayload(), uploadTest.getParts()));
-        }*/
+        uploadSnapshotImages(test);
+        requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
     }
 
-    private void letsPlay(Test test) {
+    private void uploadSnapshotImages(Test test) {
         Map<Integer, String> snapshotMap =
                 test.getComparisonInfoTests()
                     .stream()
@@ -163,11 +157,6 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
     }
 
     @Override
-    public int additionalTimeForWebTestToFinishInSec() {
-        return requestHandler.execute(gatewayRequests.additionalTimeForWebTestToFinishInSec(createTokenHeader()));
-    }
-
-    @Override
     public SpeedTestMetaData getNextSpeedTestWebSite() {
         return requestHandler.execute(gatewayRequests.getNextSpeedTestWebSite(createTokenHeader()));
     }
@@ -181,33 +170,6 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
     public PreSignedUrl generatePreSignedUrl(String userIP, String fileName) {
         userIP = userIP.replaceAll("\\.", "_");
         return requestHandler.execute(gatewayRequests.generatePreSignedUrl(createTokenHeader(), userIP, fileName));
-    }
-
-    private UploadTest createUploadTest(Test test) {
-
-        Map<Integer, String> snapshotMap =
-                test.getComparisonInfoTests()
-                        .stream()
-                        .map(ComparisonInfo::getSpeedTestWebSite)
-                        .collect(toMap(SpeedTestWebSite::getKey, SpeedTestWebSite::getWebSiteDownloadInfoSnapshot));
-
-        List<MultipartBody.Part> parts =
-                snapshotMap.entrySet()
-                        .stream()
-                        .map(snapshot -> createRequestBodyPart(snapshot.getKey(), snapshot.getValue()))
-                        .collect(Collectors.toList());
-
-        RequestBody payload = RequestBody.create(MultipartBody.FORM, new Gson().toJson(test));
-
-        return new UploadTest(payload, parts);
-    }
-
-    private MultipartBody.Part createRequestBodyPart(int key, String filePath) {
-        File imgFile = new File(filePath);
-        RequestBody imgRequestBody = RequestBody.create(MediaType.parse(".png"), imgFile);
-        MultipartBody.Part imgPart = MultipartBody.Part.createFormData(String.valueOf(key), imgFile.getName(), imgRequestBody);
-
-        return imgPart;
     }
 
     private void handleError(int statusCode, String message) throws LoginException {
@@ -232,35 +194,5 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
         tokenHeader.put(TOKEN_HEADER, token);
 
         return tokenHeader;
-    }
-
-    private static class UploadTest {
-
-        private RequestBody payload;
-        private List<MultipartBody.Part> parts;
-
-        public UploadTest() {
-        }
-
-        public UploadTest(RequestBody payload, List<MultipartBody.Part> parts) {
-            this.payload = payload;
-            this.parts = parts;
-        }
-
-        public RequestBody getPayload() {
-            return payload;
-        }
-
-        public void setPayload(RequestBody payload) {
-            this.payload = payload;
-        }
-
-        public List<MultipartBody.Part> getParts() {
-            return parts;
-        }
-
-        public void setParts(List<MultipartBody.Part> parts) {
-            this.parts = parts;
-        }
     }
 }

@@ -1,6 +1,7 @@
 package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
+import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.GoogleVisionKey;
@@ -53,13 +54,12 @@ public interface GatewayRequests {
                                             @Query("user_ip") String userIP,
                                             @Query("file_name") String fileName);
 
-    @Multipart
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @POST("central/save-test")
-    Call<Void> upload(
-            @HeaderMap Map<String, String> headers,
-            @Part("payload") RequestBody message,
-            @Part List<MultipartBody.Part> files
-    );
+    Call<Void> saveTest(@HeaderMap Map<String, String> headers, @Body Test test);
 
     @Headers({
             "Accept: application/json",
