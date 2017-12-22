@@ -116,6 +116,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
 
         preSignedUrls.entrySet()
                      .forEach(entry -> uploadObject(entry.getValue().getPreSignedUrl(), snapshotMap.get(entry.getKey())));
+
+        test.getComparisonInfoTests()
+            .stream()
+            .map(ComparisonInfo::getSpeedTestWebSite)
+            .forEach(speedTestWebSite -> speedTestWebSite.setPath(preSignedUrls.get(speedTestWebSite.getKey()).getKey()));
     }
 
     private void uploadObject(URL url, String fileToUploadPath) {
@@ -178,7 +183,6 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
                 case 401:
                     ErrorMessage errorMessage = new ObjectMapper().readValue(message, ErrorMessage.class);
                     throw new LoginException(errorMessage.getError() + " " + errorMessage.getMessage());
-
 
                 default:
                     throw new RequestFailureException(message, statusCode);

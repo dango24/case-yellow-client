@@ -7,15 +7,18 @@ import com.google.gson.annotations.Expose;
  */
 public class SpeedTestWebSite {
 
+    @Expose
     private int key;
+
+    @Expose
+    private String webSiteDownloadInfoSnapshot;
+
     private boolean succeed;
     private String urlAddress;
     private String speedTestIdentifier;
     private String nonFlashResult;
+    private String path;
     private long startMeasuringTimestamp;
-
-    @Expose
-    private String webSiteDownloadInfoSnapshot;
 
     public SpeedTestWebSite() {
     }
@@ -90,6 +93,14 @@ public class SpeedTestWebSite {
 
     public void setNonFlashResult(String nonFlashResult) {
         this.nonFlashResult = nonFlashResult;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     @Override
