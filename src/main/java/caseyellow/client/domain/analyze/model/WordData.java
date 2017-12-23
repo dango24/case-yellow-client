@@ -1,6 +1,8 @@
 package caseyellow.client.domain.analyze.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WordData {
 
     private String locale;

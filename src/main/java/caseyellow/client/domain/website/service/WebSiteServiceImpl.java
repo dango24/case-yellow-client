@@ -28,7 +28,7 @@ import static caseyellow.client.common.Utils.takeScreenSnapshot;
 @Service
 public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
-    public static final int DELAY_TIME_BEFORE_SNAPSHOT = 2200;
+    public static final int DELAY_TIME_BEFORE_SNAPSHOT = 1200;
 
     private Logger logger = Logger.getLogger(WebSiteServiceImpl.class);
 
@@ -116,7 +116,8 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     private String waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
-            return browserService.waitForFlashTestToFinish(speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifier());
+            return browserService.waitForFlashTestToFinish(speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifier(),
+                                                           speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifiers());
         } else {
             return browserService.waitForTestToFinishByText(speedTestWebsite.getSpeedTestNonFlashMetaData().getFinishIdentifier(),
                                                             speedTestWebsite.getSpeedTestNonFlashMetaData());

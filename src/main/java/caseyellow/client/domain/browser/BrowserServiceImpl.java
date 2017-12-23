@@ -165,7 +165,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public String waitForFlashTestToFinish(String identifier) throws InterruptedException {
+    public String waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers) throws InterruptedException, BrowserFailedException {
         String logPayload;
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
         try {
@@ -179,6 +179,7 @@ public class BrowserServiceImpl implements BrowserService {
 
             } while (!logPayload.contains(identifier));
 
+            waitForFlashTestToFinish(identifiers);
             return "SUCCESS";
 
         } catch (IOException e) {
@@ -208,6 +209,26 @@ public class BrowserServiceImpl implements BrowserService {
 
         throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + speedTestNonFlashMetaData.getFinishTextIdentifier());
     }
+
+    private void waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
+        checkBrowser();
+
+        try {
+            int waitForTestToFinishInterval = waitForFinishIdentifier < 1000 ? 1 : (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
+            int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
+
+            waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false);
+
+        } catch (WebDriverException e) {
+            logger.error(e.getMessage());
+            throw new UserInterruptException(e.getMessage(), e);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new BrowserFailedException(e.getMessage(), e);
+        }
+    }
+
 
     private By getByIdentifier(String identifier) {
         String[] identifiers = identifier.split("=");

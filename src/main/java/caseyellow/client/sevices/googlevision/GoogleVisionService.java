@@ -18,7 +18,7 @@ import retrofit2.Retrofit;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 
-@Service
+//@Service
 public class GoogleVisionService implements OcrService {
 
     @Value("${google_vision_url}")
@@ -51,7 +51,7 @@ public class GoogleVisionService implements OcrService {
     public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException, RequestFailureException {
 
         GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
-        JsonNode response = requestHandler.execute(googleVisionRetrofitRequests.ocrRequest(gatewayService.googleVisionKey(), googleVisionRequest));
+        JsonNode response = requestHandler.execute(googleVisionRetrofitRequests.ocrRequest(googleVisionRequest));
         OcrResponse ocrData = parseResponse(response);
 
         return ocrData;

@@ -2,22 +2,22 @@ package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.interfaces.DataAccessService;
+import caseyellow.client.domain.interfaces.OcrService;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.LoginException;
+import caseyellow.client.exceptions.OcrParsingException;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.ErrorMessage;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
+import caseyellow.client.sevices.googlevision.model.GoogleVisionRequest;
+import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ import static java.util.stream.Collectors.toMap;
 
 @Profile("prod")
 @Service("gatewayService")
-public class GatewayServiceImpl implements GatewayService, DataAccessService {
+public class GatewayServiceImpl implements GatewayService, DataAccessService, OcrService {
 
     private Logger logger = Logger.getLogger(GatewayServiceImpl.class);
 
@@ -63,6 +63,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
     @Autowired
     public void setRequestHandler(RequestHandler requestHandler) {
         this.requestHandler = requestHandler;
+    }
+
+    @Override
+    public void cancelRequest() {
+        requestHandler.cancelRequest();
     }
 
     @Override
@@ -198,5 +203,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService {
         tokenHeader.put(TOKEN_HEADER, token);
 
         return tokenHeader;
+    }
+
+    @Override
+    public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException, RequestFailureException {
+        GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
+        return requestHandler.execute(gatewayRequests.ocrRequest(createTokenHeader(), googleVisionRequest));
     }
 }

@@ -14,6 +14,6 @@ public interface GoogleVisionRetrofitRequests {
         "Accept: application/json",
         "Content-Type: application/json"
     })
-    @POST("v1/images:annotate")
-    Call<JsonNode> ocrRequest(@Query("key")String key, @Body GoogleVisionRequest googleVisionRequest);
+    @POST("ocr_request")
+    Call<JsonNode> ocrRequest(@Body GoogleVisionRequest googleVisionRequest);
 }

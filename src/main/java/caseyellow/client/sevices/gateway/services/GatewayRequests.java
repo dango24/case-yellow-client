@@ -6,8 +6,8 @@ import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.GoogleVisionKey;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
+import caseyellow.client.sevices.googlevision.model.GoogleVisionRequest;
+import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -21,7 +21,6 @@ public interface GatewayRequests {
     })
     @POST("login")
     Call<Void> login(@Body AccountCredentials accountCredentials);
-
 
     @Headers({
             "Accept: application/json",
@@ -67,4 +66,11 @@ public interface GatewayRequests {
     })
     @GET("central/google-vision-key")
     Call<GoogleVisionKey> googleVisionKey(@HeaderMap Map<String, String> headers);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("ocr_request")
+    Call<OcrResponse> ocrRequest(@HeaderMap Map<String, String> headers, @Body GoogleVisionRequest googleVisionRequest);
 }

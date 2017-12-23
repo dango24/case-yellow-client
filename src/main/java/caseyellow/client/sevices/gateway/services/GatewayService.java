@@ -6,6 +6,6 @@ import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import java.io.IOException;
 
 public interface GatewayService {
-    boolean login(AccountCredentials accountCredentials) throws IOException, LoginException;
     String googleVisionKey();
+    boolean login(AccountCredentials accountCredentials) throws IOException, LoginException;
 }
