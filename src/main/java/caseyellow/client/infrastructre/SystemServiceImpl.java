@@ -41,6 +41,7 @@ import static java.util.Objects.nonNull;
 public class SystemServiceImpl implements SystemService {
 
     private static final String ETHERNET_IDENTIFIER = "eth";
+    public static final int TIMEOUT = 120;
 
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
 
@@ -71,7 +72,7 @@ public class SystemServiceImpl implements SystemService {
     public long copyURLToFile(URL source, File destination) throws IOException, InternalFailureException {
         try {
             copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
-            return copyURLToFileTask.get(120, TimeUnit.MINUTES);
+            return copyURLToFileTask.get(TIMEOUT, TimeUnit.MINUTES);
 
         } catch (InterruptedException | CancellationException e) {
             throw new UserInterruptException("User cancel download file request, " + e.getMessage(), e);
@@ -80,9 +81,9 @@ public class SystemServiceImpl implements SystemService {
             throw new InternalFailureException("Failed to download file, " + e.getMessage(), e);
 
         } catch (TimeoutException e) {
-            log.error("Reach timeout of 30 minutes for url: " + source.toString());
-            throw new InternalFailureException("Failed to download file, reach timeout of 30 minutes for url: " + source.toString() +
-                                               " cause: " + e.getMessage(), e);
+            log.error("Reach timeout of " + TIMEOUT + " minutes for url: " + source.toString());
+            throw new InternalFailureException("Failed to download file, reach timeout of " + TIMEOUT +
+                                               " minutes for url: " + source.toString() + " cause: " + e.getMessage(), e);
         }
     }
 
