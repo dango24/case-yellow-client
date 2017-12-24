@@ -53,7 +53,7 @@ public class TextAnalyzerImp implements TextAnalyzerService {
         wordDescription = buildMatchingWordsDescription(matchWordsInText);
 
         if (!matchIdentifiersInText(textIdentifiers, matchWordsInText)) {
-            logger.info("Not found text identifiers in text");
+            logger.error("Not found text identifiers in text, textIdentifiers: " + textIdentifiers + ", matchWordsInText: " + matchWordsInText);
             return DescriptionMatch.notFound();
         }
 

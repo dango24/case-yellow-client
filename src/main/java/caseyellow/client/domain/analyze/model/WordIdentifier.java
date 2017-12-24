@@ -48,4 +48,12 @@ public class WordIdentifier implements Comparable<WordIdentifier> {
     public int hashCode() {
         return identifier != null ? identifier.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "identifier='" + identifier + '\'' +
+                ", count=" + count +
+                '}';
+    }
 }

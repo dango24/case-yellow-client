@@ -54,4 +54,9 @@ public class WordData {
     public int hashCode() {
         return description != null ? description.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return description;
+    }
 }
