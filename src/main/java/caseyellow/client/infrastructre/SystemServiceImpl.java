@@ -69,7 +69,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public long copyURLToFile(URL source, File destination) throws IOException, InternalFailureException {
+    public long copyURLToFile(URL source, File destination) throws IOException, InternalFailureException, UserInterruptException {
         try {
             copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
             return copyURLToFileTask.get(TIMEOUT, TimeUnit.MINUTES);

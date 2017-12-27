@@ -1,6 +1,7 @@
 package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
+import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
@@ -66,6 +67,13 @@ public interface GatewayRequests {
     })
     @GET("central/google-vision-key")
     Call<GoogleVisionKey> googleVisionKey(@HeaderMap Map<String, String> headers);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("central/failed-test")
+    Call<Void> failedTest(@HeaderMap Map<String, String> headers, FailedTestDetails failedTestDetails);
 
     @Headers({
             "Accept: application/json",

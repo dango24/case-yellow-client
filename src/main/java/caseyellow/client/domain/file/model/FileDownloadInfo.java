@@ -70,7 +70,13 @@ public class FileDownloadInfo {
     }
 
     public static FileDownloadInfo emptyFileDownloadInfo() {
-        return new FileDownloadInfo();
+        return new FileDownloadInfoBuilder("test failed").addFileURL("noUrl")
+                                                                 .addFileDownloadedDurationTimeInMs(1)
+                                                                 .addFileSizeInBytes(1)
+                                                                 .addFileDownloadRateKBPerSec(1)
+                                                                 .addFileDownloadedDurationTimeInMs(1)
+                                                                 .addStartDownloadingTime(1)
+                                                                 .build();
     }
 
     @Override

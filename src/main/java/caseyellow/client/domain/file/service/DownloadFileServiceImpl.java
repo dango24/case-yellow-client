@@ -83,6 +83,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedDurationTimeInMs, fileSizeInBytes);
 
             systemService.deleteDirectory(tmpFile.getParentFile());
+            messagesService.showMessage(fileDownloadMetaData.getFileName() + " finish download, rate: " + fileDownloadRateKBPerSec + "KB per sec");
 
             return new FileDownloadInfo.FileDownloadInfoBuilder(fileDownloadMetaData.getFileName())
                                        .addFileURL(url.toString())
@@ -93,7 +94,6 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .build();
 
         } catch (IOException | InternalFailureException e) {
-            dataAccessService.sendErrorMessage(e.getMessage());
             logger.error("Failed to download file, " + e.getMessage(), e);
             throw new FileDownloadInfoException(e.getMessage());
         }

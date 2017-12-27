@@ -82,22 +82,23 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .build();
 
         } catch (BrowserFailedException e) {
-            handleError("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
+            logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
             return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                        .setFailure()
+                                       .setNonFlashResult(e.getMessage())
                                        .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
                                        .build();
 
         } catch (WebDriverException | InterruptedException e) {
-            handleError(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
             throw new UserInterruptException(e.getMessage(), e);
 
         } catch (UnknownHostException e) {
-            handleError(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
             throw new ConnectionException(e.getMessage(), e);
 
         } catch(Exception e) {
-            handleError(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
             throw new WebSiteDownloadInfoException(e.getMessage(), e);
 
         } finally {
@@ -127,10 +128,5 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     @Override
     public void close() throws IOException {
         browserService.closeBrowser();
-    }
-
-    private void handleError(String errorMessage, Exception e) {
-        dataAccessService.sendErrorMessage(errorMessage);
-        logger.error(errorMessage, e);
     }
 }

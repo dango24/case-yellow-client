@@ -4,6 +4,7 @@ import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.OcrService;
 import caseyellow.client.domain.test.model.ComparisonInfo;
+import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
@@ -34,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -49,6 +49,9 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
 
     @Value("${gateway_url}")
     private String gatewayUrl;
+
+    @Value("${failed_tests_dir}")
+    private String failedTestsDir;
 
     private String token;
     private RequestHandler requestHandler;
@@ -92,14 +95,24 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public void sendErrorMessage(String errorMessage) {
-//        requestHandler.execute(centralRequests.sendMessage(errorMessage));
-    }
-
-    @Override
     public void saveTest(Test test) throws RequestFailureException {
         uploadSnapshotImages(test);
         requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
+    }
+
+    @Override
+    public void notifyFailedTest(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {
+        PreSignedUrl preSignedUrl = generatePreSignedUrl(failedTestsDir, String.valueOf(failedSpeedTestWebSite.getKey()));
+        uploadObject(preSignedUrl.getPreSignedUrl(), String.valueOf(failedSpeedTestWebSite.getKey()));
+
+        FailedTestDetails failedTestDetails =
+                new FailedTestDetails.FailedTestDetailsBuilder()
+                                     .addIp(clientIP)
+                                     .addErrorMessage(failedSpeedTestWebSite.getNonFlashResult())
+                                     .addPath(preSignedUrl.getKey())
+                                     .build();
+
+        requestHandler.execute(gatewayRequests.failedTest(createTokenHeader(), failedTestDetails));
     }
 
     private void uploadSnapshotImages(Test test) {

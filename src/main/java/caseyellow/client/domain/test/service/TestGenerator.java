@@ -1,6 +1,5 @@
 package caseyellow.client.domain.test.service;
 
-import caseyellow.client.common.Validator;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.file.service.DownloadFileService;
 import caseyellow.client.domain.interfaces.DataAccessService;
@@ -80,10 +79,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
             try {
                 test = generateNewTest();
-
-                if (Validator.validateTest(test)) {
-                    saveTest(test);
-                }
+                saveTest(test);
 
             } catch (ConnectionException e) {
                 handleError("Connection with host failed, " + e.getMessage(), e);
@@ -98,7 +94,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         }
     }
 
-    private Test generateNewTest() throws UserInterruptException {
+    private Test generateNewTest() throws UserInterruptException, FileDownloadInfoException {
 
         SystemInfo systemInfo = systemService.getSystemInfo();
         SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
@@ -107,6 +103,8 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         List<ComparisonInfo> comparisonInfoList =
                 filesDownloadMetaData.stream()
                                      .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
+                                     .peek(comparisonInfo -> notifyFailedTest(comparisonInfo, systemInfo.getPublicIP()))
+                                     .filter(ComparisonInfo::isSuccess)
                                      .collect(toList());
 
         return new Test.TestBuilder(generateUniqueID())
@@ -117,12 +115,13 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     }
 
     private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestMetaData, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
-        FileDownloadInfo fileDownloadInfo = null;
+        FileDownloadInfo fileDownloadInfo;
         SpeedTestWebSite speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSite(speedTestMetaData);
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
             fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadMetaData);
-            messagesService.showMessage(fileDownloadInfo.getFileName() + " finish download, rate: " + fileDownloadInfo.getFileDownloadRateKBPerSec() + "KB per sec");
+        } else {
+            fileDownloadInfo = FileDownloadInfo.emptyFileDownloadInfo();
         }
 
         return new ComparisonInfo(speedTestWebSiteDownloadInfo, fileDownloadInfo);
@@ -134,13 +133,18 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                          .thenAccept(dataAccessService::saveTest);
     }
 
+    private void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) {
+        if (comparisonInfo.failed()) {
+            dataAccessService.notifyFailedTest(comparisonInfo.getSpeedTestWebSite(), clientIP);
+        }
+    }
+
     private Test saveTestExceptionHandler(Throwable e) {
         logger.error("Failed to save urls, " + e.getMessage(), e);
         return null;
     }
 
     private void handleError(String errorMessage, Exception e) {
-        dataAccessService.sendErrorMessage(errorMessage);
         logger.error(errorMessage, e);
     }
 

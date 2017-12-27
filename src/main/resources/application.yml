@@ -4,6 +4,8 @@ spring.main.web-environment: false
 # Profiles: prod, integration, dev
 spring.profiles.active: prod
 
+failed_tests_dir: failed-tests
+
 numOfComparisonPerTest : 3
 wait-for-test-to-finish-in-sec : 110
 wait-for-start-test-button-to-appear-in-sec : 20

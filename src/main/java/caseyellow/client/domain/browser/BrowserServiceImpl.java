@@ -155,7 +155,7 @@ public class BrowserServiceImpl implements BrowserService {
         try {
             int waitForTestToFinishInSec = getWaitForTestToFinishInSec(waitForStartButton);
             int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForTestToFinishInSec;
-            waitForImageAppearance(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true);
+            waitForImageAppearance(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true, "Start button");
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);
@@ -184,9 +184,8 @@ public class BrowserServiceImpl implements BrowserService {
 
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
+            throw new BrowserFailedException(e.getMessage(), e);
         }
-
-        return "FAILURE";
     }
 
     @Override
@@ -217,7 +216,7 @@ public class BrowserServiceImpl implements BrowserService {
             int waitForTestToFinishInterval = waitForFinishIdentifier < 1000 ? 1 : (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
             int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
 
-            waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false);
+            waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false, "finish");
 
         } catch (WebDriverException e) {
             logger.error(e.getMessage());
@@ -228,7 +227,6 @@ public class BrowserServiceImpl implements BrowserService {
             throw new BrowserFailedException(e.getMessage(), e);
         }
     }
-
 
     private By getByIdentifier(String identifier) {
         String[] identifiers = identifier.split("=");
@@ -252,7 +250,7 @@ public class BrowserServiceImpl implements BrowserService {
         return waitForStartButton < 1000 ? 1 : (int) TimeUnit.MILLISECONDS.toSeconds(waitForStartButton);
     }
 
-    private boolean waitForImageAppearance(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage) throws IOException, InterruptedException, BrowserFailedException, RequestFailureException {
+    private boolean waitForImageAppearance(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage, String findImageStatus) throws IOException, InterruptedException, BrowserFailedException, RequestFailureException {
         int currentAttempt = 0;
 
         do {
@@ -274,11 +272,10 @@ public class BrowserServiceImpl implements BrowserService {
 
         } while (++currentAttempt < numOfAttempts);
 
-        throw new BrowserFailedException("Failure to find finish test identifiers: " + textIdentifiers);
+        throw new BrowserFailedException("Failure to find " + findImageStatus + " test identifiers: " + textIdentifiers);
     }
 
     private void handleError(String errorMessage, Exception e) {
-        dataAccessService.sendErrorMessage(errorMessage);
         logger.error(errorMessage, e);
     }
 
