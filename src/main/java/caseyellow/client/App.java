@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 
 import javax.swing.JOptionPane;
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -28,13 +28,13 @@ public class App {
 
     private static MainFormImpl mainForm;
 
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws Exception {
         initView();
         initForkJoinCommonPool();
         initApplicationContext(args);
     }
 
-    private static void initView() {
+    private static void initView() throws IOException {
         mainForm = new MainFormImpl();
         mainForm.view();
     }

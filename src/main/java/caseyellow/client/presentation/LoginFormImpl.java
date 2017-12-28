@@ -3,8 +3,10 @@ package caseyellow.client.presentation;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.stream.Stream;
 
+import static caseyellow.client.common.Utils.getTempFileFromResources;
 import static java.util.stream.Collectors.joining;
 
 public class LoginFormImpl extends JFrame implements LoginForm {
@@ -15,11 +17,20 @@ public class LoginFormImpl extends JFrame implements LoginForm {
     private JPasswordField passwordText;
     private MainFrame mainFrame;
 
-    public LoginFormImpl(MainFrame mainFrame) throws HeadlessException {
+    public LoginFormImpl(MainFrame mainFrame) throws HeadlessException, IOException {
         super("Login");
         this.mainFrame = mainFrame;
+        setIcon();
         init();
     }
+
+
+    private void setIcon() throws IOException {
+        String pathToFileOnDisk = getTempFileFromResources("icon/login_icon.png").getAbsolutePath();
+        ImageIcon img = new ImageIcon(pathToFileOnDisk);
+        this.setIconImage(img.getImage());
+    }
+
 
     private void init() {
         this.setSize(300, 170);

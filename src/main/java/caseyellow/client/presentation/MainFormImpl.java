@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static caseyellow.client.common.Messages.churchillSpeech;
+import static caseyellow.client.common.Utils.getTempFileFromResources;
 
 /**
  * Created by Dan on 7/7/2017.
@@ -40,13 +41,20 @@ public class MainFormImpl implements MessagesService, MainFrame {
     private int currentTest;
 
     // Constructor
-    public MainFormImpl() {
+    public MainFormImpl() throws IOException {
         mainFrame = new JFrame("Case Yellow");
-        buildComponents();
         currentTest = 0;
+        setIcon();
+        buildComponents();
     }
 
-    private void buildComponents() {
+    private void setIcon() throws IOException {
+        String pathToFileOnDisk = getTempFileFromResources("icon/main_icon.png").getAbsolutePath();
+        ImageIcon img = new ImageIcon(pathToFileOnDisk);
+        mainFrame.setIconImage(img.getImage());
+    }
+
+    private void buildComponents() throws IOException {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
         buildButtons();
