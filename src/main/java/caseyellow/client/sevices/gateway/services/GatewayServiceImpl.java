@@ -103,7 +103,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     @Override
     public void notifyFailedTest(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {
         PreSignedUrl preSignedUrl = generatePreSignedUrl(failedTestsDir, String.valueOf(failedSpeedTestWebSite.getKey()));
-        uploadObject(preSignedUrl.getPreSignedUrl(), String.valueOf(failedSpeedTestWebSite.getKey()));
+        uploadObject(preSignedUrl.getPreSignedUrl(), failedSpeedTestWebSite.getWebSiteDownloadInfoSnapshot());
 
         FailedTestDetails failedTestDetails =
                 new FailedTestDetails.FailedTestDetailsBuilder()

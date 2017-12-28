@@ -107,6 +107,8 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                                      .filter(ComparisonInfo::isSuccess)
                                      .collect(toList());
 
+        messagesService.testDone();
+
         return new Test.TestBuilder(generateUniqueID())
                        .addSpeedTestWebsite(speedTestWebSite.getIdentifier())
                        .addComparisonInfoTests(comparisonInfoList)
@@ -116,6 +118,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
     private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestMetaData, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo;
+        messagesService.subTestStart();
         SpeedTestWebSite speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSite(speedTestMetaData);
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
@@ -135,6 +138,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
     private void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) {
         if (comparisonInfo.failed()) {
+            logger.info("Receive failed test: " + comparisonInfo.getSpeedTestWebSite());
             dataAccessService.notifyFailedTest(comparisonInfo.getSpeedTestWebSite(), clientIP);
         }
     }

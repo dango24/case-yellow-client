@@ -5,4 +5,6 @@ package caseyellow.client.domain.interfaces;
  */
 public interface MessagesService {
     void showMessage(String message);
+    void subTestStart();
+    void testDone();
 }

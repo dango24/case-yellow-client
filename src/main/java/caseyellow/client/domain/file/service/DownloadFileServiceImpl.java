@@ -73,7 +73,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             url = new URL(fileDownloadMetaData.getFileURL());
             tmpFile = new File(createTmpDir(), fileDownloadMetaData.getFileName());
 
-            String message = "Start measuring and downloading file: " + fileDownloadMetaData.getFileName() + ", from url: " + fileDownloadMetaData.getFileURL();
+            String message = "Downloading file: " + fileDownloadMetaData.getFileName() + ", from url: " + fileDownloadMetaData.getFileURL();
             logger.info(message);
             messagesService.showMessage(message);
 

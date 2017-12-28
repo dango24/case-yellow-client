@@ -16,4 +16,14 @@ public class MessageServiceImp implements MessagesService {
     public void showMessage(String message) {
         presentationMessagesService.showMessage(message);
     }
+
+    @Override
+    public void subTestStart() {
+        presentationMessagesService.subTestStart();
+    }
+
+    @Override
+    public void testDone() {
+        presentationMessagesService.testDone();
+    }
 }

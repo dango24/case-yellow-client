@@ -6,4 +6,6 @@ import java.io.IOException;
 
 public interface MainFrame {
     void login(String userName, String password) throws IOException, LoginException;
+    void subTestStart();
+    void testDone();
 }

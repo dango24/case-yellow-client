@@ -37,11 +37,13 @@ public class MainFormImpl implements MessagesService, MainFrame {
     private StartProducingTestsCommand startProducingTestsCommand;
     private StopProducingTestsCommand stopProducingTestsCommand;
     private GatewayService gatewayService;
+    private int currentTest;
 
     // Constructor
     public MainFormImpl() {
         mainFrame = new JFrame("Case Yellow");
         buildComponents();
+        currentTest = 0;
     }
 
     private void buildComponents() {
@@ -82,7 +84,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
 
     @Override
     public void showMessage(String message) {
-        message = new SimpleDateFormat(dateFormatter).format(new Date()) + " - " + message;
+        message = new SimpleDateFormat(dateFormatter).format(new Date()) + " - Test Num " + currentTest + ": " + message;
         logger.info("Message show to the user: " + message);
         showMessageToUser(message);
     }
@@ -116,6 +118,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
 
     private void stopProducingTests() {
         logger.info("Stop button pressed");
+        testDone();
         showMessage("App halt, stop production tests");
         SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         SwingUtilities.invokeLater(() -> stopButton.setEnabled(false));
@@ -148,5 +151,15 @@ public class MainFormImpl implements MessagesService, MainFrame {
             SwingUtilities.invokeLater(() -> loginForm.close());
             SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         }
+    }
+
+    @Override
+    public void subTestStart() {
+        SwingUtilities.invokeLater(() -> currentTest++);
+    }
+
+    @Override
+    public void testDone() {
+        SwingUtilities.invokeLater(() -> currentTest = 0);
     }
 }
