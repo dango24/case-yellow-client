@@ -125,8 +125,8 @@ public class MainFormImpl implements MessagesService, MainFrame {
     }
 
     private void stopProducingTests() {
-        logger.info("Stop button pressed");
         testDone();
+        logger.info("Stop button pressed");
         showMessage("App halt, stop production tests");
         SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         SwingUtilities.invokeLater(() -> stopButton.setEnabled(false));
