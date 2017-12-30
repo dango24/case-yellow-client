@@ -5,16 +5,20 @@ import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
-import caseyellow.client.domain.interfaces.DataAccessService;
+import caseyellow.client.domain.website.model.Command;
+import caseyellow.client.domain.website.model.Role;
 import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.interfaces.OcrService;
 import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,10 +27,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +50,6 @@ public class BrowserServiceImpl implements BrowserService {
     @Value("${wait-for-start-test-button-to-appear-in-sec}")
     private final int waitForStartTestButtonToAppearInSec = 20;
 
-
     @Value("${wait-for-start-button}")
     private final int waitForStartButton = 900;
 
@@ -62,7 +62,6 @@ public class BrowserServiceImpl implements BrowserService {
     private String logPath;
     private WebDriver webDriver;
     private OcrService ocrService;
-    private DataAccessService dataAccessService;
     private TextAnalyzerService textAnalyzer;
 
     @PostConstruct
@@ -100,11 +99,6 @@ public class BrowserServiceImpl implements BrowserService {
     @Autowired
     public void setTextAnalyzer(TextAnalyzerService textAnalyzer) {
         this.textAnalyzer = textAnalyzer;
-    }
-
-    @Autowired
-    public void setDataAccessService(DataAccessService dataAccessService) {
-        this.dataAccessService = dataAccessService;
     }
 
     @Override
@@ -165,12 +159,13 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public String waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers) throws InterruptedException, BrowserFailedException {
+    public String waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers, List<Role> roles) throws InterruptedException, BrowserFailedException {
         String logPayload;
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
         try {
             do {
                 TimeUnit.MILLISECONDS.sleep(800);
+                roles.forEach(this::executeRole);
                 logPayload = Utils.readFile(logPath);
 
                 if (System.currentTimeMillis() > timeout) {
@@ -185,6 +180,35 @@ public class BrowserServiceImpl implements BrowserService {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new BrowserFailedException(e.getMessage(), e);
+        }
+    }
+
+    private void executeRole(Role role) {
+        if (!role.isExecuted()) {
+            By by = getByIdentifier(role.getIdentifier());
+
+            try {
+                WebElement webElement = webDriver.findElement(by);
+                executeCommand(webElement, role.getCommand());
+
+                if (role.isMono()) {
+                    logger.info("Role: " + role + " has executed");
+                    role.done();
+                }
+
+            } catch (NoSuchElementException e) {
+                logger.info("Not Found the requested element");
+            }
+        }
+    }
+
+    private void executeCommand(WebElement webElement, Command command) {
+        switch (command) {
+            case CLICK:
+                WebDriverWait wait = new WebDriverWait(webDriver, 30);
+                wait.until(ExpectedConditions.elementToBeClickable(webElement));
+                webElement.click();
+                break;
         }
     }
 
@@ -231,8 +255,18 @@ public class BrowserServiceImpl implements BrowserService {
     private By getByIdentifier(String identifier) {
         String[] identifiers = identifier.split("=");
 
-        return identifiers[0].equals("id") ? By.id(identifiers[1]) :
-                                             By.className(identifiers[1]);
+        switch (identifiers[0]) {
+
+            case "id" :
+                return By.id(identifiers[1]);
+            case "class":
+                return By.className(identifiers[1]);
+            case "cssSelector":
+                return By.cssSelector(identifiers[1]);
+
+            default:
+                return By.id(identifiers[1]);
+        }
     }
 
     private void checkBrowser() throws BrowserFailedException {
