@@ -1,6 +1,4 @@
-package caseyellow.client.sevices.googlevision.model;
-
-import caseyellow.client.sevices.googlevision.model.VisionRequest;
+package caseyellow.client.domain.analyze.model;
 
 import java.io.IOException;
 import java.util.ArrayList;

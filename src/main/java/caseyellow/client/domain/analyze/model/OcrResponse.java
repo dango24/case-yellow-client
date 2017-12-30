@@ -1,4 +1,4 @@
-package caseyellow.client.sevices.googlevision.model;
+package caseyellow.client.domain.analyze.model;
 
 import caseyellow.client.domain.analyze.model.WordData;
 

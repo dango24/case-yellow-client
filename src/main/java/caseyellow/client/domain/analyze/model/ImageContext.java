@@ -1,4 +1,4 @@
-package caseyellow.client.sevices.googlevision.model;
+package caseyellow.client.domain.analyze.model;
 
 import java.util.ArrayList;
 import java.util.List;

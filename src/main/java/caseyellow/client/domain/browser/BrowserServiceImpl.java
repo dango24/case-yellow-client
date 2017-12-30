@@ -1,6 +1,7 @@
 package caseyellow.client.domain.browser;
 
 import caseyellow.client.common.Utils;
+import caseyellow.client.domain.analyze.model.OcrResponse;
 import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
@@ -10,7 +11,6 @@ import caseyellow.client.domain.website.model.Role;
 import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.interfaces.OcrService;
-import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;

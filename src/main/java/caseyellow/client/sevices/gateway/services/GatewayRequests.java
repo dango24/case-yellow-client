@@ -1,5 +1,7 @@
 package caseyellow.client.sevices.gateway.services;
 
+import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
+import caseyellow.client.domain.analyze.model.OcrResponse;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
@@ -7,8 +9,6 @@ import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.GoogleVisionKey;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
-import caseyellow.client.sevices.googlevision.model.GoogleVisionRequest;
-import caseyellow.client.sevices.googlevision.model.OcrResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
 

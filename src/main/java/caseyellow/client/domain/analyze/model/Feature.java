@@ -1,4 +1,4 @@
-package caseyellow.client.sevices.googlevision.model;
+package caseyellow.client.domain.analyze.model;
 
 public class Feature {
 
