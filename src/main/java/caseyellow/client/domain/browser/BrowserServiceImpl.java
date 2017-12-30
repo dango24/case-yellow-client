@@ -165,7 +165,7 @@ public class BrowserServiceImpl implements BrowserService {
         try {
             do {
                 TimeUnit.MILLISECONDS.sleep(800);
-                roles.forEach(this::executeRole);
+                executeRoles(roles);
                 logPayload = Utils.readFile(logPath);
 
                 if (System.currentTimeMillis() > timeout) {
@@ -180,6 +180,12 @@ public class BrowserServiceImpl implements BrowserService {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new BrowserFailedException(e.getMessage(), e);
+        }
+    }
+
+    private void executeRoles(List<Role> roles) {
+        if (nonNull(roles)) {
+            roles.forEach(this::executeRole);
         }
     }
 

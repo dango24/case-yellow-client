@@ -154,7 +154,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
     private void handleLostConnection() throws InterruptedException {
         logger.info("Wait for 20 seconds before new attempt to produce new test");
-        TimeUnit.SECONDS.sleep(20);
+        TimeUnit.SECONDS.sleep(30);
     }
 
     @Override

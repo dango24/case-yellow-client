@@ -117,6 +117,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     private String waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
+            speedTestWebsite.resetAllRules();
             return browserService.waitForFlashTestToFinish(speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifier(),
                                                            speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifiers(),
                                                            speedTestWebsite.getRoles());

@@ -41,7 +41,7 @@ import static java.util.Objects.nonNull;
 public class SystemServiceImpl implements SystemService {
 
     private static final String ETHERNET_IDENTIFIER = "eth";
-    public static final int TIMEOUT = 120;
+    public static final int TIMEOUT = 90;
 
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
 

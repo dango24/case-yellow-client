@@ -85,4 +85,8 @@ public class SpeedTestMetaData {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
+
+    public void resetAllRules() {
+        roles.forEach(role -> role.setExecuted(false));
+    }
 }
