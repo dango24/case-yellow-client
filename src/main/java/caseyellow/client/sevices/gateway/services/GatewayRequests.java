@@ -73,7 +73,7 @@ public interface GatewayRequests {
             "Content-Type: application/json"
     })
     @POST("central/failed-test")
-    Call<Void> failedTest(@HeaderMap Map<String, String> headers, FailedTestDetails failedTestDetails);
+    Call<Void> failedTest(@HeaderMap Map<String, String> headers, @Body FailedTestDetails failedTestDetails);
 
     @Headers({
             "Accept: application/json",
