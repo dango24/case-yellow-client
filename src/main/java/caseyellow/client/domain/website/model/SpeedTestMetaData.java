@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SpeedTestMetaData {
 
@@ -87,6 +89,8 @@ public class SpeedTestMetaData {
     }
 
     public void resetAllRules() {
-        roles.forEach(role -> role.setExecuted(false));
+        if (nonNull(roles)) {
+            roles.forEach(role -> role.setExecuted(false));
+        }
     }
 }
