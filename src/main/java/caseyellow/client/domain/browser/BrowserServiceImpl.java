@@ -132,7 +132,11 @@ public class BrowserServiceImpl implements BrowserService {
         try {
             TimeUnit.MILLISECONDS.sleep(900);
             By by = getByIdentifier(btnIdentifier);
-            webDriver.findElement(by).click();
+
+            WebDriverWait wait = new WebDriverWait(webDriver, 45);
+            wait.until(ExpectedConditions.elementToBeClickable(by));
+            WebElement webElement = webDriver.findElement(by);
+            webElement.click();
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);

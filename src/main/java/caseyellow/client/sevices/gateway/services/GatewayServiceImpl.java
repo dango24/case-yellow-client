@@ -2,6 +2,7 @@ package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
 import caseyellow.client.domain.analyze.model.OcrResponse;
+import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.OcrService;
@@ -101,18 +102,40 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public void notifyFailedTest(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {
-        PreSignedUrl preSignedUrl = generatePreSignedUrl(failedTestsDir, String.valueOf(failedSpeedTestWebSite.getKey()));
-        uploadObject(preSignedUrl.getPreSignedUrl(), failedSpeedTestWebSite.getWebSiteDownloadInfoSnapshot());
+    public void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) {
+        FailedTestDetails failedTestDetails;
 
-        FailedTestDetails failedTestDetails =
-                new FailedTestDetails.FailedTestDetailsBuilder()
-                                     .addIp(clientIP)
-                                     .addErrorMessage(failedSpeedTestWebSite.getNonFlashResult())
-                                     .addPath(preSignedUrl.getKey())
-                                     .build();
+        if (!comparisonInfo.getSpeedTestWebSite().isSucceed()) {
+            failedTestDetails = createFailedTestFromSpeedTestWebSite(comparisonInfo.getSpeedTestWebSite(), clientIP);
+        } else {
+            failedTestDetails = createFailedTestFromFileDownloadInfo(comparisonInfo.getFileDownloadInfo(), clientIP);
+        }
 
         requestHandler.execute(gatewayRequests.failedTest(createTokenHeader(), failedTestDetails));
+    }
+
+    private FailedTestDetails createFailedTestFromSpeedTestWebSite(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {
+        logger.error("Receive failed test: " + failedSpeedTestWebSite);
+        PreSignedUrl preSignedUrl = generatePreSignedUrl(failedTestsDir, String.valueOf(failedSpeedTestWebSite.getKey()));
+        uploadObject(preSignedUrl.getPreSignedUrl(), failedSpeedTestWebSite.getWebSiteDownloadInfoSnapshot());
+        String message = "Identifier: " + failedSpeedTestWebSite.getSpeedTestIdentifier() + ", cause: " + failedSpeedTestWebSite.getMessage();
+
+        return new FailedTestDetails.FailedTestDetailsBuilder()
+                                    .addIp(clientIP)
+                                    .addErrorMessage(message)
+                                    .addPath(preSignedUrl.getKey())
+                                    .build();
+    }
+
+    private FailedTestDetails createFailedTestFromFileDownloadInfo(FileDownloadInfo failedFileDownloadInfo, String clientIP) {
+        logger.error("Receive failed test: " + failedFileDownloadInfo);
+        String message = "Identifier: " + failedFileDownloadInfo.getFileName() + ", cause: " + failedFileDownloadInfo.getMessage();
+
+        return new FailedTestDetails.FailedTestDetailsBuilder()
+                .addIp(clientIP)
+                .addErrorMessage(message)
+                .addPath(failedFileDownloadInfo.getFileURL())
+                .build();
     }
 
     private void uploadSnapshotImages(Test test) {

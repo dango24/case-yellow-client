@@ -138,8 +138,8 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
 
     private void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) {
         if (comparisonInfo.failed()) {
-            logger.info("Receive failed test: " + comparisonInfo.getSpeedTestWebSite());
-            dataAccessService.notifyFailedTest(comparisonInfo.getSpeedTestWebSite(), clientIP);
+            messagesService.testDone();
+            dataAccessService.notifyFailedTest(comparisonInfo, clientIP);
         }
     }
 

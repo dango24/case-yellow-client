@@ -13,6 +13,9 @@ public class SpeedTestWebSite {
     @Expose
     private String webSiteDownloadInfoSnapshot;
 
+    @Expose
+    private String message;
+
     private boolean succeed;
     private String urlAddress;
     private String speedTestIdentifier;
@@ -28,7 +31,8 @@ public class SpeedTestWebSite {
                             long startDownloadingTime,
                             String webSiteDownloadInfoSnapshot,
                             String urlAddress,
-                            String result) {
+                            String result,
+                            String message) {
 
         this.succeed = succeed;
         this.speedTestIdentifier = speedTestIdentifier;
@@ -36,6 +40,7 @@ public class SpeedTestWebSite {
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
         this.urlAddress = urlAddress;
         this.nonFlashResult = result;
+        this.message = message;
         this.key = webSiteDownloadInfoSnapshot.hashCode();
     }
 
@@ -69,6 +74,14 @@ public class SpeedTestWebSite {
 
     public void setWebSiteDownloadInfoSnapshot(String webSiteDownloadInfoSnapshot) {
         this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getUrlAddress() {
@@ -113,7 +126,6 @@ public class SpeedTestWebSite {
                 '}';
     }
 
-
     public static class SpeedTestWebSiteDownloadInfoBuilder {
 
         private boolean succeed;
@@ -122,6 +134,7 @@ public class SpeedTestWebSite {
         private String urlAddress;
         private String nonFlashResult;
         private String webSiteDownloadInfoSnapshot;
+        private String message;
 
         public SpeedTestWebSiteDownloadInfoBuilder(String speedTestIdentifier) {
             this.speedTestIdentifier = speedTestIdentifier;
@@ -157,10 +170,15 @@ public class SpeedTestWebSite {
             return this;
         }
 
+        public SpeedTestWebSiteDownloadInfoBuilder setMessage(String message) {
+            this.message = message;
+            return this;
+        }
+
         public SpeedTestWebSite build() {
             return new SpeedTestWebSite(speedTestIdentifier, succeed,
                                         startDownloadingTime, webSiteDownloadInfoSnapshot,
-                                        urlAddress, nonFlashResult);
+                                        urlAddress, nonFlashResult, message);
         }
 
     }

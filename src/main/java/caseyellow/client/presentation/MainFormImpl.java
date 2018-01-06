@@ -169,5 +169,6 @@ public class MainFormImpl implements MessagesService, MainFrame {
     @Override
     public void testDone() {
         SwingUtilities.invokeLater(() -> currentTest = 0);
+        showMessage("Test Done");
     }
 }

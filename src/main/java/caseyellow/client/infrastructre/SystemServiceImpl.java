@@ -69,7 +69,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public long copyURLToFile(URL source, File destination) throws IOException, InternalFailureException, UserInterruptException {
+    public long copyURLToFile(URL source, File destination) throws FileDownloadInfoException, UserInterruptException {
         try {
             copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
             return copyURLToFileTask.get(TIMEOUT, TimeUnit.MINUTES);
@@ -78,16 +78,16 @@ public class SystemServiceImpl implements SystemService {
             throw new UserInterruptException("User cancel download file request, " + e.getMessage(), e);
 
         } catch (ExecutionException e) {
-            throw new InternalFailureException("Failed to download file, " + e.getMessage(), e);
+            throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
 
         } catch (TimeoutException e) {
             log.error("Reach timeout of " + TIMEOUT + " minutes for url: " + source.toString());
-            throw new InternalFailureException("Failed to download file, reach timeout of " + TIMEOUT +
-                                               " minutes for url: " + source.toString() + " cause: " + e.getMessage(), e);
+            throw new FileDownloadInfoException("Failed to download file, reach timeout of " + TIMEOUT +
+                                                " minutes for url: " + source.toString() + " cause: " + e.getMessage(), e);
         }
     }
 
-    private long executeCopyURLToFile(URL source, File destination) {
+    private long executeCopyURLToFile(URL source, File destination) throws FileDownloadInfoException {
         String threadOriginalName = Thread.currentThread().getName();
         Thread.currentThread().setName("copy url to file thread");
 

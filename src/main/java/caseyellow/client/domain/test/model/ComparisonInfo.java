@@ -21,7 +21,7 @@ public class ComparisonInfo {
     public ComparisonInfo(SpeedTestWebSite speedTestWebSiteDownloadInfo, FileDownloadInfo fileDownloadInfo) {
         this.fileDownloadInfo = fileDownloadInfo;
         this.speedTestWebSite = speedTestWebSiteDownloadInfo;
-        this.success = speedTestWebSite.isSucceed();
+        this.success = speedTestWebSite.isSucceed() && fileDownloadInfo.isSucceed();
     }
 
     public boolean isSuccess() {

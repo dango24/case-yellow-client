@@ -85,7 +85,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
             return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                        .setFailure()
-                                       .setNonFlashResult(e.getMessage())
+                                       .setMessage(e.getMessage())
                                        .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
                                        .build();
 

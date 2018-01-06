@@ -1,5 +1,7 @@
 package caseyellow.client.domain.file.model;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Created by Dan on 04/10/2016.
  */
@@ -11,6 +13,12 @@ public class FileDownloadInfo {
     private double fileDownloadRateKBPerSec;
     private long   fileDownloadedDurationTimeInMs;
     private long   startDownloadingTimestamp;
+
+    @Expose
+    private boolean succeed;
+
+    @Expose
+    private String message;
 
     public FileDownloadInfo() {}
 
@@ -25,6 +33,7 @@ public class FileDownloadInfo {
         fileDownloadRateKBPerSec = fileDownloadInfoBuilder.fileDownloadRateKBPerSec;
         fileDownloadedDurationTimeInMs = fileDownloadInfoBuilder.fileDownloadedDurationTimeInMs;
         startDownloadingTimestamp = fileDownloadInfoBuilder.startDownloadingTimestamp;
+        succeed = fileDownloadInfoBuilder.succeed;
     }
 
     public String getFileURL() {
@@ -69,6 +78,34 @@ public class FileDownloadInfo {
         this.fileDownloadRateKBPerSec = fileDownloadRateKBPerSec;
     }
 
+    public void setFileURL(String fileURL) {
+        this.fileURL = fileURL;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isSucceed() {
+        return succeed;
+    }
+
+    public void setSucceed(boolean succeed) {
+        this.succeed = succeed;
+    }
+
+    public static FileDownloadInfo errorFileDownloadInfo(String url, String message) {
+        FileDownloadInfo fileDownloadInfo = new FileDownloadInfo(url);
+        fileDownloadInfo.setMessage(message);
+        fileDownloadInfo.setSucceed(false);
+
+        return fileDownloadInfo;
+    }
+
     public static FileDownloadInfo emptyFileDownloadInfo() {
         return new FileDownloadInfoBuilder("test failed").addFileURL("noUrl")
                                                                  .addFileDownloadedDurationTimeInMs(1)
@@ -93,6 +130,7 @@ public class FileDownloadInfo {
     public static class FileDownloadInfoBuilder {
 
         // Fields
+        private boolean succeed;
         private String fileURL;
         private String fileName;
         private long   fileSizeInBytes;
@@ -134,8 +172,14 @@ public class FileDownloadInfo {
             return this;
         }
 
+        public FileDownloadInfoBuilder addSucceed() {
+            this.succeed = true;
+            return this;
+        }
+
         public FileDownloadInfo build() {
             return new FileDownloadInfo(this);
         }
+
     }
 }

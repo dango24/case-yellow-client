@@ -8,7 +8,7 @@ import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.interfaces.URLToFileService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
-import caseyellow.client.exceptions.InternalFailureException;
+import caseyellow.client.exceptions.UserInterruptException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -61,7 +61,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     }
 
     @Override
-    public FileDownloadInfo generateFileDownloadInfo(FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException {
+    public FileDownloadInfo generateFileDownloadInfo(FileDownloadMetaData fileDownloadMetaData) throws UserInterruptException {
         URL url;
         File tmpFile;
         long fileSizeInBytes;
@@ -86,6 +86,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             messagesService.showMessage(fileDownloadMetaData.getFileName() + " finish download, rate: " + fileDownloadRateKBPerSec + "KB per sec");
 
             return new FileDownloadInfo.FileDownloadInfoBuilder(fileDownloadMetaData.getFileName())
+                                       .addSucceed()
                                        .addFileURL(url.toString())
                                        .addFileSizeInBytes(fileSizeInBytes)
                                        .addFileDownloadRateKBPerSec(fileDownloadRateKBPerSec)
@@ -93,9 +94,9 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
 
-        } catch (IOException | InternalFailureException e) {
+        } catch (IOException | FileDownloadInfoException e) {
             logger.error("Failed to download file, " + e.getMessage(), e);
-            throw new FileDownloadInfoException(e.getMessage());
+            return FileDownloadInfo.errorFileDownloadInfo(fileDownloadMetaData.getFileURL(), e.getMessage());
         }
     }
 
