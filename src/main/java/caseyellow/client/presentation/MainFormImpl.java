@@ -22,6 +22,7 @@ import static caseyellow.client.common.Utils.getTempFileFromResources;
  */
 public class MainFormImpl implements MessagesService, MainFrame {
 
+    private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
     private final String dateFormatter = "HH:mm:ss";
     private Logger logger = Logger.getLogger(MainFormImpl.class);
 
@@ -92,7 +93,8 @@ public class MainFormImpl implements MessagesService, MainFrame {
 
     @Override
     public void showMessage(String message) {
-        message = new SimpleDateFormat(dateFormatter).format(new Date()) + " - Test Num " + currentTest + ": " + message;
+        String testMessage = String.format(TEST_MESSAGE_SCHEMA, currentTest);
+        message = new SimpleDateFormat(dateFormatter).format(new Date()) + testMessage + message;
         logger.info("Message show to the user: " + message);
         showMessageToUser(message);
     }

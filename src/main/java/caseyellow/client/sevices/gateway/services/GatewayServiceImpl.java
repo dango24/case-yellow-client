@@ -47,6 +47,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
 
     private static final String TOKEN_PREFIX = "Bearer";
     private static final String TOKEN_HEADER = "Authorization";
+    private static final String USER_HEADER = "Case-Yellow-User";
 
     @Value("${gateway_url}")
     private String gatewayUrl;
@@ -54,6 +55,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     @Value("${failed_tests_dir}")
     private String failedTestsDir;
 
+    private String user;
     private String token;
     private RequestHandler requestHandler;
     private GatewayRequests gatewayRequests;
@@ -83,6 +85,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
                 throw new LoginException("There is no authentication header at the login request");
             }
 
+            user = accountCredentials.getUsername();
             token = headers.get(TOKEN_HEADER)
                            .replaceAll(TOKEN_PREFIX, "")
                            .trim();
@@ -232,6 +235,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     private Map<String, String> createTokenHeader() {
         Map<String, String> tokenHeader = new HashMap<>();
         tokenHeader.put(TOKEN_HEADER, token);
+        tokenHeader.put(USER_HEADER, user);
 
         return tokenHeader;
     }
