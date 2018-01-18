@@ -112,10 +112,17 @@ public class MainFormImpl implements MessagesService, MainFrame {
         showMessage(churchillSpeech());
     }
 
-    public void disableApp() {
-        startButton.setEnabled(false);
-        stopButton.setEnabled(false);
+    @Override
+    public void disableApp(boolean tokenExpired) {
         stopProducingTests();
+        SwingUtilities.invokeLater(() -> startButton.setEnabled(false));
+        SwingUtilities.invokeLater(() -> stopButton.setEnabled(false));
+
+        if (tokenExpired) {
+            showMessageToUser("Your account expired please login again");
+            JOptionPane.showMessageDialog(null, "Your account expired please login again");
+            loginForm.view();
+        }
     }
 
     private void startProducingTests() {
@@ -158,6 +165,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
 
         if (loginSucceed) {
             JOptionPane.showMessageDialog(null, "Justice will be served");
+            showMessageToUser("On The Side Of Angles");
             SwingUtilities.invokeLater(() -> loginForm.close());
             SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         }

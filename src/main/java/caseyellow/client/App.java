@@ -55,6 +55,7 @@ public class App {
             MessageServiceImp messagesService = (MessageServiceImp) ctx.getBean("messageServiceImp");
             GatewayService gatewayService = (GatewayService) ctx.getBean("gatewayService");
 
+            testService.setMainFrame(mainForm);
             messagesService.setPresentationMessagesService(mainForm);
             mainForm.setStartProducingTestsCommand(testService);
             mainForm.setStopProducingTestsCommand(testService);

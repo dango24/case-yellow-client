@@ -25,20 +25,4 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
-  file: logs\\client_log.log
-
-urlInfo :
-    https://ftp.mozilla.org/pub/firefox/releases/37.0b1/win32/en-US/Firefox%20Setup%2037.0b1.exe : firefox
-    https://storage.googleapis.com/golang/go1.7.1.windows-amd64.msi : go
-    https://sdk-for-java.amazonwebservices.com/latest/aws-java-sdk.zip : java-sdk
-    https://get.enterprisedb.com/postgresql/postgresql-10.0-1-windows-x64.exe : postgres
-    https://download.microsoft.com/download/F/2/D/F2D1012E-3BC6-49C5-B8B3-5ACFF58AF7B8/KinectSDK-v2.0_1409-Setup.exe : kinect
-    https://secure-appldnld.apple.com/itunes12/031-69284-20160802-7E7B2D20-552B-11E6-B2B9-696CECD541CE/iTunes64Setup.exe : itunes
-
-websiteInfo :
-  atnt : ATNTSpeedTestWebSite
-  bezeq : BezeqSpeedTestWebSite
-  fast : FastSpeedTestWebSite
-  hot : HotSpeedTestWebSite
-  ookla : OoklaSpeedTestWebSite
-  speedof : SpeedOfSpeedTestWebSite
+  file: logs\\client_log

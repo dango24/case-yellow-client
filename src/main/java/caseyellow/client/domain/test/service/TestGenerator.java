@@ -13,12 +13,10 @@ import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.WebSiteService;
-import caseyellow.client.exceptions.ConnectionException;
-import caseyellow.client.exceptions.FileDownloadInfoException;
+import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.test.model.Test;
-import caseyellow.client.exceptions.UserInterruptException;
-import caseyellow.client.exceptions.WebSiteDownloadInfoException;
+import caseyellow.client.presentation.MainFrame;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +27,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static caseyellow.client.common.Utils.generateUniqueID;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -37,6 +36,7 @@ import static java.util.stream.Collectors.toList;
 @Component("testGenerator")
 public class TestGenerator implements TestService, StartProducingTestsCommand, StopProducingTestsCommand {
 
+    public static final int TOKEN_EXPIRED_CODE = 701;
     private Logger logger = Logger.getLogger(TestGenerator.class);
 
     @Value("${numOfComparisonPerTest}")
@@ -50,6 +50,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     private ExecutorService executorService;
     private MessagesService messagesService;
     private ResponsiveService responsiveService;
+    private MainFrame mainFrame;
 
     public TestGenerator() {
         this.toProduceTests = new AtomicBoolean(false);
@@ -82,23 +83,36 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
                 saveTest(test);
 
             } catch (ConnectionException e) {
-                handleError("Connection with host failed, " + e.getMessage(), e);
+                logger.error("Connection with host failed, " + e.getMessage(), e);
                 handleLostConnection();
 
             } catch (UserInterruptException e) {
-                handleError("Stop to produce test, user interrupt action" + e.getMessage(), e);
+                logger.error("Stop to produce test, user interrupt action" + e.getMessage(), e);
+
+            } catch (RequestFailureException e) {
+                logger.error("Request failed with status code: " + e.getErrorCode() + ", error message: " + e.getMessage());
+                handleRequestFailure(e.getErrorCode());
 
             } catch (Exception e) {
-                handleError("Failed to produce test, " + e.getMessage(), e);
+                logger.error("Failed to produce test, " + e.getMessage(), e);
             }
         }
     }
 
-    private Test generateNewTest() throws UserInterruptException, FileDownloadInfoException {
+    private void handleRequestFailure(int errorCode) {
+        switch (errorCode) {
+            case TOKEN_EXPIRED_CODE:
+                mainFrame.disableApp(true);
+                break;
+        }
+    }
+
+    private Test generateNewTest() throws UserInterruptException, FileDownloadInfoException, RequestFailureException {
 
         SystemInfo systemInfo = systemService.getSystemInfo();
         SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
         List<FileDownloadMetaData> filesDownloadMetaData = dataAccessService.getNextUrls(numOfComparisonPerTest);
+        logger.info(String.format("Start producing test with speedtest: %s, urls: %s", speedTestWebSite.getIdentifier(), filesDownloadMetaData.stream().map(FileDownloadMetaData::getFileName).collect(joining(", "))));
 
         List<ComparisonInfo> comparisonInfoList =
                 filesDownloadMetaData.stream()
@@ -148,10 +162,6 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
         return null;
     }
 
-    private void handleError(String errorMessage, Exception e) {
-        logger.error(errorMessage, e);
-    }
-
     private void handleLostConnection() throws InterruptedException {
         logger.info("Wait for 20 seconds before new attempt to produce new test");
         TimeUnit.SECONDS.sleep(30);
@@ -173,7 +183,7 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
             responsiveService.close();
 
         } catch (Exception e) {
-            handleError("Error occurred while user cancel request, " + e.getMessage(), e);
+            logger.error("Error occurred while user cancel request, " + e.getMessage(), e);
         }
     }
 
@@ -207,5 +217,9 @@ public class TestGenerator implements TestService, StartProducingTestsCommand, S
     @Autowired
     public void setResponsiveService(ResponsiveService responsiveService) {
         this.responsiveService = responsiveService;
+    }
+
+    public void setMainFrame(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
     }
 }

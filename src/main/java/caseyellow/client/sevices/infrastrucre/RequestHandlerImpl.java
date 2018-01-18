@@ -9,15 +9,18 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static caseyellow.client.domain.test.service.TestGenerator.TOKEN_EXPIRED_CODE;
 import static java.util.stream.Collectors.toMap;
 
 @Component
 public class RequestHandlerImpl implements RequestHandler {
+
+    private static final int INTERNAL_ERROR_CODE = 420;
+    private static final String TOKEN_EXPIRED = "tokenExpired";
 
     private Logger logger = Logger.getLogger(RequestHandlerImpl.class);
 
@@ -60,14 +63,21 @@ public class RequestHandlerImpl implements RequestHandler {
 
         } else if (currentRequest.isCanceled()) {
             throw new UserInterruptException("User cancelRequest request");
+        } else if (isTokenExpired(response)){
+            throw new RequestFailureException("Token expired", TOKEN_EXPIRED_CODE);
         } else {
             throw new RequestFailureException(response.errorBody().string(), response.code());
         }
     }
 
+    private boolean isTokenExpired(Response response) {
+        Map<String, String> headers = createHeadersMap(response.headers());
+
+        return headers.containsKey(TOKEN_EXPIRED) && Boolean.valueOf(headers.get(TOKEN_EXPIRED));
+    }
+
     @Override
     public <T> Map<String, String> getResponseHeaders(Call<T> request) throws RequestFailureException, IOException {
-        Map<String, String> headers;
         Response<T> response = request.execute();
 
         if (response.isSuccessful()) {
@@ -84,5 +94,4 @@ public class RequestHandlerImpl implements RequestHandler {
                       .stream()
                       .collect(toMap(Function.identity(), name -> headers.values(name).get(0)));
     }
-
 }

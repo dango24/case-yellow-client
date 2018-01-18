@@ -1,9 +1,7 @@
 package caseyellow.client.domain.file.service;
 
-import caseyellow.client.common.Mapper;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
-import caseyellow.client.domain.interfaces.DataAccessService;
 import caseyellow.client.domain.interfaces.MessagesService;
 import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.domain.interfaces.URLToFileService;
@@ -29,20 +27,13 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
     private Logger logger = Logger.getLogger(DownloadFileServiceImpl.class);
 
-    private Mapper mapper;
     private SystemService systemService;
     private URLToFileService urlToFileService;
-    private DataAccessService dataAccessService;
     private MessagesService messagesService;
 
     @Autowired
     public void setMessagesService(MessagesService messagesService) {
         this.messagesService = messagesService;
-    }
-
-    @Autowired
-    public void setMapper(Mapper mapper) {
-        this.mapper = mapper;
     }
 
     @Autowired
@@ -55,10 +46,6 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         this.systemService = systemService;
     }
 
-    @Autowired
-    public void setDataAccessService(DataAccessService dataAccessService) {
-        this.dataAccessService = dataAccessService;
-    }
 
     @Override
     public FileDownloadInfo generateFileDownloadInfo(FileDownloadMetaData fileDownloadMetaData) throws UserInterruptException {

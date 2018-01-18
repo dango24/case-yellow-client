@@ -105,7 +105,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) {
+    public void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) throws RequestFailureException {
         FailedTestDetails failedTestDetails;
 
         if (!comparisonInfo.getSpeedTestWebSite().isSucceed()) {
@@ -201,12 +201,12 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public SpeedTestMetaData getNextSpeedTestWebSite() {
+    public SpeedTestMetaData getNextSpeedTestWebSite() throws RequestFailureException {
         return requestHandler.execute(gatewayRequests.getNextSpeedTestWebSite(createTokenHeader()));
     }
 
     @Override
-    public List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest) {
+    public List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest) throws RequestFailureException {
         return requestHandler.execute(gatewayRequests.getNextUrls(createTokenHeader(), numOfComparisonPerTest));
     }
 
