@@ -22,6 +22,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
 import static caseyellow.client.common.Utils.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
@@ -230,7 +232,7 @@ public class BrowserServiceImpl implements BrowserService {
 
         do {
             checkBrowser();
-            result = retrieveResultFromHtml(speedTestNonFlashMetaData.getFinishTextIdentifier(), 1);
+            result = retrieveResultFromHtml(identifier, speedTestNonFlashMetaData.getFinishTextIdentifier(), speedTestNonFlashMetaData.getFinishIdentifierKbps(), 1);
 
             if (nonNull(result)) {
                 return result;
@@ -362,12 +364,46 @@ public class BrowserServiceImpl implements BrowserService {
         jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
     }
 
-    private String retrieveResultFromHtml(String regex, int groupNumber) {
+    private String retrieveResultFromHtml(String identifier, List<String> MbpsRegex, List<String> KbpsRegex, int groupNumber) throws BrowserFailedException {
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         String htmlPayload = String.valueOf(jse.executeScript(GET_HTML_JS));
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(htmlPayload);
+        boolean MbpsMatcher = verifyPatterns(MbpsRegex, htmlPayload);
+        boolean KbpsMatcher = verifyPatterns(KbpsRegex, htmlPayload);
+
+        if (MbpsMatcher && KbpsMatcher) {
+            throw new BrowserFailedException("Failure to find finish test identifier, Found Kbps and Mbps matcher for identifier: " + identifier);
+
+        } else if (MbpsMatcher) {
+            return retrieveLastMatcher(MbpsRegex, htmlPayload,groupNumber); // regex matcher result
+
+        } else if (KbpsMatcher) {
+            return convertKbpsToMbps(retrieveLastMatcher(KbpsRegex, htmlPayload, groupNumber));
+        }
+
+        return null;
+    }
+
+    private boolean verifyPatterns(List<String> regexes, String payload) {
+        if (isNull(regexes) || regexes.isEmpty()) {
+            return false;
+        }
+
+        return regexes.stream()
+                      .filter(regex -> !StringUtils.isEmpty(regex))
+                      .map(Pattern::compile)
+                      .map(pattern -> pattern.matcher(payload))
+                      .allMatch(Matcher::find);
+    }
+
+
+    private String retrieveLastMatcher(List<String> regex, String payload, int groupNumber) {
+        if (isNull(regex) || regex.isEmpty() || StringUtils.isEmpty(regex.get(regex.size() -1))) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile(regex.get(regex.size() -1));
+        Matcher matcher = pattern.matcher(payload);
 
         if (matcher.find()) {
             return matcher.group(groupNumber); // regex matcher result
@@ -375,4 +411,14 @@ public class BrowserServiceImpl implements BrowserService {
 
         return null;
     }
+
+    private String convertKbpsToMbps(String KbpsResultStr) {
+        if (StringUtils.isEmpty(KbpsResultStr)) {
+            return null;
+        }
+
+        double KbpsResult = Double.valueOf(KbpsResultStr) / 1_000.0;
+        return String.valueOf(KbpsResult);
+    }
+
 }

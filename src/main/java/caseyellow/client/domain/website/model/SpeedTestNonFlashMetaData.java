@@ -1,13 +1,16 @@
 package caseyellow.client.domain.website.model;
 
 
+import java.util.List;
+
 public class SpeedTestNonFlashMetaData {
 
     private String buttonId;
     private String finishIdentifier;
-    private String finishTextIdentifier;
     private String resultLocation;
     private String resultAttribute;
+    private List<String> finishIdentifierKbps;
+    private List<String> finishTextIdentifier;
 
     public SpeedTestNonFlashMetaData() {
     }
@@ -28,14 +31,6 @@ public class SpeedTestNonFlashMetaData {
         this.finishIdentifier = finishIdentifier;
     }
 
-    public String getFinishTextIdentifier() {
-        return finishTextIdentifier;
-    }
-
-    public void setFinishTextIdentifier(String finishTextIdentifier) {
-        this.finishTextIdentifier = finishTextIdentifier;
-    }
-
     public String getResultLocation() {
         return resultLocation;
     }
@@ -50,5 +45,21 @@ public class SpeedTestNonFlashMetaData {
 
     public void setResultAttribute(String resultAttribute) {
         this.resultAttribute = resultAttribute;
+    }
+
+    public List<String> getFinishIdentifierKbps() {
+        return finishIdentifierKbps;
+    }
+
+    public void setFinishIdentifierKbps(List<String> finishIdentifierKbps) {
+        this.finishIdentifierKbps = finishIdentifierKbps;
+    }
+
+    public List<String> getFinishTextIdentifier() {
+        return finishTextIdentifier;
+    }
+
+    public void setFinishTextIdentifier(List<String> finishTextIdentifier) {
+        this.finishTextIdentifier = finishTextIdentifier;
     }
 }

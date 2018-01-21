@@ -47,6 +47,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
         currentTest = 0;
         setIcon();
         buildComponents();
+        mainFrame.setLocationRelativeTo(null);
     }
 
     private void setIcon() throws IOException {
