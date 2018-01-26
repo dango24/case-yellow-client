@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 
 @Profile("prod")
@@ -100,8 +101,10 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
 
     @Override
     public void saveTest(Test test) throws RequestFailureException {
-        uploadSnapshotImages(test);
-        requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
+        if (nonNull(test)) {
+            uploadSnapshotImages(test);
+            requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
+        }
     }
 
     @Override

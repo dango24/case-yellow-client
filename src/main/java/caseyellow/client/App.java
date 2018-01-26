@@ -1,6 +1,6 @@
 package caseyellow.client;
 
-import caseyellow.client.domain.test.service.TestGenerator;
+import caseyellow.client.domain.test.service.TestGeneratorImpl;
 import caseyellow.client.infrastructre.MessageServiceImp;
 import caseyellow.client.presentation.MainFormImpl;
 import caseyellow.client.sevices.gateway.services.GatewayService;
@@ -51,7 +51,7 @@ public class App {
         try {
             ApplicationContext ctx = SpringApplication.run(App.class, args);
 
-            TestGenerator testService = (TestGenerator) ctx.getBean("testGenerator");
+            TestGeneratorImpl testService = (TestGeneratorImpl) ctx.getBean("testGenerator");
             MessageServiceImp messagesService = (MessageServiceImp) ctx.getBean("messageServiceImp");
             GatewayService gatewayService = (GatewayService) ctx.getBean("gatewayService");
 

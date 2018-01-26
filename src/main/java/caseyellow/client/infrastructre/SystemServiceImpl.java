@@ -10,7 +10,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -71,7 +70,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public long copyURLToFile(URL source, File destination) throws FileDownloadInfoException, UserInterruptException {
         try {
-            copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFile(source, destination));
+            copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFileWithNio(source, destination));
             return copyURLToFileTask.get(TIMEOUT, TimeUnit.MINUTES);
 
         } catch (InterruptedException | CancellationException e) {
@@ -87,7 +86,7 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
-    private long executeCopyURLToFile(URL source, File destination) throws FileDownloadInfoException {
+    private long executeCopyURLToFileWithNio(URL source, File destination) throws FileDownloadInfoException {
         String threadOriginalName = Thread.currentThread().getName();
         Thread.currentThread().setName("copy url to file thread");
 
@@ -109,7 +108,7 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
-    private long executeCopyURLToFile2(URL source, File destination) {
+    private long executeCopyURLToFileWithFileUtils(URL source, File destination) {
         String threadOriginalName = Thread.currentThread().getName();
         Thread.currentThread().setName("copy url to file thread");
 

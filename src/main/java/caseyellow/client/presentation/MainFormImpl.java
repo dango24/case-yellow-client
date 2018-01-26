@@ -131,7 +131,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
         showMessage("Start producing tests");
         SwingUtilities.invokeLater(() -> startButton.setEnabled(false));
         SwingUtilities.invokeLater(() -> stopButton.setEnabled(true));
-        SwingUtilities.invokeLater(startProducingTestsCommand::executeStartProducingTestsCommand);
+        SwingUtilities.invokeLater(startProducingTestsCommand::startProducingTests);
     }
 
     private void stopProducingTests() {
@@ -140,7 +140,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
         showMessage("App halt, stop production tests");
         SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         SwingUtilities.invokeLater(() -> stopButton.setEnabled(false));
-        SwingUtilities.invokeLater(stopProducingTestsCommand::executeStopProducingCommand);
+        SwingUtilities.invokeLater(stopProducingTestsCommand::stopProducingTests);
     }
 
     public void terminate() {

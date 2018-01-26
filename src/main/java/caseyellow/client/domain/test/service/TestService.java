@@ -1,9 +1,13 @@
 package caseyellow.client.domain.test.service;
 
-/**
- * Created by Dan on 6/23/2017.
- */
+import caseyellow.client.domain.test.model.Test;
+import caseyellow.client.exceptions.FileDownloadInfoException;
+import caseyellow.client.exceptions.RequestFailureException;
+import caseyellow.client.exceptions.UserInterruptException;
+
+import java.io.IOException;
+
 public interface TestService {
-    void start();
-    void stop();
+    Test generateNewTest() throws UserInterruptException, FileDownloadInfoException, RequestFailureException;
+    void stop() throws IOException;
 }

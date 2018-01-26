@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static caseyellow.client.domain.test.service.TestGenerator.TOKEN_EXPIRED_CODE;
+import static caseyellow.client.domain.test.service.TestGeneratorImpl.TOKEN_EXPIRED_CODE;
 import static java.util.stream.Collectors.toMap;
 
 @Component
