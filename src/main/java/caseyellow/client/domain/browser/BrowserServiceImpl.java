@@ -10,7 +10,7 @@ import caseyellow.client.domain.website.model.Command;
 import caseyellow.client.domain.website.model.Role;
 import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.exceptions.*;
-import caseyellow.client.domain.interfaces.OcrService;
+import caseyellow.client.domain.analyze.service.OcrService;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;

@@ -1,10 +1,8 @@
-package caseyellow.client.infrastructre;
+package caseyellow.client.domain.system;
 
-import caseyellow.client.domain.interfaces.ResponsiveService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.awt.*;
 import java.io.IOException;
 import java.util.concurrent.Executors;

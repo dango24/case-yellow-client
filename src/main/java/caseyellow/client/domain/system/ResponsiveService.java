@@ -1,4 +1,4 @@
-package caseyellow.client.domain.interfaces;
+package caseyellow.client.domain.system;
 
 import java.io.Closeable;
 

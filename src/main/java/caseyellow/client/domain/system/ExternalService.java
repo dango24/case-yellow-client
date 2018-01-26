@@ -1,4 +1,4 @@
-package caseyellow.client.domain.interfaces;
+package caseyellow.client.domain.system;
 
 public interface ExternalService {
     void cancelRequest();

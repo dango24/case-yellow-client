@@ -1,6 +1,7 @@
-package caseyellow.client.domain.interfaces;
+package caseyellow.client.domain.analyze.service;
 
 import caseyellow.client.domain.analyze.model.OcrResponse;
+import caseyellow.client.domain.system.ExternalService;
 import caseyellow.client.exceptions.OcrParsingException;
 import caseyellow.client.exceptions.RequestFailureException;
 

@@ -1,6 +1,6 @@
 package caseyellow.client.presentation;
 
-import caseyellow.client.domain.interfaces.MessagesService;
+import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.exceptions.LoginException;
@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static caseyellow.client.common.Messages.churchillSpeech;
 import static caseyellow.client.common.Utils.getTempFileFromResources;
 
 /**
@@ -23,6 +22,7 @@ import static caseyellow.client.common.Utils.getTempFileFromResources;
 public class MainFormImpl implements MessagesService, MainFrame {
 
     private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
+    public static final String BOOT_MESSAGE = "On The Side Of Angles";
     private final String dateFormatter = "HH:mm:ss";
     private Logger logger = Logger.getLogger(MainFormImpl.class);
 
@@ -110,7 +110,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
 
     public void enableApp() {
         loginForm.view();
-        showMessage(churchillSpeech());
+        showMessage(BOOT_MESSAGE);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
 
         if (loginSucceed) {
             JOptionPane.showMessageDialog(null, "Justice will be served");
-            showMessageToUser("On The Side Of Angles");
+            showMessageToUser(BOOT_MESSAGE);
             SwingUtilities.invokeLater(() -> loginForm.close());
             SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         }

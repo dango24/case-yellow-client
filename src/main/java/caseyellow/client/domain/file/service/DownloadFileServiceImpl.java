@@ -2,9 +2,9 @@ package caseyellow.client.domain.file.service;
 
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadMetaData;
-import caseyellow.client.domain.interfaces.MessagesService;
-import caseyellow.client.domain.interfaces.SystemService;
-import caseyellow.client.domain.interfaces.URLToFileService;
+import caseyellow.client.domain.message.MessagesService;
+import caseyellow.client.domain.system.SystemService;
+import caseyellow.client.domain.system.URLToFileService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.exceptions.UserInterruptException;
 import org.apache.log4j.Logger;

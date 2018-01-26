@@ -1,4 +1,4 @@
-package caseyellow.client.domain.interfaces;
+package caseyellow.client.domain.system;
 
 import caseyellow.client.domain.test.model.SystemInfo;
 

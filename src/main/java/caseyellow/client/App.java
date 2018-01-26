@@ -1,7 +1,7 @@
 package caseyellow.client;
 
 import caseyellow.client.domain.test.service.TestGeneratorImpl;
-import caseyellow.client.infrastructre.MessageServiceImp;
+import caseyellow.client.domain.message.MessageServiceImp;
 import caseyellow.client.presentation.MainFormImpl;
 import caseyellow.client.sevices.gateway.services.GatewayService;
 import org.springframework.boot.SpringApplication;

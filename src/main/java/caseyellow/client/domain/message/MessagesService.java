@@ -1,4 +1,4 @@
-package caseyellow.client.domain.interfaces;
+package caseyellow.client.domain.message;
 
 /**
  * Created by Dan on 7/8/2017.

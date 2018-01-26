@@ -1,4 +1,4 @@
-package caseyellow.client.domain.interfaces;
+package caseyellow.client.domain.system;
 
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.exceptions.UserInterruptException;

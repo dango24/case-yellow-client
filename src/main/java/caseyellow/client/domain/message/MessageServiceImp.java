@@ -1,6 +1,5 @@
-package caseyellow.client.infrastructre;
+package caseyellow.client.domain.message;
 
-import caseyellow.client.domain.interfaces.MessagesService;
 import org.springframework.stereotype.Service;
 
 @Service("messageServiceImp")

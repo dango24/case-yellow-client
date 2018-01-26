@@ -1,7 +1,7 @@
 package caseyellow.client.domain.website.service;
 
-import caseyellow.client.domain.interfaces.DataAccessService;
-import caseyellow.client.domain.interfaces.MessagesService;
+import caseyellow.client.domain.data.access.DataAccessService;
+import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;

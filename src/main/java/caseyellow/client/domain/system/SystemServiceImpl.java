@@ -1,7 +1,6 @@
-package caseyellow.client.infrastructre;
+package caseyellow.client.domain.system;
 
 import caseyellow.client.domain.test.model.SystemInfo;
-import caseyellow.client.domain.interfaces.SystemService;
 import caseyellow.client.exceptions.ConnectionTypeException;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.exceptions.InternalFailureException;

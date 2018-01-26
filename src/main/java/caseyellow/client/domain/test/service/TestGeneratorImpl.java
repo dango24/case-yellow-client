@@ -1,7 +1,7 @@
 package caseyellow.client.domain.test.service;
 
-import caseyellow.client.domain.interfaces.DataAccessService;
-import caseyellow.client.domain.interfaces.ResponsiveService;
+import caseyellow.client.domain.data.access.DataAccessService;
+import caseyellow.client.domain.system.ResponsiveService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.exceptions.*;

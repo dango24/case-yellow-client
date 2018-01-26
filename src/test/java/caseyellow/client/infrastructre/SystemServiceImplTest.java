@@ -1,6 +1,7 @@
 package caseyellow.client.infrastructre;
 
-import caseyellow.client.domain.interfaces.SystemService;
+import caseyellow.client.domain.system.SystemService;
+import caseyellow.client.domain.system.SystemServiceImpl;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
