@@ -69,7 +69,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public long copyURLToFile(URL source, File destination) throws FileDownloadInfoException, UserInterruptException {
         try {
-            copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFileWithNio(source, destination));
+            copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFileWithFileUtils(source, destination));
             return copyURLToFileTask.get(TIMEOUT, TimeUnit.MINUTES);
 
         } catch (InterruptedException | CancellationException e) {

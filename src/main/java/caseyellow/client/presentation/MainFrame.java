@@ -7,5 +7,6 @@ import java.io.IOException;
 public interface MainFrame {
     void login(String userName, String password) throws IOException, LoginException;
     void testDone();
+    void testStopped();
     void disableApp(boolean tokenExpired);
 }

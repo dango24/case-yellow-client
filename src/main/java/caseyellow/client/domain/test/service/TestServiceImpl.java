@@ -58,10 +58,10 @@ public class TestServiceImpl implements TestService {
 
         List<ComparisonInfo> comparisonInfoList =
                 filesDownloadMetaData.stream()
-                        .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
-                        .peek(comparisonInfo -> notifyFailedTest(comparisonInfo, systemInfo.getPublicIP()))
-                        .filter(ComparisonInfo::isSuccess)
-                        .collect(toList());
+                                      .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
+                                      .peek(comparisonInfo -> notifyFailedTest(comparisonInfo, systemInfo.getPublicIP()))
+                                      .filter(ComparisonInfo::isSuccess)
+                                      .collect(toList());
 
         messagesService.testDone();
 

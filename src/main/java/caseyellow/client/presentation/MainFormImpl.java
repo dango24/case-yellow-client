@@ -96,7 +96,6 @@ public class MainFormImpl implements MessagesService, MainFrame {
     public void showMessage(String message) {
         String testMessage = String.format(TEST_MESSAGE_SCHEMA, currentTest);
         message = new SimpleDateFormat(dateFormatter).format(new Date()) + testMessage + message;
-        logger.info("Message show to the user: " + message);
         showMessageToUser(message);
     }
 
@@ -181,5 +180,12 @@ public class MainFormImpl implements MessagesService, MainFrame {
     public void testDone() {
         SwingUtilities.invokeLater(() -> currentTest = 0);
         showMessage("Test Done");
+    }
+
+    @Override
+    public void testStopped() {
+        SwingUtilities.invokeLater(() -> currentTest = 0);
+        logger.warn("Test Stopped");
+        showMessage("Test Stopped");
     }
 }

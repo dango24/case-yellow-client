@@ -6,17 +6,18 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -218,5 +219,12 @@ public class Utils {
                      .mapToInt(intMaxFunction)
                      .max()
                      .orElseThrow(() -> new InternalFailureException("There is no max point in points: " + points));
+    }
+
+    public static String convertToBase64MD5(File file) throws NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(IOUtils.toByteArray(new FileInputStream(file)));
+
+        return DatatypeConverter.printBase64Binary(md.digest());
     }
 }

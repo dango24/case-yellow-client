@@ -97,7 +97,8 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         return null;
     }
 
-    private void handleLostConnection() throws InterruptedException {
+    @Override
+    public void handleLostConnection() throws InterruptedException {
         stopProducingTests();
         logger.info("Wait for 30 seconds before new attempt to produce new test");
         TimeUnit.SECONDS.sleep(30);
@@ -115,7 +116,9 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     public void stopProducingTests() {
         try {
             toProduceTests.set(false);
+            mainFrame.testStopped();
             responsiveService.close();
+            testService.stop();
 
         } catch (Exception e) {
             logger.error("Error occurred while user cancel request, " + e.getMessage(), e);

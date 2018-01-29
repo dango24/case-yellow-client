@@ -5,4 +5,5 @@ package caseyellow.client.domain.test.service;
  */
 public interface TestGenerator {
     void start();
+    void handleLostConnection() throws InterruptedException;
 }

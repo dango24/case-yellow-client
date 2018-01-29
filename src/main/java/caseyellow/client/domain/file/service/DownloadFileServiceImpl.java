@@ -9,20 +9,20 @@ import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.exceptions.UserInterruptException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 
+import static caseyellow.client.common.Utils.convertToBase64MD5;
 import static caseyellow.client.common.Utils.createTmpDir;
 
 /**
  * Created by dango on 6/3/17.
  */
 @Service
-@Profile({"prod", "integration"})
 public class DownloadFileServiceImpl implements DownloadFileService {
 
     private Logger logger = Logger.getLogger(DownloadFileServiceImpl.class);
@@ -67,6 +67,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             startDownloadingTime = System.currentTimeMillis();
             fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(url, tmpFile);
             fileSizeInBytes = tmpFile.length();
+            String md5 = convertToBase64MD5(tmpFile);
             fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedDurationTimeInMs, fileSizeInBytes);
 
             systemService.deleteDirectory(tmpFile.getParentFile());
@@ -81,7 +82,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
 
-        } catch (IOException | FileDownloadInfoException e) {
+        } catch (IOException | FileDownloadInfoException | NoSuchAlgorithmException e) {
             logger.error("Failed to download file, " + e.getMessage(), e);
             return FileDownloadInfo.errorFileDownloadInfo(fileDownloadMetaData.getFileURL(), e.getMessage());
         }

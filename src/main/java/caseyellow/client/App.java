@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.swing.JOptionPane;
 import java.io.IOException;
@@ -20,8 +21,8 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by dango on 6/2/17.
  */
-@SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class,
-        WebMvcAutoConfiguration.class})
+@EnableScheduling
+@SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 public class App {
 
     private final static Logger logger = Logger.getLogger(App.class);
