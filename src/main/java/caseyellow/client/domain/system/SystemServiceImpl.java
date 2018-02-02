@@ -3,30 +3,26 @@ package caseyellow.client.domain.system;
 import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.exceptions.ConnectionTypeException;
 import caseyellow.client.exceptions.FileDownloadInfoException;
-import caseyellow.client.exceptions.InternalFailureException;
 import caseyellow.client.exceptions.UserInterruptException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.security.MessageDigest;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -38,18 +34,9 @@ import static java.util.Objects.nonNull;
 @Service
 public class SystemServiceImpl implements SystemService {
 
-    private static final String ETHERNET_IDENTIFIER = "eth";
-    public static final int TIMEOUT = 90;
-
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
 
-    private Future<Long> copyURLToFileTask;
-    private ExecutorService copyURLToFileService;
-
-    @PostConstruct
-    private void init() {
-        copyURLToFileService = Executors.newSingleThreadExecutor();
-    }
+    private static final String ETHERNET_IDENTIFIER = "eth";
 
     @Override
     public SystemInfo getSystemInfo() {
@@ -62,89 +49,56 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public void deleteDirectory(File directory) throws IOException {
-        FileUtils.deleteDirectory(directory);
+    public void deleteDirectory(File directory) {
+        try {
+            if (nonNull(directory)) {
+                FileUtils.deleteDirectory(directory);
+            }
+        } catch (IOException e) {
+            log.error("Failed to delete file, cause: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public long copyURLToFile(URL source, File destination) throws FileDownloadInfoException, UserInterruptException {
+        long fileDownloadedDurationTimeInMs;
+
         try {
-            copyURLToFileTask = copyURLToFileService.submit(() -> executeCopyURLToFileWithFileUtils(source, destination));
-            return copyURLToFileTask.get(TIMEOUT, TimeUnit.MINUTES);
+            URLConnection connection = source.openConnection();
+            connection.setReadTimeout(5000);
+            connection.connect();
 
-        } catch (InterruptedException | CancellationException e) {
-            throw new UserInterruptException("User cancel download file request, " + e.getMessage(), e);
+            fileDownloadedDurationTimeInMs = downloadFile(destination, connection);
+            log.info("finish downloading file from: " + source.toString());
 
-        } catch (ExecutionException e) {
+            return fileDownloadedDurationTimeInMs;
+
+        } catch (IOException e) {
             throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
-
-        } catch (TimeoutException e) {
-            log.error("Reach timeout of " + TIMEOUT + " minutes for url: " + source.toString());
-            throw new FileDownloadInfoException("Failed to download file, reach timeout of " + TIMEOUT +
-                                                " minutes for url: " + source.toString() + " cause: " + e.getMessage(), e);
         }
     }
 
-    private long executeCopyURLToFileWithNio(URL source, File destination) throws FileDownloadInfoException {
-        String threadOriginalName = Thread.currentThread().getName();
-        Thread.currentThread().setName("copy url to file thread");
+    private long downloadFile(File destination, URLConnection connection) {
+        int count;
+        final byte[] data = new byte[1024];
 
-        try (FileOutputStream fos = new FileOutputStream(destination);
-            ReadableByteChannel rbc = Channels.newChannel(source.openStream())){
+        try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
+             FileOutputStream out = new FileOutputStream(destination)){
 
-            long startDownloadingTime = System.currentTimeMillis();
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            long fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
-            log.info("finish downloading file from: " + source.toString());
+             long startDownloadingTime = System.currentTimeMillis();
 
-            return fileDownloadedDurationTimeInMs;
+             while ((count = in.read(data, 0, 1024)) != -1) {
+                 out.write(data, 0, count);
+
+                 if (Thread.currentThread().isInterrupted()) {
+                     throw new UserInterruptException("User cancel download file request");
+                 }
+             }
+
+             return System.currentTimeMillis() - startDownloadingTime;
 
         } catch (IOException e) {
-            log.error("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage(), e);
-            throw new FileDownloadInfoException("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage());
-        } finally {
-            Thread.currentThread().setName(threadOriginalName);
-        }
-    }
-
-    private long executeCopyURLToFileWithFileUtils(URL source, File destination) {
-        String threadOriginalName = Thread.currentThread().getName();
-        Thread.currentThread().setName("copy url to file thread");
-
-        try {
-            long startDownloadingTime = System.currentTimeMillis();
-            FileUtils.copyURLToFile(source, destination);
-            long fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
-            log.info("finish downloading file from: " + source.toString());
-
-            return fileDownloadedDurationTimeInMs;
-
-        } catch (IOException e) {
-            log.error("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage(), e);
-            throw new FileDownloadInfoException("Failed to download file from url: " + source.toString() + ", cause: " + e.getMessage());
-        } finally {
-            Thread.currentThread().setName(threadOriginalName);
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (nonNull(copyURLToFileTask) && !copyURLToFileTask.isCancelled()) {
-            copyURLToFileTask.cancel(true);
-        }
-    }
-
-    @Override
-    public String getImgMD5HashValue(String imgPath) {
-        try {
-            byte[] bytes = convertImgToByteArray(imgPath);
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            byte[] hashResult = messageDigest.digest(bytes);
-
-            return Hex.encodeHexString(hashResult);
-
-        } catch (Exception e) {
-           throw new InternalFailureException(e.getMessage(), e);
+            throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
         }
     }
 

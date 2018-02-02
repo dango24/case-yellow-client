@@ -2,7 +2,7 @@ package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
 import caseyellow.client.domain.analyze.model.OcrResponse;
-import caseyellow.client.domain.file.model.FileDownloadMetaData;
+import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
@@ -42,8 +42,8 @@ public interface GatewayRequests {
             "Content-Type: application/json"
     })
     @GET("central/next-urls")
-    Call<List<FileDownloadMetaData>> getNextUrls(@HeaderMap Map<String, String> headers ,
-                                                 @Query("num_of_comparison_per_test") int numOfComparisonPerTest);
+    Call<List<FileDownloadProperties>> getNextUrls(@HeaderMap Map<String, String> headers ,
+                                                   @Query("num_of_comparison_per_test") int numOfComparisonPerTest);
 
     @Headers({
             "Accept: application/json",

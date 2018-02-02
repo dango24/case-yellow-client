@@ -25,10 +25,11 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     public static final int TOKEN_EXPIRED_CODE = 701;
 
     private MainFrame mainFrame;
+    private Future<?> testTask;
     private AtomicBoolean toProduceTests;
     private TestService testService;
     private DataAccessService dataAccessService;
-    private ExecutorService executorService;
+    private ExecutorService executorTestService;
     private ResponsiveService responsiveService;
 
     @Autowired
@@ -37,7 +38,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         this.dataAccessService = dataAccessService;
         this.responsiveService = responsiveService;
         this.toProduceTests = new AtomicBoolean(false);
-        this.executorService = Executors.newSingleThreadExecutor();
+        this.executorTestService = Executors.newSingleThreadExecutor();
     }
 
     public void setMainFrame(MainFrame mainFrame) {
@@ -56,7 +57,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
     private void produceTests() throws InterruptedException {
         Test test;
-        Thread.currentThread().setName("TestProducer-Thread");
+        Thread.currentThread().setName("Test-Producer");
 
         while (toProduceTests.get()) {
 
@@ -108,7 +109,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     @Override
     public void startProducingTests() {
         toProduceTests.set(true);
-        executorService.submit(this::start);
+        testTask = executorTestService.submit(this::start);
         responsiveService.keepAlive();
     }
 
@@ -116,9 +117,10 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     public void stopProducingTests() {
         try {
             toProduceTests.set(false);
-            mainFrame.testStopped();
             responsiveService.close();
             testService.stop();
+            testTask.cancel(true);
+            mainFrame.testStopped();
 
         } catch (Exception e) {
             logger.error("Error occurred while user cancel request, " + e.getMessage(), e);

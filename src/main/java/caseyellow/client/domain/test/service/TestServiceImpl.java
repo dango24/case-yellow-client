@@ -1,7 +1,7 @@
 package caseyellow.client.domain.test.service;
 
 import caseyellow.client.domain.file.model.FileDownloadInfo;
-import caseyellow.client.domain.file.model.FileDownloadMetaData;
+import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.file.service.DownloadFileService;
 import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.message.MessagesService;
@@ -53,11 +53,11 @@ public class TestServiceImpl implements TestService {
 
         SystemInfo systemInfo = systemService.getSystemInfo();
         SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        List<FileDownloadMetaData> filesDownloadMetaData = dataAccessService.getNextUrls(numOfComparisonPerTest);
-        logger.info(String.format("Start producing test with speedtest: %s, urls: %s", speedTestWebSite.getIdentifier(), filesDownloadMetaData.stream().map(FileDownloadMetaData::getFileName).collect(joining(", "))));
+        List<FileDownloadProperties> fileDownloadProperties = dataAccessService.getNextUrls(numOfComparisonPerTest);
+        logger.info(String.format("Start producing test with speedtest: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
 
         List<ComparisonInfo> comparisonInfoList =
-                filesDownloadMetaData.stream()
+                fileDownloadProperties.stream()
                                       .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
                                       .peek(comparisonInfo -> notifyFailedTest(comparisonInfo, systemInfo.getPublicIP()))
                                       .filter(ComparisonInfo::isSuccess)
@@ -75,16 +75,15 @@ public class TestServiceImpl implements TestService {
     @Override
     public void stop() throws IOException {
         webSiteService.close();
-        downloadFileService.close();
     }
 
-    private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestMetaData, FileDownloadMetaData fileDownloadMetaData) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
+    private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestMetaData, FileDownloadProperties fileDownloadProperties) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo;
         messagesService.subTestStart();
         SpeedTestWebSite speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSite(speedTestMetaData);
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
-            fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadMetaData);
+            fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadProperties);
         } else {
             fileDownloadInfo = FileDownloadInfo.emptyFileDownloadInfo();
         }

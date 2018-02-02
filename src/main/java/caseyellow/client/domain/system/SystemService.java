@@ -17,6 +17,5 @@ public interface SystemService extends URLToFileService {
 
     // Methods
     SystemInfo getSystemInfo();
-    String getImgMD5HashValue(String imgPath);
-    void deleteDirectory(File directory) throws IOException;
+    void deleteDirectory(File directory);
 }

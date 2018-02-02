@@ -1,7 +1,7 @@
 package caseyellow.client.domain.file.service;
 
 import caseyellow.client.domain.file.model.FileDownloadInfo;
-import caseyellow.client.domain.file.model.FileDownloadMetaData;
+import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.system.URLToFileService;
@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static caseyellow.client.common.Utils.convertToBase64MD5;
 import static caseyellow.client.common.Utils.createTmpDir;
+import static java.util.Objects.nonNull;
 
 /**
  * Created by dango on 6/3/17.
@@ -46,34 +47,36 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         this.systemService = systemService;
     }
 
-
     @Override
-    public FileDownloadInfo generateFileDownloadInfo(FileDownloadMetaData fileDownloadMetaData) throws UserInterruptException {
+    public FileDownloadInfo generateFileDownloadInfo(FileDownloadProperties fileDownloadProperties) throws UserInterruptException {
         URL url;
-        File tmpFile;
+        String md5;
+        File tmpFile = null;
         long fileSizeInBytes;
         long startDownloadingTime;
         long fileDownloadedDurationTimeInMs;
         double fileDownloadRateKBPerSec;
 
         try {
-            url = new URL(fileDownloadMetaData.getFileURL());
-            tmpFile = new File(createTmpDir(), fileDownloadMetaData.getFileName());
+            url = new URL(fileDownloadProperties.getUrl());
+            tmpFile = new File(createTmpDir(), fileDownloadProperties.getIdentifier());
 
-            String message = "Downloading file: " + fileDownloadMetaData.getFileName() + ", from url: " + fileDownloadMetaData.getFileURL();
+            String message = "Downloading file: " + fileDownloadProperties.getIdentifier() + ", from url: " + fileDownloadProperties.getUrl();
             logger.info(message);
             messagesService.showMessage(message);
 
             startDownloadingTime = System.currentTimeMillis();
             fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(url, tmpFile);
             fileSizeInBytes = tmpFile.length();
-            String md5 = convertToBase64MD5(tmpFile);
+            md5 = convertToBase64MD5(tmpFile);
+
+            validateFile(fileDownloadProperties, fileSizeInBytes, md5);
+
             fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedDurationTimeInMs, fileSizeInBytes);
 
-            systemService.deleteDirectory(tmpFile.getParentFile());
-            messagesService.showMessage(fileDownloadMetaData.getFileName() + " finish download, rate: " + fileDownloadRateKBPerSec + "KB per sec");
+            messagesService.showMessage(fileDownloadProperties.getIdentifier() + " finish download, rate: " + fileDownloadRateKBPerSec + "KB per sec");
 
-            return new FileDownloadInfo.FileDownloadInfoBuilder(fileDownloadMetaData.getFileName())
+            return new FileDownloadInfo.FileDownloadInfoBuilder(fileDownloadProperties.getIdentifier())
                                        .addSucceed()
                                        .addFileURL(url.toString())
                                        .addFileSizeInBytes(fileSizeInBytes)
@@ -84,7 +87,18 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
         } catch (IOException | FileDownloadInfoException | NoSuchAlgorithmException e) {
             logger.error("Failed to download file, " + e.getMessage(), e);
-            return FileDownloadInfo.errorFileDownloadInfo(fileDownloadMetaData.getFileURL(), e.getMessage());
+            return FileDownloadInfo.errorFileDownloadInfo(fileDownloadProperties.getUrl(), e.getMessage());
+
+        } finally {
+            if (nonNull(tmpFile)) {
+                systemService.deleteDirectory(tmpFile.getParentFile());
+            }
+        }
+    }
+
+    private void validateFile(FileDownloadProperties fileDownloadProperties, long fileSizeInBytes, String md5) {
+        if (fileDownloadProperties.getSize() != fileSizeInBytes || !fileDownloadProperties.getMd5().equals(md5)) {
+            throw new FileDownloadInfoException(String.format("Invalidate file download info, expected md5: %s, actual md5: %s; expected file size: %s, actual file size: %s",fileDownloadProperties.getMd5(), md5, fileDownloadProperties.getSize(), fileSizeInBytes));
         }
     }
 
@@ -96,8 +110,4 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         return bytesPerSec / Math.pow(2, 10); // Transform to KB
     }
 
-    @Override
-    public void close() throws IOException {
-        urlToFileService.close();
-    }
 }

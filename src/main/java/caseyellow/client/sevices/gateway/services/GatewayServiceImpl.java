@@ -3,9 +3,9 @@ package caseyellow.client.sevices.gateway.services;
 import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
 import caseyellow.client.domain.analyze.model.OcrResponse;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
-import caseyellow.client.domain.file.model.FileDownloadMetaData;
 import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.analyze.service.OcrService;
+import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
@@ -209,7 +209,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest) throws RequestFailureException {
+    public List<FileDownloadProperties> getNextUrls(int numOfComparisonPerTest) throws RequestFailureException {
         return requestHandler.execute(gatewayRequests.getNextUrls(createTokenHeader(), numOfComparisonPerTest));
     }
 

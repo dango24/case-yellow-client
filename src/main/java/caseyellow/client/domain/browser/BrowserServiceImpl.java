@@ -80,15 +80,17 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     private ChromeOptions generateChromeOptions() {
+        Map<String, Object> prefs = new HashMap<>();
         ChromeOptions options = new ChromeOptions();
 
-        logPath = new File(Utils.createTmpDir(), "log_net").getAbsolutePath();
         String log_flag = "--log-net-log=" + logPath;
+        prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
+
         options.addArguments(log_flag);
         options.addArguments("disable-infobars");
-        Map<String, Object> prefs = new HashMap<>();
-        prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
         options.setExperimentalOption("prefs", prefs);
+
+        logPath = new File(Utils.createTmpDir(), "log_net").getAbsolutePath();
 
         return options;
     }

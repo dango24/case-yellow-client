@@ -1,6 +1,6 @@
 package caseyellow.client.domain.data.access;
 
-import caseyellow.client.domain.file.model.FileDownloadMetaData;
+import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
@@ -16,6 +16,6 @@ public interface DataAccessService {
     void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP);
     void saveTest(Test test) throws RequestFailureException;
     SpeedTestMetaData getNextSpeedTestWebSite();
-    List<FileDownloadMetaData> getNextUrls(int numOfComparisonPerTest);
+    List<FileDownloadProperties> getNextUrls(int numOfComparisonPerTest);
     PreSignedUrl generatePreSignedUrl(String userIP, String fileName);
 }
