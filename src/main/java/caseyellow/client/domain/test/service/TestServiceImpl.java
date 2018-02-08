@@ -54,7 +54,7 @@ public class TestServiceImpl implements TestService {
         SystemInfo systemInfo = systemService.getSystemInfo();
         SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
         List<FileDownloadProperties> fileDownloadProperties = dataAccessService.getNextUrls(numOfComparisonPerTest);
-        logger.info(String.format("Start producing test with speedtest: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
+        logger.info(String.format("Start producing test with speed-test: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
 
         List<ComparisonInfo> comparisonInfoList =
                 fileDownloadProperties.stream()

@@ -11,7 +11,7 @@ public class FileDownloadProperties {
     }
 
     public FileDownloadProperties(String identifier, String url) {
-        this(null, url, 0, null);
+        this(identifier, url, 0, null);
     }
 
     public FileDownloadProperties(String identifier, String url, int size, String md5) {

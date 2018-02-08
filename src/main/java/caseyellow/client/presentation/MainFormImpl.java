@@ -5,6 +5,7 @@ import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.exceptions.LoginException;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
+import caseyellow.client.sevices.gateway.model.LoginDetails;
 import caseyellow.client.sevices.gateway.services.GatewayService;
 import org.apache.log4j.Logger;
 
@@ -13,6 +14,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static caseyellow.client.common.Utils.getTempFileFromResources;
 
@@ -21,15 +24,14 @@ import static caseyellow.client.common.Utils.getTempFileFromResources;
  */
 public class MainFormImpl implements MessagesService, MainFrame {
 
-    private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
-    public static final String BOOT_MESSAGE = "On The Side Of Angles";
-    private final String dateFormatter = "HH:mm:ss";
     private Logger logger = Logger.getLogger(MainFormImpl.class);
 
-    // Constants
+    private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
+    private static final String BOOT_MESSAGE = "On The Side Of Angles";
+    private static final String dateFormatter = "HH:mm:ss";
     private static final String LOADING_APP_MESSAGE = "loading app...  Please wait";
 
-    // Fields
+    private int currentTest;
     private JFrame mainFrame;
     private LoginForm loginForm;
     private JButton startButton;
@@ -39,9 +41,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
     private StartProducingTestsCommand startProducingTestsCommand;
     private StopProducingTestsCommand stopProducingTestsCommand;
     private GatewayService gatewayService;
-    private int currentTest;
 
-    // Constructor
     public MainFormImpl() throws IOException {
         mainFrame = new JFrame("Case Yellow");
         currentTest = 0;
@@ -146,7 +146,6 @@ public class MainFormImpl implements MessagesService, MainFrame {
         mainFrame.dispose();
     }
 
-
     public void setStartProducingTestsCommand(StartProducingTestsCommand startProducingTestsCommand) {
         this.startProducingTestsCommand = startProducingTestsCommand;
     }
@@ -160,15 +159,27 @@ public class MainFormImpl implements MessagesService, MainFrame {
     }
 
     @Override
-    public void login(String userName, String password) throws IOException, LoginException {
-        boolean loginSucceed = gatewayService.login(new AccountCredentials(userName, password));
+    public void login(String userName, String password) throws IOException, LoginException, InterruptedException {
+        LoginDetails loginDetails = gatewayService.login(new AccountCredentials(userName, password));
 
-        if (loginSucceed) {
-            JOptionPane.showMessageDialog(null, "Justice will be served");
-            showMessageToUser(BOOT_MESSAGE);
-            SwingUtilities.invokeLater(() -> loginForm.close());
-            SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
+        if (loginDetails.isSucceed()) {
+
+            if (loginDetails.isRegistration()) {
+                mainFrame.setEnabled(false);
+                Map<String, List<String>> connectionDetails = gatewayService.getConnectionDetails();
+                new ConnectionDetailsFormImpl(this, connectionDetails);
+            } else {
+                formInitView();
+            }
         }
+    }
+
+    @Override
+    public void formInitView() {
+        JOptionPane.showMessageDialog(null, "Justice will be served");
+        showMessageToUser(BOOT_MESSAGE);
+        SwingUtilities.invokeLater(() -> loginForm.close());
+        SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
     }
 
     @Override

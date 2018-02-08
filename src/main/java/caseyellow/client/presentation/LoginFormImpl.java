@@ -24,7 +24,6 @@ public class LoginFormImpl extends JFrame implements LoginForm {
         init();
     }
 
-
     private void setIcon() throws IOException {
         String pathToFileOnDisk = getTempFileFromResources("icon/login_icon.png").getAbsolutePath();
         ImageIcon img = new ImageIcon(pathToFileOnDisk);
@@ -85,6 +84,7 @@ public class LoginFormImpl extends JFrame implements LoginForm {
 
     private void login(String userName, String password) {
         try {
+            this.dispose();
             mainFrame.login(userName, password);
 
         } catch (Exception e) {

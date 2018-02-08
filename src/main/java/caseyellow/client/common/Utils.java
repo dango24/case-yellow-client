@@ -221,10 +221,10 @@ public class Utils {
                      .orElseThrow(() -> new InternalFailureException("There is no max point in points: " + points));
     }
 
-    public static String convertToBase64MD5(File file) throws NoSuchAlgorithmException, IOException {
+    public static String convertToMD5(File file) throws NoSuchAlgorithmException, IOException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(IOUtils.toByteArray(new FileInputStream(file)));
 
-        return DatatypeConverter.printBase64Binary(md.digest());
+        return DatatypeConverter.printHexBinary(md.digest());
     }
 }

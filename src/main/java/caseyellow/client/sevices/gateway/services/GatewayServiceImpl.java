@@ -16,6 +16,7 @@ import caseyellow.client.exceptions.OcrParsingException;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.ErrorMessage;
+import caseyellow.client.sevices.gateway.model.LoginDetails;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
@@ -49,6 +50,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     private static final String TOKEN_PREFIX = "Bearer";
     private static final String TOKEN_HEADER = "Authorization";
     private static final String USER_HEADER = "Case-Yellow-User";
+    private static final String USER_REGISTRATION = "user_registration";
 
     @Value("${gateway_url}")
     private String gatewayUrl;
@@ -78,7 +80,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public boolean login(AccountCredentials accountCredentials) throws IOException, LoginException {
+    public LoginDetails login(AccountCredentials accountCredentials) throws IOException, LoginException {
         try {
             Map<String, String> headers = requestHandler.getResponseHeaders(gatewayRequests.login(accountCredentials));
 
@@ -91,12 +93,21 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
                            .replaceAll(TOKEN_PREFIX, "")
                            .trim();
 
-            return true;
+            return new LoginDetails(true, isFirstRegistration(headers.get(USER_REGISTRATION)));
 
         } catch (RequestFailureException e) {
             handleError(e.getErrorCode(), e.getMessage());
-            return false;
+            return new LoginDetails(false);
         }
+    }
+
+    @Override
+    public Map<String, List<String>> getConnectionDetails() {
+        return requestHandler.execute(gatewayRequests.getConnectionDetails(createTokenHeader()));
+    }
+
+    private boolean isFirstRegistration(String registrationHeader) {
+        return nonNull(registrationHeader) && Boolean.valueOf(registrationHeader);
     }
 
     @Override

@@ -81,4 +81,11 @@ public interface GatewayRequests {
     })
     @POST("ocr_request")
     Call<OcrResponse> ocrRequest(@HeaderMap Map<String, String> headers, @Body GoogleVisionRequest googleVisionRequest);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET("central/connection-details")
+    Call<Map<String, List<String>>> getConnectionDetails(@HeaderMap Map<String, String> headers);
 }

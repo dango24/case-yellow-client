@@ -15,8 +15,8 @@ chromeDriverExecutorPath : drivers/chromedriver.exe
 sleep_interval_in_seconds: 10
 
 google_vision_url : https://vision.googleapis.com/
-gateway_url : http://ec2-18-196-42-127.eu-central-1.compute.amazonaws.com:8008/
-#gateway_url : http://localhost:8008/
+#gateway_url : http://ec2-18-196-42-127.eu-central-1.compute.amazonaws.com:8008/
+gateway_url : http://localhost:8008/
 
 logging:
   level:

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 
-import static caseyellow.client.common.Utils.convertToBase64MD5;
+import static caseyellow.client.common.Utils.convertToMD5;
 import static caseyellow.client.common.Utils.createTmpDir;
 import static java.util.Objects.nonNull;
 
@@ -68,7 +68,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             startDownloadingTime = System.currentTimeMillis();
             fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(url, tmpFile);
             fileSizeInBytes = tmpFile.length();
-            md5 = convertToBase64MD5(tmpFile);
+            md5 = convertToMD5(tmpFile);
 
             validateFile(fileDownloadProperties, fileSizeInBytes, md5);
 
