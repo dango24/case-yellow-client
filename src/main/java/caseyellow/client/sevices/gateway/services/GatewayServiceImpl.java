@@ -6,10 +6,7 @@ import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.analyze.service.OcrService;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
-import caseyellow.client.domain.test.model.ComparisonInfo;
-import caseyellow.client.domain.test.model.ConnectionDetails;
-import caseyellow.client.domain.test.model.FailedTestDetails;
-import caseyellow.client.domain.test.model.Test;
+import caseyellow.client.domain.test.model.*;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.LoginException;
@@ -34,12 +31,18 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static caseyellow.client.common.Utils.getSnapshotMetadataFile;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Profile("prod")
@@ -120,6 +123,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     public void saveTest(Test test) throws RequestFailureException {
         if (nonNull(test)) {
             uploadSnapshotImages(test);
+            saveSnapshotHashToDisk(test);
             requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
         }
     }
@@ -162,13 +166,13 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     private void uploadSnapshotImages(Test test) {
-        Map<Integer, String> snapshotMap =
+        Map<String, String> snapshotMap =
                 test.getComparisonInfoTests()
                     .stream()
                     .map(ComparisonInfo::getSpeedTestWebSite)
                     .collect(toMap(SpeedTestWebSite::getKey, SpeedTestWebSite::getWebSiteDownloadInfoSnapshot));
 
-        Map<Integer, PreSignedUrl> preSignedUrls =
+        Map<String, PreSignedUrl> preSignedUrls =
                 snapshotMap.keySet()
                            .stream()
                            .collect(toMap(Function.identity(), key -> generatePreSignedUrl(test.getSystemInfo().getPublicIP(), String.valueOf(key))));
@@ -180,6 +184,25 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
             .stream()
             .map(ComparisonInfo::getSpeedTestWebSite)
             .forEach(speedTestWebSite -> speedTestWebSite.setPath(preSignedUrls.get(speedTestWebSite.getKey()).getKey()));
+    }
+
+    private void saveSnapshotHashToDisk(Test test) {
+        List<String> snapshotMetadata =
+            test.getComparisonInfoTests()
+                .stream()
+                .map(ComparisonInfo::getSpeedTestWebSite)
+                .filter(SpeedTestWebSite::isSucceed)
+                .map(info -> SnapshotMetadata.createSnapshotMetadata(info.getWebSiteDownloadInfoSnapshot(), info.getPath()).toString())
+                .collect(toList());
+
+        try {
+            if (!snapshotMetadata.isEmpty()) {
+                Files.write(getSnapshotMetadataFile().toPath(), snapshotMetadata, UTF_8, APPEND, CREATE);
+            }
+
+        } catch (IOException e) {
+            throw new RequestFailureException("Failed to write snapshot metadata file, cause: " + e.getMessage(), e);
+        }
     }
 
     private void uploadObject(URL url, String fileToUploadPath) {

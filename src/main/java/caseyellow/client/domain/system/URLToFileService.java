@@ -10,5 +10,5 @@ import java.net.URL;
  * Created by Dan on 6/24/2017.
  */
 public interface URLToFileService {
-    long copyURLToFile(URL source, File destination) throws FileDownloadInfoException, UserInterruptException;
+    long copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException;
 }

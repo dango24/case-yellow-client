@@ -56,7 +56,7 @@ public class SystemServiceImplTest {
         Method getConnectionMethod;
 
         try {
-            systemService = new SystemServiceImpl();
+            systemService = new SystemServiceImpl(null);
             getConnectionMethod = SystemServiceImpl.class.getDeclaredMethod(methodIdentifier);
             getConnectionMethod.setAccessible(true);
             return (String)getConnectionMethod.invoke(systemService);

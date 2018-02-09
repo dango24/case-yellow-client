@@ -1,6 +1,12 @@
 package caseyellow.client.domain.website.model;
 
+import caseyellow.client.common.Utils;
+import caseyellow.client.exceptions.WebSiteDownloadInfoException;
 import com.google.gson.annotations.Expose;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by Dan on 12/10/2016.
@@ -8,7 +14,7 @@ import com.google.gson.annotations.Expose;
 public class SpeedTestWebSite {
 
     @Expose
-    private int key;
+    private String key;
 
     @Expose
     private String webSiteDownloadInfoSnapshot;
@@ -32,7 +38,7 @@ public class SpeedTestWebSite {
                             String webSiteDownloadInfoSnapshot,
                             String urlAddress,
                             String result,
-                            String message) {
+                            String message) throws IOException, NoSuchAlgorithmException {
 
         this.succeed = succeed;
         this.speedTestIdentifier = speedTestIdentifier;
@@ -41,7 +47,7 @@ public class SpeedTestWebSite {
         this.urlAddress = urlAddress;
         this.nonFlashResult = result;
         this.message = message;
-        this.key = webSiteDownloadInfoSnapshot.hashCode();
+        this.key = Utils.convertToMD5(new File(webSiteDownloadInfoSnapshot));
     }
 
     public boolean isSucceed() {
@@ -92,11 +98,11 @@ public class SpeedTestWebSite {
         this.urlAddress = urlAddress;
     }
 
-    public int getKey() {
+    public String getKey() {
         return key;
     }
 
-    public void setKey(int key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
@@ -176,9 +182,14 @@ public class SpeedTestWebSite {
         }
 
         public SpeedTestWebSite build() {
-            return new SpeedTestWebSite(speedTestIdentifier, succeed,
-                                        startDownloadingTime, webSiteDownloadInfoSnapshot,
-                                        urlAddress, nonFlashResult, message);
+            try {
+                return new SpeedTestWebSite(speedTestIdentifier, succeed,
+                                            startDownloadingTime, webSiteDownloadInfoSnapshot,
+                                            urlAddress, nonFlashResult, message);
+
+            } catch (IOException | NoSuchAlgorithmException e) {
+                throw new WebSiteDownloadInfoException("Failed to build SpeedTestWebSite, cause: " + e.getMessage(), e);
+            }
         }
 
     }

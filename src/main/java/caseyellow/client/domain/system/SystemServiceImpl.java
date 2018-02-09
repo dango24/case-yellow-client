@@ -1,5 +1,6 @@
 package caseyellow.client.domain.system;
 
+import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.exceptions.ConnectionTypeException;
 import caseyellow.client.exceptions.FileDownloadInfoException;
@@ -7,6 +8,7 @@ import caseyellow.client.exceptions.UserInterruptException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -38,6 +40,13 @@ public class SystemServiceImpl implements SystemService {
 
     private static final String ETHERNET_IDENTIFIER = "eth";
 
+    private MessagesService messagesService;
+
+    @Autowired
+    public SystemServiceImpl(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
+
     @Override
     public SystemInfo getSystemInfo() {
         String connection = getConnection();
@@ -60,7 +69,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public long copyURLToFile(URL source, File destination) throws FileDownloadInfoException, UserInterruptException {
+    public long copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException {
         long fileDownloadedDurationTimeInMs;
 
         try {
@@ -68,7 +77,7 @@ public class SystemServiceImpl implements SystemService {
             connection.setReadTimeout(5000);
             connection.connect();
 
-            fileDownloadedDurationTimeInMs = downloadFile(destination, connection);
+            fileDownloadedDurationTimeInMs = downloadFile(fileName, destination, connection, fileSize);
             log.info("finish downloading file from: " + source.toString());
 
             return fileDownloadedDurationTimeInMs;
@@ -78,7 +87,7 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
-    private long downloadFile(File destination, URLConnection connection) {
+    private long downloadFile(String fileName, File destination, URLConnection connection, long fileSize) {
         int count;
         final byte[] data = new byte[1024];
 
@@ -93,6 +102,8 @@ public class SystemServiceImpl implements SystemService {
                  if (Thread.currentThread().isInterrupted()) {
                      throw new UserInterruptException("User cancel download file request");
                  }
+
+                 messagesService.showDownloadFileProgress(fileName, out.getChannel().size(), fileSize);
              }
 
              return System.currentTimeMillis() - startDownloadingTime;

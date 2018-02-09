@@ -17,6 +17,11 @@ public class MessageServiceImp implements MessagesService {
     }
 
     @Override
+    public void showDownloadFileProgress(String fileName, long currentFileSize, long fullFileSize) {
+        presentationMessagesService.showDownloadFileProgress(fileName, currentFileSize, fullFileSize);
+    }
+
+    @Override
     public void subTestStart() {
         presentationMessagesService.subTestStart();
     }

@@ -104,13 +104,17 @@ public class Utils {
 
     public static File createTmpDir() {
         File tmpDir = new File(tmpDirPath, generateUniqueID());
-        tmpDir.mkdir();
+        tmpDir.mkdirs();
 
         return tmpDir;
     }
 
     public static String readFile(String path) throws IOException {
         return FileUtils.readFileToString(new File(path), Charset.forName("UTF-8"));
+    }
+
+    public static File getSnapshotMetadataFile() {
+        return new File("logs", "snapshotFile");
     }
 
     public static String getScreenResolution() {

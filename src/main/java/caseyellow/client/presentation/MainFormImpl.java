@@ -34,18 +34,20 @@ public class MainFormImpl implements MessagesService, MainFrame {
 
     private int currentTest;
     private JFrame mainFrame;
-    private LoginForm loginForm;
     private JButton startButton;
     private JButton stopButton;
     private JEditorPane editorPane;
     private JScrollPane editorScrollPane;
     private StartProducingTestsCommand startProducingTestsCommand;
     private StopProducingTestsCommand stopProducingTestsCommand;
+    private LoginForm loginForm;
+    private DownloadProgressBar downloadProgressBar;
     private GatewayService gatewayService;
 
     public MainFormImpl() throws IOException {
         mainFrame = new JFrame("Speed Test Detective");
         currentTest = 0;
+        downloadProgressBar = new DownloadProgressBar();
         setIcon();
         buildComponents();
         mainFrame.setLocationRelativeTo(null);
@@ -208,4 +210,10 @@ public class MainFormImpl implements MessagesService, MainFrame {
         logger.warn("Test Stopped");
         showMessage("Test Stopped");
     }
+
+    @Override
+    public void showDownloadFileProgress(String fileName, long currentFileSize, long fullFileSize) {
+        SwingUtilities.invokeLater( () -> downloadProgressBar.showFileDownloadState(fileName, currentFileSize, fullFileSize));
+    }
+
 }

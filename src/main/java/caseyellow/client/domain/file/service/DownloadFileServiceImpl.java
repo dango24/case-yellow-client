@@ -66,7 +66,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             messagesService.showMessage(message);
 
             startDownloadingTime = System.currentTimeMillis();
-            fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(url, tmpFile);
+            fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(fileDownloadProperties.getIdentifier(), url, tmpFile, fileDownloadProperties.getSize());
             fileSizeInBytes = tmpFile.length();
             md5 = convertToMD5(tmpFile);
 
