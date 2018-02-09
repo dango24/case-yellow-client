@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static caseyellow.client.common.Utils.getTempFileFromResources;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetailsForm {
 
@@ -23,11 +24,11 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
     private Map<String, List<String>> connectionDetails;
 
     public ConnectionDetailsFormImpl(MainFrame mainFrame, Map<String, List<String>> connectionDetails) {
-        super("Service");
+        super("Your Service");
         this.mainFrame = mainFrame;
         this.connectionDetails = connectionDetails;
-        setIcon();
 
+        setIcon();
         init();
         view();
     }
@@ -53,14 +54,15 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
     }
 
     private void placeComponents(JPanel panel) {
-
         panel.setLayout(null);
 
         JLabel infrastructureLabel = new JLabel("Infrastructure");
         infrastructureLabel.setBounds(10, 10, 80, 25);
         panel.add(infrastructureLabel);
 
-        infrastructureCombo = new JComboBox(connectionDetails.get("infrastructure").toArray());
+        infrastructureCombo = new JComboBox(connectionDetails.get("infrastructure").stream().sorted().toArray());
+        infrastructureCombo.insertItemAt("Choose", 0);
+        infrastructureCombo.setSelectedIndex(0);
         infrastructureCombo.setMaximumRowCount(5);
         infrastructureCombo.setBounds(100, 10, 160, 25);
         panel.add(infrastructureCombo);
@@ -69,7 +71,9 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
         ispLabel.setBounds(10, 40, 80, 25);
         panel.add(ispLabel);
 
-        ispCombo = new JComboBox(connectionDetails.get("isp").toArray());
+        ispCombo = new JComboBox(connectionDetails.get("isp").stream().sorted().toArray());
+        ispCombo.insertItemAt("Choose", 0);
+        ispCombo.setSelectedIndex(0);
         ispCombo.setMaximumRowCount(5);
         ispCombo.setBounds(100, 40, 160, 25);
         panel.add(ispCombo);
@@ -78,7 +82,9 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
         speedLabel.setBounds(10, 70, 80, 25);
         panel.add(speedLabel);
 
-        speedCombo = new JComboBox(connectionDetails.get("speed").toArray());
+        speedCombo = new JComboBox(connectionDetails.get("speed").stream().map(speed -> speed + " Mbps").toArray());
+        speedCombo.insertItemAt("Choose", 0);
+        speedCombo.setSelectedIndex(0);
         speedCombo.setMaximumRowCount(5);
         speedCombo.setBounds(100, 70, 160, 25);
         panel.add(speedCombo);
@@ -95,11 +101,53 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
     }
 
     private void saveCommand() {
-        JOptionPane.showMessageDialog(null, "Welcome");
+        if (validateInput()) {
+            saveUserDetails();
+        }
+    }
+
+    private boolean validateInput() {
+        int infraIndex = infrastructureCombo.getSelectedIndex();
+        int ispIndex = ispCombo.getSelectedIndex();
+        int speedIndex = speedCombo.getSelectedIndex();
+
+        if (infraIndex == 0) {
+            JOptionPane.showMessageDialog(null, "You must choose infrastructure!", "",  JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+
+        if (ispIndex == 0) {
+            JOptionPane.showMessageDialog(null, "You must choose ISP!", "",  JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+
+        if (speedIndex == 0) {
+            JOptionPane.showMessageDialog(null, "You must choose speed!", "",  JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void saveUserDetails() {
+        String infa = String.valueOf(infrastructureCombo.getSelectedItem());
+        String isp = String.valueOf(ispCombo.getSelectedItem());
+        String speed = String.valueOf(speedCombo.getSelectedItem());
+        String message = String.format("Infrastructure: %s\nISP: %s\nSpeed: %s", infa, isp, speed);
+        Object[] options = {"Confirm", "Change"};
+
+        int result = JOptionPane.showOptionDialog(null, message, "Connection Details",
+                                                  YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                                                  options, options[0]);
+
+        if (result == 0) {
+            SwingUtilities.invokeLater( () -> this.dispose());
+            SwingUtilities.invokeLater( () -> mainFrame.saveConnectionDetails(infa, isp, speed));
+        }
     }
 
     private void cancelCommand() {
-        JOptionPane.showMessageDialog(null, "Bye Bye");
+        JOptionPane.showMessageDialog(null, "Bye Bye", "",  JOptionPane.INFORMATION_MESSAGE);
         System.exit(1);
     }
 

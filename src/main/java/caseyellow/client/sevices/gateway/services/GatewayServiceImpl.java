@@ -7,6 +7,7 @@ import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.analyze.service.OcrService;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.test.model.ComparisonInfo;
+import caseyellow.client.domain.test.model.ConnectionDetails;
 import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
@@ -104,6 +105,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     @Override
     public Map<String, List<String>> getConnectionDetails() {
         return requestHandler.execute(gatewayRequests.getConnectionDetails(createTokenHeader()));
+    }
+
+    @Override
+    public void saveConnectionDetails(ConnectionDetails connectionDetails) {
+        requestHandler.execute(gatewayRequests.saveConnectionDetails(createTokenHeader(), connectionDetails));
     }
 
     private boolean isFirstRegistration(String registrationHeader) {

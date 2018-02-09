@@ -70,6 +70,8 @@ public class LoginFormImpl extends JFrame implements LoginForm {
         cancelButton.addActionListener( l -> cancelCommand());
         cancelButton.setBounds(180, 80, 80, 25);
         panel.add(cancelButton);
+
+        this.getRootPane().setDefaultButton(loginButton);
     }
 
     private void loginCommand() {
@@ -84,7 +86,6 @@ public class LoginFormImpl extends JFrame implements LoginForm {
 
     private void login(String userName, String password) {
         try {
-            this.dispose();
             mainFrame.login(userName, password);
 
         } catch (Exception e) {
@@ -107,7 +108,7 @@ public class LoginFormImpl extends JFrame implements LoginForm {
     }
 
     private void cancelCommand() {
-        JOptionPane.showMessageDialog(null, "Bye Bye");
+        JOptionPane.showMessageDialog(null, "Bye Bye", "",  JOptionPane.INFORMATION_MESSAGE);
         System.exit(1);
     }
 

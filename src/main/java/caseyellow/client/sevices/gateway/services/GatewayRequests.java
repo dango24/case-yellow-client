@@ -3,6 +3,7 @@ package caseyellow.client.sevices.gateway.services;
 import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
 import caseyellow.client.domain.analyze.model.OcrResponse;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
+import caseyellow.client.domain.test.model.ConnectionDetails;
 import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
@@ -88,4 +89,12 @@ public interface GatewayRequests {
     })
     @GET("central/connection-details")
     Call<Map<String, List<String>>> getConnectionDetails(@HeaderMap Map<String, String> headers);
+
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("central/save-connection-details")
+    Call<Void> saveConnectionDetails(@HeaderMap Map<String, String> headers, @Body ConnectionDetails connectionDetails);
 }

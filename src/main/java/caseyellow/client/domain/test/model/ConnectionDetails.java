@@ -9,7 +9,7 @@ public class ConnectionDetails {
     public ConnectionDetails() {
     }
 
-    public ConnectionDetails(int speed, String isp, String infrastructure) {
+    public ConnectionDetails(String infrastructure, String isp, int speed) {
         this.speed = speed;
         this.isp = isp;
         this.infrastructure = infrastructure;

@@ -3,6 +3,7 @@ package caseyellow.client.presentation;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
+import caseyellow.client.domain.test.model.ConnectionDetails;
 import caseyellow.client.exceptions.LoginException;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.LoginDetails;
@@ -43,7 +44,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
     private GatewayService gatewayService;
 
     public MainFormImpl() throws IOException {
-        mainFrame = new JFrame("Case Yellow");
+        mainFrame = new JFrame("Speed Test Detective");
         currentTest = 0;
         setIcon();
         buildComponents();
@@ -66,7 +67,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
         panel.add(stopButton);
         panel.add(editorScrollPane);
         mainFrame.add(panel);
-        mainFrame.setSize(350, 260);
+        mainFrame.setSize(370, 260);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginForm = new LoginFormImpl(this);
     }
@@ -168,6 +169,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
                 mainFrame.setEnabled(false);
                 Map<String, List<String>> connectionDetails = gatewayService.getConnectionDetails();
                 new ConnectionDetailsFormImpl(this, connectionDetails);
+                loginForm.dispose();
             } else {
                 formInitView();
             }
@@ -175,8 +177,15 @@ public class MainFormImpl implements MessagesService, MainFrame {
     }
 
     @Override
+    public void saveConnectionDetails(String infrastructure, String isp, String speed) {
+        ConnectionDetails connectionDetails = new ConnectionDetails(infrastructure, isp, Integer.valueOf(speed.replaceAll("Mbps", "").trim()));
+        gatewayService.saveConnectionDetails(connectionDetails);
+        formInitView();
+    }
+
+    @Override
     public void formInitView() {
-        JOptionPane.showMessageDialog(null, "Justice will be served");
+        JOptionPane.showMessageDialog(null, "Justice will be served", "", JOptionPane.INFORMATION_MESSAGE);
         showMessageToUser(BOOT_MESSAGE);
         SwingUtilities.invokeLater(() -> loginForm.close());
         SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
