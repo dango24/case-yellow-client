@@ -30,9 +30,13 @@ public class App {
     private static MainFormImpl mainForm;
 
     public static void main(String[] args) throws Exception {
-        initView();
-        initForkJoinCommonPool();
-        initApplicationContext(args);
+        try {
+            initView();
+            initForkJoinCommonPool();
+            initApplicationContext(args);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     private static void initView() throws IOException {
