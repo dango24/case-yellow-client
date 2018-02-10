@@ -3,11 +3,12 @@ package caseyellow.client.presentation;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.io.Closeable;
 import java.io.IOException;
 
 import static caseyellow.client.common.Utils.getTempFileFromResources;
 
-public class DownloadProgressBar {
+public class DownloadProgressBar implements Closeable {
 
     private static final String TITLE_MESSAGE = "Downloading file: %s";
 
@@ -52,4 +53,8 @@ public class DownloadProgressBar {
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        frame.setVisible(false);
+    }
 }
