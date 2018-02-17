@@ -120,6 +120,5 @@ public class LoginFormImpl extends JFrame implements LoginForm {
     @Override
     public void close() {
         setVisible(false);
-        dispose();
     }
 }

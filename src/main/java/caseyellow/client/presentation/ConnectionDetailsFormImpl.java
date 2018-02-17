@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -18,19 +19,15 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
     private JButton saveButton;
     private JButton cancelButton;
     private JComboBox infrastructureCombo;
-    private JComboBox ispCombo;
     private JComboBox speedCombo;
     private MainFrame mainFrame;
-    private Map<String, List<String>> connectionDetails;
 
-    public ConnectionDetailsFormImpl(MainFrame mainFrame, Map<String, List<String>> connectionDetails) {
-        super("Your Service");
+    public ConnectionDetailsFormImpl(MainFrame mainFrame) {
+        super("Service");
         this.mainFrame = mainFrame;
-        this.connectionDetails = connectionDetails;
 
         setIcon();
         init();
-        view();
     }
 
     private void setIcon() {
@@ -44,7 +41,7 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
     }
 
     private void init() {
-        this.setSize(310, 200);
+        this.setSize(290, 170);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
@@ -60,43 +57,33 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
         infrastructureLabel.setBounds(10, 10, 80, 25);
         panel.add(infrastructureLabel);
 
-        infrastructureCombo = new JComboBox(connectionDetails.get("infrastructure").stream().sorted().toArray());
+        infrastructureCombo = new JComboBox();
         infrastructureCombo.insertItemAt("Choose", 0);
         infrastructureCombo.setSelectedIndex(0);
         infrastructureCombo.setMaximumRowCount(5);
         infrastructureCombo.setBounds(100, 10, 160, 25);
         panel.add(infrastructureCombo);
 
-        JLabel ispLabel= new JLabel("ISP");
-        ispLabel.setBounds(10, 40, 80, 25);
-        panel.add(ispLabel);
-
-        ispCombo = new JComboBox(connectionDetails.get("isp").stream().sorted().toArray());
-        ispCombo.insertItemAt("Choose", 0);
-        ispCombo.setSelectedIndex(0);
-        ispCombo.setMaximumRowCount(5);
-        ispCombo.setBounds(100, 40, 160, 25);
-        panel.add(ispCombo);
 
         JLabel speedLabel= new JLabel("Speed");
-        speedLabel.setBounds(10, 70, 80, 25);
+        speedLabel.setBounds(10, 40, 80, 25);
         panel.add(speedLabel);
 
-        speedCombo = new JComboBox(connectionDetails.get("speed").stream().map(speed -> speed + " Mbps").toArray());
+        speedCombo = new JComboBox();
         speedCombo.insertItemAt("Choose", 0);
         speedCombo.setSelectedIndex(0);
         speedCombo.setMaximumRowCount(5);
-        speedCombo.setBounds(100, 70, 160, 25);
+        speedCombo.setBounds(100, 40, 160, 25);
         panel.add(speedCombo);
 
         saveButton = new JButton("Save");
         saveButton.addActionListener(l -> saveCommand());
-        saveButton.setBounds(10, 110, 80, 25);
+        saveButton.setBounds(10, 80, 80, 25);
         panel.add(saveButton);
 
         cancelButton = new JButton("cancel");
         cancelButton.addActionListener( l -> cancelCommand());
-        cancelButton.setBounds(180, 110, 80, 25);
+        cancelButton.setBounds(180, 80, 80, 25);
         panel.add(cancelButton);
     }
 
@@ -108,16 +95,10 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
 
     private boolean validateInput() {
         int infraIndex = infrastructureCombo.getSelectedIndex();
-        int ispIndex = ispCombo.getSelectedIndex();
         int speedIndex = speedCombo.getSelectedIndex();
 
         if (infraIndex == 0) {
             JOptionPane.showMessageDialog(null, "You must choose infrastructure!", "",  JOptionPane.INFORMATION_MESSAGE);
-            return false;
-        }
-
-        if (ispIndex == 0) {
-            JOptionPane.showMessageDialog(null, "You must choose ISP!", "",  JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 
@@ -131,9 +112,8 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
 
     private void saveUserDetails() {
         String infa = String.valueOf(infrastructureCombo.getSelectedItem());
-        String isp = String.valueOf(ispCombo.getSelectedItem());
         String speed = String.valueOf(speedCombo.getSelectedItem());
-        String message = String.format("Infrastructure: %s\nISP: %s\nSpeed: %s", infa, isp, speed);
+        String message = String.format("Infrastructure: %s\nSpeed: %s", infa, speed);
         Object[] options = {"Confirm", "Change"};
 
         int result = JOptionPane.showOptionDialog(null, message, "Connection Details",
@@ -141,8 +121,7 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
                                                   options, options[0]);
 
         if (result == 0) {
-            SwingUtilities.invokeLater( () -> this.dispose());
-            SwingUtilities.invokeLater( () -> mainFrame.saveConnectionDetails(infa, isp, speed));
+            mainFrame.saveConnectionDetails(infa, speed);
         }
     }
 
@@ -152,13 +131,27 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
     }
 
     @Override
-    public void view() {
+    public void view(Map<String, List<String>> connectionDetails) {
+
+        connectionDetails.get("infrastructure")
+                         .stream()
+                         .sorted()
+                         .forEach(infrastructureCombo::addItem);
+
+        infrastructureCombo.setSelectedIndex(0);
+
+        connectionDetails.get("speed")
+                         .stream()
+                         .map(speed -> speed + " Mbps")
+                         .forEach(speedCombo::addItem);
+
+        speedCombo.setSelectedIndex(0);
+
         this.setVisible(true);
     }
 
     @Override
     public void close() {
         setVisible(false);
-        dispose();
     }
 }

@@ -30,9 +30,6 @@ public class TestServiceImpl implements TestService {
 
     private Logger logger = Logger.getLogger(TestServiceImpl.class);
 
-    @Value("${numOfComparisonPerTest}")
-    private int numOfComparisonPerTest;
-
     private SystemService systemService;
     private WebSiteService webSiteService;
     private MessagesService messagesService;
@@ -53,14 +50,13 @@ public class TestServiceImpl implements TestService {
 
         SystemInfo systemInfo = systemService.getSystemInfo();
         SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        List<FileDownloadProperties> fileDownloadProperties = dataAccessService.getNextUrls(numOfComparisonPerTest);
+        List<FileDownloadProperties> fileDownloadProperties = dataAccessService.getNextUrls();
         logger.info(String.format("Start producing test with speed-test: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
 
         List<ComparisonInfo> comparisonInfoList =
                 fileDownloadProperties.stream()
                                       .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
-                                      .peek(comparisonInfo -> notifyFailedTest(comparisonInfo, systemInfo.getPublicIP()))
-                                      .filter(ComparisonInfo::isSuccess)
+                                      .peek(comparisonInfo -> checkFailedTest(comparisonInfo, systemInfo.getPublicIP()))
                                       .collect(toList());
 
         messagesService.testDone();
@@ -91,10 +87,12 @@ public class TestServiceImpl implements TestService {
         return new ComparisonInfo(speedTestWebSiteDownloadInfo, fileDownloadInfo);
     }
 
-    private void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) {
+    private void checkFailedTest(ComparisonInfo comparisonInfo, String clientIP) {
         if (comparisonInfo.failed()) {
             messagesService.testDone();
             dataAccessService.notifyFailedTest(comparisonInfo, clientIP);
+
+            throw new TestException("Failed to generate test");
         }
     }
 }

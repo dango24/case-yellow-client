@@ -9,9 +9,8 @@ public class ConnectionDetails {
     public ConnectionDetails() {
     }
 
-    public ConnectionDetails(String infrastructure, String isp, int speed) {
+    public ConnectionDetails(String infrastructure, int speed) {
         this.speed = speed;
-        this.isp = isp;
         this.infrastructure = infrastructure;
     }
 

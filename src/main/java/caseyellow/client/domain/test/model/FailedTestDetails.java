@@ -67,4 +67,12 @@ public class FailedTestDetails {
             return new FailedTestDetails(ip, path, errorMessage);
         }
     }
+
+    @Override
+    public String toString() {
+        return "FailedTestDetails{" +
+                "path='" + path + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
+    }
 }

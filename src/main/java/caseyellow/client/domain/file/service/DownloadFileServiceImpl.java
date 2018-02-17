@@ -57,13 +57,11 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         long fileDownloadedDurationTimeInMs;
         double fileDownloadRateKBPerSec;
 
+        displayMessage("Downloading file: " + fileDownloadProperties.getIdentifier() + ", from url: " + fileDownloadProperties.getUrl());
+
         try {
             url = new URL(fileDownloadProperties.getUrl());
             tmpFile = new File(createTmpDir(), fileDownloadProperties.getIdentifier());
-
-            String message = "Downloading file: " + fileDownloadProperties.getIdentifier() + ", from url: " + fileDownloadProperties.getUrl();
-            logger.info(message);
-            messagesService.showMessage(message);
 
             startDownloadingTime = System.currentTimeMillis();
             fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(fileDownloadProperties.getIdentifier(), url, tmpFile, fileDownloadProperties.getSize());
@@ -74,10 +72,10 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
             fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedDurationTimeInMs, fileSizeInBytes);
 
-            messagesService.showMessage(fileDownloadProperties.getIdentifier() + " finish download, rate: " + fileDownloadRateKBPerSec + "KB per sec");
+            displayMessage(fileDownloadProperties.getIdentifier() + " finish download, rate: " + fileDownloadRateKBPerSec + "KB per sec");
 
             return new FileDownloadInfo.FileDownloadInfoBuilder(fileDownloadProperties.getIdentifier())
-                                       .addSucceed()
+                                       .setSucceed()
                                        .addFileURL(url.toString())
                                        .addFileSizeInBytes(fileSizeInBytes)
                                        .addFileDownloadRateKBPerSec(fileDownloadRateKBPerSec)
@@ -110,4 +108,8 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         return bytesPerSec / Math.pow(2, 10); // Transform to KB
     }
 
+    private void displayMessage(String message) {
+        logger.info(message);
+        messagesService.showMessage(message);
+    }
 }

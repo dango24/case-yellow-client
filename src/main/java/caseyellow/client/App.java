@@ -2,7 +2,7 @@ package caseyellow.client;
 
 import caseyellow.client.domain.test.service.TestGeneratorImpl;
 import caseyellow.client.domain.message.MessageServiceImp;
-import caseyellow.client.presentation.MainFormImpl;
+import caseyellow.client.presentation.MainFrameImpl;
 import caseyellow.client.sevices.gateway.services.GatewayService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.swing.JOptionPane;
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -27,12 +26,11 @@ public class App {
 
     private final static Logger logger = Logger.getLogger(App.class);
 
-    private static MainFormImpl mainForm;
+    private static MainFrameImpl mainForm;
 
     public static void main(String[] args) throws Exception {
         try {
             initView();
-            initForkJoinCommonPool();
             initApplicationContext(args);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -40,15 +38,8 @@ public class App {
     }
 
     private static void initView() throws IOException {
-        mainForm = new MainFormImpl();
+        mainForm = new MainFrameImpl();
         mainForm.view();
-    }
-
-    // ForkJoinCommonPool is lazy initialized, there for at app boot make a dummy
-    // request for ForkJoinCommonPool initialization
-    private static void initForkJoinCommonPool() {
-        CompletableFuture.supplyAsync(() -> "Init ForkJoinCommonPool at start-up")
-                         .thenAccept(output -> App.logger.info(output));
     }
 
     private static void initApplicationContext(String[] args) {

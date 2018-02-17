@@ -48,6 +48,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     @Override
     public void start() {
         try {
+            Thread.currentThread().setName("Test-Producer");
             produceTests();
 
         } catch (Exception e) {
@@ -57,7 +58,6 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
     private void produceTests() throws InterruptedException {
         Test test;
-        Thread.currentThread().setName("Test-Producer");
 
         while (toProduceTests.get()) {
 
@@ -75,6 +75,9 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
             } catch (RequestFailureException e) {
                 logger.error("Request failed with status code: " + e.getErrorCode() + ", error message: " + e.getMessage());
                 handleRequestFailure(e.getErrorCode());
+
+            } catch (TestException e) {
+                logger.error(String.format("Failed to generate test, cause: %s", e.getMessage()), e);
             }
         }
     }

@@ -18,10 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.BufferedInputStream;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -77,17 +74,21 @@ public class SystemServiceImpl implements SystemService {
             connection.setReadTimeout(5000);
             connection.connect();
 
-            fileDownloadedDurationTimeInMs = downloadFile(fileName, destination, connection, fileSize);
+            messagesService.startDownloadingFile(fileName);
+            fileDownloadedDurationTimeInMs = downloadFile(destination, connection, fileSize);
+            messagesService.finishDownloadingFile();
+
             log.info("finish downloading file from: " + source.toString());
 
             return fileDownloadedDurationTimeInMs;
 
         } catch (IOException e) {
+            messagesService.finishDownloadingFile();
             throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
         }
     }
 
-    private long downloadFile(String fileName, File destination, URLConnection connection, long fileSize) {
+    private long downloadFile(File destination, URLConnection connection, long fileSize) {
         int count;
         final byte[] data = new byte[1024];
 
@@ -103,12 +104,13 @@ public class SystemServiceImpl implements SystemService {
                      throw new UserInterruptException("User cancel download file request");
                  }
 
-                 messagesService.showDownloadFileProgress(fileName, out.getChannel().size(), fileSize);
+                 messagesService.showDownloadFileProgress(out.getChannel().size(), fileSize);
              }
 
              return System.currentTimeMillis() - startDownloadingTime;
 
         } catch (IOException e) {
+            messagesService.finishDownloadingFile();
             throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
         }
     }
@@ -127,20 +129,27 @@ public class SystemServiceImpl implements SystemService {
     }
 
     private String getPublicIPAddress() {
+        return getUrl("http://checkip.amazonaws.com");
+    }
 
+    @Override
+    public String getISP() {
+        return getUrl("https://ipinfo.io/org");
+    }
+
+    private String getUrl(String url) {
         return IntStream.range(0, 10)
-                        .mapToObj(i -> getPublicIPAddressFromAWS())
+                        .mapToObj(i -> getUrlPayload(url))
                         .filter(ipAddress -> !ipAddress.equals(UNKNOWN_CONNECTION))
                         .findFirst()
                         .orElse(UNKNOWN_CONNECTION);
     }
 
-    private String getPublicIPAddressFromAWS() {
+    private String getUrlPayload(String url) {
         String ipAddress;
 
         try {
-            URL amazonAwsCheckIP = new URL("http://checkip.amazonaws.com");
-            ipAddress = IOUtils.toString(amazonAwsCheckIP, "UTF-8").replace("\n", "");
+            ipAddress = IOUtils.toString(new URL(url), "UTF-8").replace("\n", "");
 
         } catch (IOException e) {
             log.error("Failed to retrieve public IP address " + e.getMessage());

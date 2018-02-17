@@ -6,6 +6,7 @@ import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.analyze.service.OcrService;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
+import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.test.model.*;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
@@ -65,17 +66,19 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     private String user;
     private String token;
     private RequestHandler requestHandler;
+    private SystemService systemService;
     private GatewayRequests gatewayRequests;
+
+    @Autowired
+    public GatewayServiceImpl(RequestHandler requestHandler, SystemService systemService) {
+        this.requestHandler = requestHandler;
+        this.systemService = systemService;
+    }
 
     @PostConstruct
     public void init() {
         Retrofit retrofit = RetrofitBuilder.Retrofit(gatewayUrl).build();
         gatewayRequests = retrofit.create(GatewayRequests.class);
-    }
-
-    @Autowired
-    public void setRequestHandler(RequestHandler requestHandler) {
-        this.requestHandler = requestHandler;
     }
 
     @Override
@@ -112,6 +115,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
 
     @Override
     public void saveConnectionDetails(ConnectionDetails connectionDetails) {
+        connectionDetails.setIsp(systemService.getISP());
         requestHandler.execute(gatewayRequests.saveConnectionDetails(createTokenHeader(), connectionDetails));
     }
 
@@ -249,8 +253,8 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public List<FileDownloadProperties> getNextUrls(int numOfComparisonPerTest) throws RequestFailureException {
-        return requestHandler.execute(gatewayRequests.getNextUrls(createTokenHeader(), numOfComparisonPerTest));
+    public List<FileDownloadProperties> getNextUrls() throws RequestFailureException {
+        return requestHandler.execute(gatewayRequests.getNextUrls(createTokenHeader()));
     }
 
     @Override

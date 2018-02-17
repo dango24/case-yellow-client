@@ -43,8 +43,7 @@ public interface GatewayRequests {
             "Content-Type: application/json"
     })
     @GET("central/next-urls")
-    Call<List<FileDownloadProperties>> getNextUrls(@HeaderMap Map<String, String> headers ,
-                                                   @Query("num_of_comparison_per_test") int numOfComparisonPerTest);
+    Call<List<FileDownloadProperties>> getNextUrls(@HeaderMap Map<String, String> headers );
 
     @Headers({
             "Accept: application/json",

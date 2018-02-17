@@ -172,7 +172,7 @@ public class FileDownloadInfo {
             return this;
         }
 
-        public FileDownloadInfoBuilder addSucceed() {
+        public FileDownloadInfoBuilder setSucceed() {
             this.succeed = true;
             return this;
         }

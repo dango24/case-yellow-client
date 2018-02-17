@@ -10,5 +10,5 @@ public interface MainFrame {
     void formInitView();
     void disableApp(boolean tokenExpired);
     void login(String userName, String password) throws IOException, LoginException, InterruptedException;
-    void saveConnectionDetails(String infrastructure, String isp, String speed);
+    void saveConnectionDetails(String infrastructure, String speed);
 }

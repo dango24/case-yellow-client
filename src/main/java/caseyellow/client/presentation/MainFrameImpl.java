@@ -23,9 +23,9 @@ import static caseyellow.client.common.Utils.getTempFileFromResources;
 /**
  * Created by Dan on 7/7/2017.
  */
-public class MainFormImpl implements MessagesService, MainFrame {
+public class MainFrameImpl implements MessagesService, MainFrame {
 
-    private Logger logger = Logger.getLogger(MainFormImpl.class);
+    private Logger logger = Logger.getLogger(MainFrameImpl.class);
 
     private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
     private static final String BOOT_MESSAGE = "On The Side Of Angles";
@@ -42,12 +42,13 @@ public class MainFormImpl implements MessagesService, MainFrame {
     private StopProducingTestsCommand stopProducingTestsCommand;
     private LoginForm loginForm;
     private DownloadProgressBar downloadProgressBar;
+    private ConnectionDetailsForm connectionDetailsForm;
     private GatewayService gatewayService;
 
-    public MainFormImpl() throws IOException {
+    public MainFrameImpl() throws IOException {
         mainFrame = new JFrame("Speed Test Detective");
         currentTest = 0;
-        downloadProgressBar = new DownloadProgressBar();
+        downloadProgressBar = new DownloadProgressBarImpl();
         setIcon();
         buildComponents();
         mainFrame.setLocationRelativeTo(null);
@@ -72,6 +73,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
         mainFrame.setSize(370, 260);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginForm = new LoginFormImpl(this);
+        connectionDetailsForm = new ConnectionDetailsFormImpl(this);
     }
 
     private void buildEditorScrollPane() {
@@ -142,6 +144,7 @@ public class MainFormImpl implements MessagesService, MainFrame {
         showMessage("App halt, stop production tests");
         SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         SwingUtilities.invokeLater(() -> stopButton.setEnabled(false));
+        SwingUtilities.invokeLater(() -> downloadProgressBar.stopDownloading());
         SwingUtilities.invokeLater(stopProducingTestsCommand::stopProducingTests);
     }
 
@@ -170,8 +173,8 @@ public class MainFormImpl implements MessagesService, MainFrame {
             if (loginDetails.isRegistration()) {
                 mainFrame.setEnabled(false);
                 Map<String, List<String>> connectionDetails = gatewayService.getConnectionDetails();
-                new ConnectionDetailsFormImpl(this, connectionDetails);
-                loginForm.dispose();
+                loginForm.close();
+                connectionDetailsForm.view(connectionDetails);
             } else {
                 formInitView();
             }
@@ -179,8 +182,10 @@ public class MainFormImpl implements MessagesService, MainFrame {
     }
 
     @Override
-    public void saveConnectionDetails(String infrastructure, String isp, String speed) {
-        ConnectionDetails connectionDetails = new ConnectionDetails(infrastructure, isp, Integer.valueOf(speed.replaceAll("Mbps", "").trim()));
+    public void saveConnectionDetails(String infrastructure, String speed) {
+        connectionDetailsForm.close();
+        mainFrame.setEnabled(true);
+        ConnectionDetails connectionDetails = new ConnectionDetails(infrastructure, Integer.valueOf(speed.replaceAll("Mbps", "").trim()));
         gatewayService.saveConnectionDetails(connectionDetails);
         formInitView();
     }
@@ -189,8 +194,8 @@ public class MainFormImpl implements MessagesService, MainFrame {
     public void formInitView() {
         JOptionPane.showMessageDialog(null, "Justice will be served", "", JOptionPane.INFORMATION_MESSAGE);
         showMessageToUser(BOOT_MESSAGE);
-        SwingUtilities.invokeLater(() -> loginForm.close());
-        SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
+        loginForm.close();
+        startButton.setEnabled(true);
     }
 
     @Override
@@ -212,8 +217,18 @@ public class MainFormImpl implements MessagesService, MainFrame {
     }
 
     @Override
-    public void showDownloadFileProgress(String fileName, long currentFileSize, long fullFileSize) {
-        SwingUtilities.invokeLater( () -> downloadProgressBar.showFileDownloadState(fileName, currentFileSize, fullFileSize));
+    public void startDownloadingFile(String fileName) {
+        SwingUtilities.invokeLater(() -> downloadProgressBar.startDownloading(fileName));
+    }
+
+    @Override
+    public void finishDownloadingFile() {
+        SwingUtilities.invokeLater(() -> downloadProgressBar.stopDownloading());
+    }
+
+    @Override
+    public void showDownloadFileProgress(long currentFileSize, long fullFileSize) {
+        SwingUtilities.invokeLater(() -> downloadProgressBar.showFileDownloadState( currentFileSize, fullFileSize));
     }
 
 }

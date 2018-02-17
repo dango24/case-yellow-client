@@ -16,6 +16,6 @@ public interface DataAccessService {
     void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP);
     void saveTest(Test test) throws RequestFailureException;
     SpeedTestMetaData getNextSpeedTestWebSite();
-    List<FileDownloadProperties> getNextUrls(int numOfComparisonPerTest);
+    List<FileDownloadProperties> getNextUrls();
     PreSignedUrl generatePreSignedUrl(String userIP, String fileName);
 }

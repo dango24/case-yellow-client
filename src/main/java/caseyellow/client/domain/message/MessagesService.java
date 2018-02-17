@@ -7,5 +7,7 @@ public interface MessagesService {
     void testDone();
     void subTestStart();
     void showMessage(String message);
-    void showDownloadFileProgress(String fileName, long currentFileSize, long fullFileSize);
+    void showDownloadFileProgress(long currentFileSize, long fullFileSize);
+    void startDownloadingFile(String fileName);
+    void finishDownloadingFile();
 }
