@@ -31,11 +31,14 @@ public class RequestHandlerImpl implements RequestHandler {
             if (response.isSuccessful()) {
                 return response.body();
 
-            } else if (request.isCanceled()) {
-                throw new UserInterruptException("User cancelRequest request");
+            } else if (request.isCanceled() || Thread.currentThread().isInterrupted()) {
+                logger.warn("User cancel request request");
+                throw new UserInterruptException("User cancel request request");
+
             } else if (isTokenExpired(response)){
                 logger.warn("Token expired");
                 throw new RequestFailureException("Token expired", TOKEN_EXPIRED_CODE);
+
             } else {
                 logger.error(String.format("Request Failed, error code: %s, error message: %s", response.code(), response.errorBody().string()));
                 throw new RequestFailureException(response.errorBody().string(), response.code());
@@ -45,6 +48,7 @@ public class RequestHandlerImpl implements RequestHandler {
             if (e.getMessage().equals("Canceled")) {
                 throw new UserInterruptException(e.getMessage(), e);
             } else {
+                logger.error(String.format("Request Failed, error message: %s", e.getMessage()));
                 throw new RequestFailureException(e.getMessage(), e);
             }
         }

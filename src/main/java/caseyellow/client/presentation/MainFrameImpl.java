@@ -228,7 +228,7 @@ public class MainFrameImpl implements MessagesService, MainFrame {
 
     @Override
     public void showDownloadFileProgress(long currentFileSize, long fullFileSize) {
-        SwingUtilities.invokeLater(() -> downloadProgressBar.showFileDownloadState( currentFileSize, fullFileSize));
+        SwingUtilities.invokeLater(() -> downloadProgressBar.showFileDownloadState(currentFileSize, fullFileSize));
     }
 
 }

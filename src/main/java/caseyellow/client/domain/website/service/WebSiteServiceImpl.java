@@ -2,6 +2,7 @@ package caseyellow.client.domain.website.service;
 
 import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.message.MessagesService;
+import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -32,23 +34,17 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     private Logger logger = Logger.getLogger(WebSiteServiceImpl.class);
 
+    private SystemService systemService;
     private BrowserService browserService;
     private MessagesService messagesService;
     private DataAccessService dataAccessService;
 
     @Autowired
-    public void setDataAccessService(DataAccessService dataAccessService) {
-        this.dataAccessService = dataAccessService;
-    }
-
-    @Autowired
-    public void setBrowserService(BrowserService browserService) {
+    public WebSiteServiceImpl(BrowserService browserService, MessagesService messagesService, DataAccessService dataAccessService, SystemService systemService) {
         this.browserService = browserService;
-    }
-
-    @Autowired
-    public void setMessagesService(MessagesService messagesService) {
         this.messagesService = messagesService;
+        this.dataAccessService = dataAccessService;
+        this.systemService = systemService;
     }
 
     @Override
@@ -59,15 +55,16 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
         try {
             messagesService.showMessage("Start testing web site: " + speedTestWebsite.getWebSiteUrl());
+            logger.info("Start testing web site: " + speedTestWebsite.getWebSiteUrl());
+
             browserService.openBrowser(speedTestWebsite.getWebSiteUrl());
             browserService.centralizedWebPage(speedTestWebsite.getCentralized());
 
             if (speedTestWebsite.isHaveStartButton()) {
                 clickStartTestButton(speedTestWebsite);
-                moveMouseToStartingPoint();
             }
 
-            logger.info("Start '" + speedTestWebsite.getIdentifier() + "' speed test");
+            moveMouseToStartingPoint();
             startMeasuringTimestamp = System.currentTimeMillis();
             result = waitForTestToFinish(speedTestWebsite);
             TimeUnit.MILLISECONDS.sleep(DELAY_TIME_BEFORE_SNAPSHOT);
@@ -79,6 +76,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
                                        .setURL(speedTestWebsite.getWebSiteUrl())
                                        .setNonFlashResult(result)
+                                       .setMD5(systemService.convertToMD5(new File(websiteSnapshot)))
                                        .build();
 
         } catch (BrowserFailedException e) {
@@ -90,19 +88,19 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .build();
 
         } catch (WebDriverException | InterruptedException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(String.format("InterruptedException, Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
             throw new UserInterruptException(e.getMessage(), e);
 
         } catch (UnknownHostException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(String.format("Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
             throw new ConnectionException(e.getMessage(), e);
 
         } catch(Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error(String.format("Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
             throw new WebSiteDownloadInfoException(e.getMessage(), e);
 
         } finally {
-            browserService.closeBrowser();
+            close();
         }
     }
 
@@ -113,7 +111,6 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             browserService.pressStartButtonById(speedTestWebsite.getSpeedTestNonFlashMetaData().getButtonId());
         }
     }
-
 
     private String waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
@@ -128,7 +125,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         browserService.closeBrowser();
     }
 }

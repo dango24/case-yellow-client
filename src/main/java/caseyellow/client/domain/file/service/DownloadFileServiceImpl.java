@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 
-import static caseyellow.client.common.Utils.convertToMD5;
 import static caseyellow.client.common.Utils.createTmpDir;
 import static java.util.Objects.nonNull;
 
@@ -66,7 +64,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             startDownloadingTime = System.currentTimeMillis();
             fileDownloadedDurationTimeInMs = urlToFileService.copyURLToFile(fileDownloadProperties.getIdentifier(), url, tmpFile, fileDownloadProperties.getSize());
             fileSizeInBytes = tmpFile.length();
-            md5 = convertToMD5(tmpFile);
+            md5 = systemService.convertToMD5(tmpFile);
 
             validateFile(fileDownloadProperties, fileSizeInBytes, md5);
 
@@ -83,9 +81,9 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addStartDownloadingTime(startDownloadingTime)
                                        .build();
 
-        } catch (IOException | FileDownloadInfoException | NoSuchAlgorithmException e) {
+        } catch (IOException | FileDownloadInfoException e) {
             logger.error("Failed to download file, " + e.getMessage(), e);
-            return FileDownloadInfo.errorFileDownloadInfo(fileDownloadProperties.getUrl(), e.getMessage());
+            return FileDownloadInfo.errorFileDownloadInfo(fileDownloadProperties.getIdentifier(), fileDownloadProperties.getUrl(), e.getMessage());
 
         } finally {
             if (nonNull(tmpFile)) {
@@ -96,7 +94,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
     private void validateFile(FileDownloadProperties fileDownloadProperties, long fileSizeInBytes, String md5) {
         if (fileDownloadProperties.getSize() != fileSizeInBytes || !fileDownloadProperties.getMd5().equals(md5)) {
-            throw new FileDownloadInfoException(String.format("Invalidate file download info, expected md5: %s, actual md5: %s; expected file size: %s, actual file size: %s",fileDownloadProperties.getMd5(), md5, fileDownloadProperties.getSize(), fileSizeInBytes));
+            throw new FileDownloadInfoException(String.format("Invalidate file download info for file: %s, expected md5: %s, actual md5: %s; expected file size: %s, actual file size: %s", fileDownloadProperties.getIdentifier(), fileDownloadProperties.getMd5(), md5, fileDownloadProperties.getSize(), fileSizeInBytes));
         }
     }
 

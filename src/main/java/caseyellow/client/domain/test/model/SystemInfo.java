@@ -5,7 +5,6 @@ package caseyellow.client.domain.test.model;
  * Created by Dan on 12/10/2016.
  */
 
- // TODO dango add system info to urls
 public class SystemInfo {
 
     private String operatingSystem;

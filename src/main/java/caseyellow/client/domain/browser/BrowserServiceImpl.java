@@ -126,8 +126,8 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public void closeBrowser() {
+        logger.warn("Browser close by user");
         webDriver.quit();
-        ocrService.cancelRequest();
     }
 
     @Override
@@ -288,9 +288,12 @@ public class BrowserServiceImpl implements BrowserService {
             webDriver.getTitle(); // Will throw UnreachableBrowserException if browser is closed
 
         } catch (UnreachableBrowserException | NoSuchSessionException e) {
+            logger.error("Browser check error: " + e.getMessage(), e);
             throw new UserInterruptException(e.getMessage(), e);
+
         } catch (Exception e) {
-            throw new BrowserFailedException("Browser is closed, " + e.getMessage(), e);
+            logger.error("Browser check error: " + e.getMessage(), e);
+            throw new BrowserFailedException("Browser check error: " + e.getMessage(), e);
         }
     }
 
@@ -311,20 +314,16 @@ public class BrowserServiceImpl implements BrowserService {
                 }
 
             } catch (SocketTimeoutException e) {
-                handleError("Reached socket timeout, try new attempt, " + e.getMessage(), e);
+                logger.error("Reached socket timeout, try new attempt, " + e.getMessage(), e);
             } catch (AnalyzeException e) {
-                handleError("Analyze failed, try new attempt, " + e.getMessage(), e);
+                logger.error("Analyze failed, try new attempt, " + e.getMessage(), e);
             } catch (OcrParsingException e) {
-                handleError("OCR parsing failed, try new attempt, " + e.getMessage(), e);
+                logger.error("OCR parsing failed, try new attempt, " + e.getMessage(), e);
             }
 
         } while (++currentAttempt < numOfAttempts);
 
         throw new BrowserFailedException("Failure to find " + findImageStatus + " test identifiers: " + textIdentifiers);
-    }
-
-    private void handleError(String errorMessage, Exception e) {
-        logger.error(errorMessage, e);
     }
 
     private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException, RequestFailureException {

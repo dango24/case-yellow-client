@@ -52,15 +52,4 @@ public class SnapshotMetadata {
                 ", timestamp=" + timestamp +
                 '}';
     }
-
-    public static SnapshotMetadata createSnapshotMetadata(String webSiteDownloadInfoSnapshot, String s3Path) {
-        try {
-            String md5Hash = Utils.convertToMD5(new File(webSiteDownloadInfoSnapshot));
-
-            return new SnapshotMetadata(md5Hash, s3Path);
-
-        } catch (Exception e) {
-            throw new InternalFailureException("Failed to generate SnapshotMetadata, cause: " + e.getMessage(), e);
-        }
-    }
 }

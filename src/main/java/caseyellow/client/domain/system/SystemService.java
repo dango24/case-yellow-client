@@ -9,13 +9,12 @@ import java.io.File;
  */
 public interface SystemService extends URLToFileService {
 
-    // Constants
     String LAN_CONNECTION = "LAN";
     String WIFI_CONNECTION = "Wifi";
     String UNKNOWN_CONNECTION = "Unknown";
 
-    // Methods
-    SystemInfo getSystemInfo();
     String getISP();
+    SystemInfo getSystemInfo();
     void deleteDirectory(File directory);
+    String convertToMD5(File file);
 }

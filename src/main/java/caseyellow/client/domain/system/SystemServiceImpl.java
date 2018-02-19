@@ -12,13 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.BufferedInputStream;
+import java.io.*;
 import java.net.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +75,6 @@ public class SystemServiceImpl implements SystemService {
 
             messagesService.startDownloadingFile(fileName);
             fileDownloadedDurationTimeInMs = downloadFile(destination, connection, fileSize);
-            messagesService.finishDownloadingFile();
 
             log.info("finish downloading file from: " + source.toString());
 
@@ -107,12 +105,30 @@ public class SystemServiceImpl implements SystemService {
                  messagesService.showDownloadFileProgress(out.getChannel().size(), fileSize);
              }
 
-             return System.currentTimeMillis() - startDownloadingTime;
+            return System.currentTimeMillis() - startDownloadingTime;
 
         } catch (IOException e) {
-            messagesService.finishDownloadingFile();
             throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
+
+        } finally {
+            messagesService.finishDownloadingFile();
         }
+    }
+
+    @Override
+    public String convertToMD5(File file)  {
+
+        try (InputStream in = new FileInputStream(file)) {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(IOUtils.toByteArray(in));
+
+            return DatatypeConverter.printHexBinary(md.digest());
+
+        } catch (IOException | NoSuchAlgorithmException e) {
+            log.error(String.format("Failed to convert to MD5, error: %s", e.getMessage(), e));
+            return "UNKNOWN";
+        }
+
     }
 
     private byte[] convertImgToByteArray(String imgPath) throws IOException {

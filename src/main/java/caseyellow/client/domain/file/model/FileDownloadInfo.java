@@ -22,8 +22,9 @@ public class FileDownloadInfo {
 
     public FileDownloadInfo() {}
 
-    public FileDownloadInfo(String url) {
-        fileURL = url;
+    public FileDownloadInfo(String fileName, String url) {
+        this.fileName = fileName;
+        this.fileURL = url;
     }
 
     public FileDownloadInfo(FileDownloadInfoBuilder fileDownloadInfoBuilder) {
@@ -98,8 +99,8 @@ public class FileDownloadInfo {
         this.succeed = succeed;
     }
 
-    public static FileDownloadInfo errorFileDownloadInfo(String url, String message) {
-        FileDownloadInfo fileDownloadInfo = new FileDownloadInfo(url);
+    public static FileDownloadInfo errorFileDownloadInfo(String fileName, String url, String message) {
+        FileDownloadInfo fileDownloadInfo = new FileDownloadInfo(fileName, url);
         fileDownloadInfo.setMessage(message);
         fileDownloadInfo.setSucceed(false);
 

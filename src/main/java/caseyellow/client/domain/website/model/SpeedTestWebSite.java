@@ -38,7 +38,8 @@ public class SpeedTestWebSite {
                             String webSiteDownloadInfoSnapshot,
                             String urlAddress,
                             String result,
-                            String message) throws IOException, NoSuchAlgorithmException {
+                            String message,
+                            String md5) throws IOException, NoSuchAlgorithmException {
 
         this.succeed = succeed;
         this.speedTestIdentifier = speedTestIdentifier;
@@ -47,7 +48,7 @@ public class SpeedTestWebSite {
         this.urlAddress = urlAddress;
         this.nonFlashResult = result;
         this.message = message;
-        this.key = Utils.convertToMD5(new File(webSiteDownloadInfoSnapshot));
+        this.key = md5;
     }
 
     public boolean isSucceed() {
@@ -141,6 +142,7 @@ public class SpeedTestWebSite {
         private String nonFlashResult;
         private String webSiteDownloadInfoSnapshot;
         private String message;
+        private String md5;
 
         public SpeedTestWebSiteDownloadInfoBuilder(String speedTestIdentifier) {
             this.speedTestIdentifier = speedTestIdentifier;
@@ -158,6 +160,11 @@ public class SpeedTestWebSite {
 
         public SpeedTestWebSiteDownloadInfoBuilder setURL(String urlAddress) {
             this.urlAddress = urlAddress;
+            return this;
+        }
+
+        public SpeedTestWebSiteDownloadInfoBuilder setMD5(String md5) {
+            this.md5 = md5;
             return this;
         }
 
@@ -185,7 +192,7 @@ public class SpeedTestWebSite {
             try {
                 return new SpeedTestWebSite(speedTestIdentifier, succeed,
                                             startDownloadingTime, webSiteDownloadInfoSnapshot,
-                                            urlAddress, nonFlashResult, message);
+                                            urlAddress, nonFlashResult, message, md5);
 
             } catch (IOException | NoSuchAlgorithmException e) {
                 throw new WebSiteDownloadInfoException("Failed to build SpeedTestWebSite, cause: " + e.getMessage(), e);
