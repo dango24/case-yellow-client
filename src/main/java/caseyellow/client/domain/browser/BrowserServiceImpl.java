@@ -326,7 +326,7 @@ public class BrowserServiceImpl implements BrowserService {
         throw new BrowserFailedException("Failure to find " + findImageStatus + " test identifiers: " + textIdentifiers);
     }
 
-    private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException, RequestFailureException {
+    private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException {
         Point point;
         OcrResponse ocrResponse = ocrService.parseImage(takeScreenSnapshot());
         checkNotNull(ocrResponse, "Ocr response is null");

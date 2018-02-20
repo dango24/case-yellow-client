@@ -295,9 +295,17 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
-    public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException, RequestFailureException {
-        GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
-        return requestHandler.execute(gatewayRequests.ocrRequest(createTokenHeader(), googleVisionRequest));
+    public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException {
+        try {
+            GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
+            return requestHandler.execute(gatewayRequests.ocrRequest(createTokenHeader(), googleVisionRequest));
+
+        } catch (RequestFailureException e) {
+            String errorMessage = String.format("OCR request failed, error code: %s, error message: %s", e.getErrorCode(), e.getMessage());
+            logger.error(errorMessage);
+
+            throw new OcrParsingException(errorMessage);
+        }
     }
 
     private SnapshotMetadata createSnapshotMetadata(String webSiteDownloadInfoSnapshot, String s3Path) {
