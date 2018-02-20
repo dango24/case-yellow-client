@@ -92,13 +92,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
     private void saveTest(Test test) {
         CompletableFuture.supplyAsync(() -> test)
-                         .exceptionally(this::saveTestExceptionHandler)
                          .thenAccept(dataAccessService::saveTest);
-    }
-
-    private Test saveTestExceptionHandler(Throwable e) {
-        logger.error("Failed to save test, " + e.getMessage(), e);
-        return null;
     }
 
     @Override

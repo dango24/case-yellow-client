@@ -32,19 +32,11 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-
-import static caseyellow.client.common.Utils.getSnapshotMetadataFile;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.StandardOpenOption.APPEND;
-import static java.nio.file.StandardOpenOption.CREATE;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @Profile("prod")
 @Service("gatewayService")
@@ -52,6 +44,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
 
     private Logger logger = Logger.getLogger(GatewayServiceImpl.class);
 
+    private static final String FILE_EXTENSION = ".png";
     private static final String TOKEN_PREFIX = "Bearer";
     private static final String TOKEN_HEADER = "Authorization";
     private static final String USER_HEADER = "Case-Yellow-User";
@@ -104,6 +97,21 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     @Override
+    public SpeedTestMetaData getNextSpeedTestWebSite() throws RequestFailureException {
+        return requestHandler.execute(gatewayRequests.getNextSpeedTestWebSite(createTokenHeader()));
+    }
+
+    @Override
+    public List<FileDownloadProperties> getNextUrls() throws RequestFailureException {
+        return requestHandler.execute(gatewayRequests.getNextUrls(createTokenHeader()));
+    }
+
+    @Override
+    public PreSignedUrl generatePreSignedUrl(String key) {
+        return requestHandler.execute(gatewayRequests.generatePreSignedUrl(createTokenHeader(), key));
+    }
+
+    @Override
     public Map<String, List<String>> getConnectionDetails() {
         return requestHandler.execute(gatewayRequests.getConnectionDetails(createTokenHeader()));
     }
@@ -114,17 +122,31 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
         requestHandler.execute(gatewayRequests.saveConnectionDetails(createTokenHeader(), connectionDetails));
     }
 
-    private boolean isFirstRegistration(String registrationHeader) {
-        return nonNull(registrationHeader) && Boolean.valueOf(registrationHeader);
+    @Override
+    public void saveTest(Test test) throws RequestFailureException {
+        try {
+            if (nonNull(test)) {
+                uploadSnapshotImages(test);
+                systemService.saveSnapshotHashToDisk(test);
+                requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
+                logger.info(String.format("Save test succeed: %s", test));
+            }
+        } catch (Exception e) {
+            logger.error(String.format("Failed to save test, cause: %s", e.getMessage(), e));
+        }
     }
 
     @Override
-    public void saveTest(Test test) throws RequestFailureException {
-        if (nonNull(test)) {
-            uploadSnapshotImages(test);
-            saveSnapshotHashToDisk(test);
-            requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
-            logger.info(String.format("Save test succeed: %s", test));
+    public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException {
+        try {
+            GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
+            return requestHandler.execute(gatewayRequests.ocrRequest(createTokenHeader(), googleVisionRequest));
+
+        } catch (RequestFailureException e) {
+            String errorMessage = String.format("OCR request failed, error code: %s, error message: %s", e.getErrorCode(), e.getMessage());
+            logger.error(errorMessage);
+
+            throw new OcrParsingException(errorMessage);
         }
     }
 
@@ -144,7 +166,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     private FailedTestDetails createFailedTestFromSpeedTestWebSite(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {
         logger.error("Receive failed test: " + failedSpeedTestWebSite);
 
-        PreSignedUrl preSignedUrl = generatePreSignedUrl(failedTestsDir, generateKey(failedSpeedTestWebSite));
+        PreSignedUrl preSignedUrl = generatePreSignedUrl(generateKey(failedTestsDir, failedSpeedTestWebSite));
         uploadObject(preSignedUrl.getPreSignedUrl(), failedSpeedTestWebSite.getWebSiteDownloadInfoSnapshot());
 
         String message = "Identifier: " + failedSpeedTestWebSite.getSpeedTestIdentifier() + ", cause: " + failedSpeedTestWebSite.getMessage();
@@ -168,52 +190,27 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     }
 
     private void uploadSnapshotImages(Test test) {
-        Map<String, String> snapshotMap =
-                test.getComparisonInfoTests()
-                    .stream()
-                    .map(ComparisonInfo::getSpeedTestWebSite)
-                    .collect(toMap(this::generateKey, SpeedTestWebSite::getWebSiteDownloadInfoSnapshot));
-
-        Map<String, PreSignedUrl> preSignedUrls =
-                snapshotMap.keySet()
-                           .stream()
-                           .collect(toMap(Function.identity(), key -> generatePreSignedUrl(test.getSystemInfo().getPublicIP(), key)));
-
-        preSignedUrls.entrySet()
-                     .forEach(entry -> uploadObject(entry.getValue().getPreSignedUrl(), snapshotMap.get(entry.getKey())));
-
-        test.getComparisonInfoTests()
-            .stream()
-            .map(ComparisonInfo::getSpeedTestWebSite)
-            .forEach(speedTestWebSite -> speedTestWebSite.setPath(buildS3Path(test.getSystemInfo().getPublicIP(), speedTestWebSite)));
-    }
-
-    private String buildS3Path(String ip, SpeedTestWebSite speedTestWebSite) {
-        return String.format("%s-%s", ip.replaceAll("\\.", "_"), generateKey(speedTestWebSite));
-    }
-
-    private String generateKey(SpeedTestWebSite speedTest) {
-        return String.format("%s_%s", speedTest.getKey(), speedTest.getSpeedTestIdentifier());
-    }
-
-    private void saveSnapshotHashToDisk(Test test) {
-        List<String> snapshotMetadata =
+        List<SpeedTestWebSite> speedTestWebSites =
             test.getComparisonInfoTests()
                 .stream()
                 .map(ComparisonInfo::getSpeedTestWebSite)
-                .filter(SpeedTestWebSite::isSucceed)
-                .map(info -> createSnapshotMetadata(info.getWebSiteDownloadInfoSnapshot(), info.getPath()).toString())
                 .collect(toList());
 
-        try {
-            if (!snapshotMetadata.isEmpty()) {
-                logger.info(String.format("save snapshot hash to disk: %s" , snapshotMetadata));
-                Files.write(getSnapshotMetadataFile().toPath(), snapshotMetadata, UTF_8, APPEND, CREATE);
-            }
+        speedTestWebSites.forEach(speedTest -> speedTest.setPath(generateKey(test.getSystemInfo().getPublicIP(), speedTest)));
+        speedTestWebSites.forEach(speedTest -> uploadObject(generatePreSignedUrl(speedTest.getPath()).getPreSignedUrl(), speedTest.getWebSiteDownloadInfoSnapshot()));
+    }
 
-        } catch (IOException e) {
-            throw new RequestFailureException("Failed to write snapshot metadata file, cause: " + e.getMessage(), e);
-        }
+    private String generateKey(String ip, SpeedTestWebSite speedTest) {
+
+        return new StringBuilder().append(user)
+                                  .append("-")
+                                  .append(ip.replaceAll("\\.", "_"))
+                                  .append("-")
+                                  .append(speedTest.getKey())
+                                  .append("_")
+                                  .append(speedTest.getSpeedTestIdentifier())
+                                  .append(FILE_EXTENSION)
+                                  .toString();
     }
 
     private void uploadObject(URL url, String fileToUploadPath) {
@@ -254,20 +251,8 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
         return responseCode >= 200 && responseCode < 300;
     }
 
-    @Override
-    public SpeedTestMetaData getNextSpeedTestWebSite() throws RequestFailureException {
-        return requestHandler.execute(gatewayRequests.getNextSpeedTestWebSite(createTokenHeader()));
-    }
-
-    @Override
-    public List<FileDownloadProperties> getNextUrls() throws RequestFailureException {
-        return requestHandler.execute(gatewayRequests.getNextUrls(createTokenHeader()));
-    }
-
-    @Override
-    public PreSignedUrl generatePreSignedUrl(String userIP, String key) {
-        userIP = userIP.replaceAll("\\.", "_");
-        return requestHandler.execute(gatewayRequests.generatePreSignedUrl(createTokenHeader(), userIP, key));
+    private boolean isFirstRegistration(String registrationHeader) {
+        return nonNull(registrationHeader) && Boolean.valueOf(registrationHeader);
     }
 
     private void handleError(int statusCode, String message) throws LoginException {
@@ -292,20 +277,6 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
         tokenHeader.put(USER_HEADER, user);
 
         return tokenHeader;
-    }
-
-    @Override
-    public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException {
-        try {
-            GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
-            return requestHandler.execute(gatewayRequests.ocrRequest(createTokenHeader(), googleVisionRequest));
-
-        } catch (RequestFailureException e) {
-            String errorMessage = String.format("OCR request failed, error code: %s, error message: %s", e.getErrorCode(), e.getMessage());
-            logger.error(errorMessage);
-
-            throw new OcrParsingException(errorMessage);
-        }
     }
 
     private SnapshotMetadata createSnapshotMetadata(String webSiteDownloadInfoSnapshot, String s3Path) {

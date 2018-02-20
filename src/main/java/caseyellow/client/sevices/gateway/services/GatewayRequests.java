@@ -51,8 +51,7 @@ public interface GatewayRequests {
     })
     @GET("central/pre-signed-url")
     Call<PreSignedUrl> generatePreSignedUrl(@HeaderMap Map<String, String> headers,
-                                            @Query("user_ip") String userIP,
-                                            @Query("file_name") String fileName);
+                                            @Query("file_key") String fileKey);
 
     @Headers({
             "Accept: application/json",

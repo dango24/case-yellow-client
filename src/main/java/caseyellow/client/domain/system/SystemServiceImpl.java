@@ -1,30 +1,37 @@
 package caseyellow.client.domain.system;
 
 import caseyellow.client.domain.message.MessagesService;
+import caseyellow.client.domain.test.model.ComparisonInfo;
+import caseyellow.client.domain.test.model.SnapshotMetadata;
 import caseyellow.client.domain.test.model.SystemInfo;
-import caseyellow.client.exceptions.ConnectionTypeException;
-import caseyellow.client.exceptions.FileDownloadInfoException;
-import caseyellow.client.exceptions.UserInterruptException;
+import caseyellow.client.domain.test.model.Test;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.exceptions.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static caseyellow.client.common.Utils.getSnapshotMetadataFile;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by dango on 6/3/17.
@@ -131,13 +138,25 @@ public class SystemServiceImpl implements SystemService {
 
     }
 
-    private byte[] convertImgToByteArray(String imgPath) throws IOException {
-        BufferedImage bufferedImage = ImageIO.read(new File(imgPath));
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write( bufferedImage, "png", baos );
-        baos.flush();
+    @Override
+    public void saveSnapshotHashToDisk(Test test) {
+        List<String> snapshotMetadata =
+                test.getComparisonInfoTests()
+                    .stream()
+                    .map(ComparisonInfo::getSpeedTestWebSite)
+                    .filter(SpeedTestWebSite::isSucceed)
+                    .map(info -> createSnapshotMetadata(info.getWebSiteDownloadInfoSnapshot(), info.getPath()).toString())
+                    .collect(toList());
 
-        return baos.toByteArray();
+        try {
+            if (!snapshotMetadata.isEmpty()) {
+                log.info(String.format("save snapshot hash to disk: %s" , snapshotMetadata));
+                Files.write(getSnapshotMetadataFile().toPath(), snapshotMetadata, UTF_8, APPEND, CREATE);
+            }
+
+        } catch (IOException e) {
+            throw new TestException("Failed to write test snapshot metadata file, cause: " + e.getMessage(), e);
+        }
     }
 
     private String getOperationSystem() {
@@ -233,6 +252,11 @@ public class SystemServiceImpl implements SystemService {
 
     private String getBrowser() {
         return "CHROME";
+    }
+
+    private SnapshotMetadata createSnapshotMetadata(String webSiteDownloadInfoSnapshot, String s3Path) {
+        String md5 = convertToMD5(new File(webSiteDownloadInfoSnapshot));
+        return new SnapshotMetadata(md5, s3Path);
     }
 
 }

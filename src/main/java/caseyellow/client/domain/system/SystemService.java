@@ -1,6 +1,7 @@
 package caseyellow.client.domain.system;
 
 import caseyellow.client.domain.test.model.SystemInfo;
+import caseyellow.client.domain.test.model.Test;
 
 import java.io.File;
 
@@ -17,4 +18,5 @@ public interface SystemService extends URLToFileService {
     SystemInfo getSystemInfo();
     void deleteDirectory(File directory);
     String convertToMD5(File file);
+    void saveSnapshotHashToDisk(Test test);
 }

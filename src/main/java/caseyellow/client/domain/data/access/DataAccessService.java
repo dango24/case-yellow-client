@@ -17,5 +17,5 @@ public interface DataAccessService {
     void saveTest(Test test) throws RequestFailureException;
     SpeedTestMetaData getNextSpeedTestWebSite();
     List<FileDownloadProperties> getNextUrls();
-    PreSignedUrl generatePreSignedUrl(String userIP, String fileName);
+    PreSignedUrl generatePreSignedUrl(String fileKey);
 }
