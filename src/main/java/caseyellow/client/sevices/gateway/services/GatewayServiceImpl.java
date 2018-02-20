@@ -124,6 +124,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
             uploadSnapshotImages(test);
             saveSnapshotHashToDisk(test);
             requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
+            logger.info(String.format("Save test succeed: %s", test));
         }
     }
 
@@ -184,7 +185,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
         test.getComparisonInfoTests()
             .stream()
             .map(ComparisonInfo::getSpeedTestWebSite)
-            .forEach(speedTestWebSite -> speedTestWebSite.setPath(preSignedUrls.get(speedTestWebSite.getKey()).getKey()));
+            .forEach(speedTestWebSite -> speedTestWebSite.setPath(buildS3Path(test.getSystemInfo().getPublicIP(), speedTestWebSite)));
+    }
+
+    private String buildS3Path(String ip, SpeedTestWebSite speedTestWebSite) {
+        return String.format("%s-%s", ip.replaceAll("\\.", "_"), generateKey(speedTestWebSite));
     }
 
     private String generateKey(SpeedTestWebSite speedTest) {
@@ -202,6 +207,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
 
         try {
             if (!snapshotMetadata.isEmpty()) {
+                logger.info(String.format("save snapshot hash to disk: %s" , snapshotMetadata));
                 Files.write(getSnapshotMetadataFile().toPath(), snapshotMetadata, UTF_8, APPEND, CREATE);
             }
 
@@ -232,7 +238,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
             responseCode = connection.getResponseCode(); // Invoke request
 
             if (isRequestSuccessful(responseCode)) {
-                logger.info("Service returned response code " + responseCode);
+                logger.info("Upload object succeed, Service returned response code " + responseCode);
             } else {
                 logger.error("Failed to upload file, responseCode is " + responseCode);
                 throw new RequestFailureException("Failed to upload file, responseCode is " + responseCode);

@@ -65,13 +65,6 @@ public interface GatewayRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @GET("central/google-vision-key")
-    Call<GoogleVisionKey> googleVisionKey(@HeaderMap Map<String, String> headers);
-
-    @Headers({
-            "Accept: application/json",
-            "Content-Type: application/json"
-    })
     @POST("central/failed-test")
     Call<Void> failedTest(@HeaderMap Map<String, String> headers, @Body FailedTestDetails failedTestDetails);
 
