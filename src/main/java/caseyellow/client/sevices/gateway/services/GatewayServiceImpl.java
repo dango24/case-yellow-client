@@ -44,6 +44,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
 
     private Logger logger = Logger.getLogger(GatewayServiceImpl.class);
 
+    private static final String DELIMITER = "-";
     private static final String FILE_EXTENSION = ".png";
     private static final String TOKEN_PREFIX = "Bearer";
     private static final String TOKEN_HEADER = "Authorization";
@@ -166,7 +167,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     private FailedTestDetails createFailedTestFromSpeedTestWebSite(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {
         logger.error("Receive failed test: " + failedSpeedTestWebSite);
 
-        PreSignedUrl preSignedUrl = generatePreSignedUrl(generateKey(failedTestsDir, failedSpeedTestWebSite));
+        PreSignedUrl preSignedUrl = generatePreSignedUrl(generateFailureKey(failedSpeedTestWebSite));
         uploadObject(preSignedUrl.getPreSignedUrl(), failedSpeedTestWebSite.getWebSiteDownloadInfoSnapshot());
 
         String message = "Identifier: " + failedSpeedTestWebSite.getSpeedTestIdentifier() + ", cause: " + failedSpeedTestWebSite.getMessage();
@@ -203,11 +204,24 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     private String generateKey(String ip, SpeedTestWebSite speedTest) {
 
         return new StringBuilder().append(user)
-                                  .append("-")
+                                  .append(DELIMITER)
                                   .append(ip.replaceAll("\\.", "_"))
-                                  .append("-")
+                                  .append(DELIMITER)
                                   .append(speedTest.getKey())
-                                  .append("_")
+                                  .append(DELIMITER)
+                                  .append(speedTest.getSpeedTestIdentifier())
+                                  .append(FILE_EXTENSION)
+                                  .toString();
+    }
+
+    private String generateFailureKey(SpeedTestWebSite speedTest) {
+
+        return new StringBuilder().append(failedTestsDir)
+                                  .append("/")
+                                  .append(user)
+                                  .append(DELIMITER)
+                                  .append(speedTest.getKey())
+                                  .append(DELIMITER)
                                   .append(speedTest.getSpeedTestIdentifier())
                                   .append(FILE_EXTENSION)
                                   .toString();
