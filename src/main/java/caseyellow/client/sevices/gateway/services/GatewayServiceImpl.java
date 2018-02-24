@@ -155,13 +155,17 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
     public void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP) throws RequestFailureException {
         FailedTestDetails failedTestDetails;
 
-        if (!comparisonInfo.getSpeedTestWebSite().isSucceed()) {
+        if (isFailedSpeedTestWebSite(comparisonInfo)) {
             failedTestDetails = createFailedTestFromSpeedTestWebSite(comparisonInfo.getSpeedTestWebSite(), clientIP);
         } else {
             failedTestDetails = createFailedTestFromFileDownloadInfo(comparisonInfo.getFileDownloadInfo(), clientIP);
         }
 
         requestHandler.execute(gatewayRequests.failedTest(createTokenHeader(), failedTestDetails));
+    }
+
+    private boolean isFailedSpeedTestWebSite(ComparisonInfo comparisonInfo) {
+        return !comparisonInfo.getSpeedTestWebSite().isSucceed();
     }
 
     private FailedTestDetails createFailedTestFromSpeedTestWebSite(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {

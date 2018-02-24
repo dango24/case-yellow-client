@@ -32,6 +32,7 @@ public class DownloadProgressBarImpl implements DownloadProgressBar {
         frame.setSize(420, 100);
         frame.setVisible(false);
         frame.setLocationRelativeTo(null);
+        frame.setAlwaysOnTop(true);
     }
 
     private void setIcon() throws IOException {

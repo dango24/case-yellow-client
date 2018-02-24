@@ -27,6 +27,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static caseyellow.client.common.Utils.getSnapshotMetadataFile;
+import static java.lang.StrictMath.toIntExact;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -74,10 +75,11 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public long copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException {
         long fileDownloadedDurationTimeInMs;
+        int readTimeOut = toIntExact(TimeUnit.SECONDS.toMillis(10));
 
         try {
             URLConnection connection = source.openConnection();
-            connection.setReadTimeout(5000);
+            connection.setReadTimeout(readTimeOut);
             connection.connect();
 
             messagesService.startDownloadingFile(fileName);

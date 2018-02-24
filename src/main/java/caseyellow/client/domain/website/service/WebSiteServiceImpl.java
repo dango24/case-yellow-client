@@ -80,12 +80,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .build();
 
         } catch (BrowserFailedException e) {
-            logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
-            return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
-                                       .setFailure()
-                                       .setMessage(e.getMessage())
-                                       .setWebSiteDownloadInfoSnapshot(takeScreenSnapshot())
-                                       .build();
+            return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, e);
 
         } catch (WebDriverException | InterruptedException e) {
             logger.error(String.format("InterruptedException, Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
@@ -102,6 +97,18 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         } finally {
             close();
         }
+    }
+
+    private SpeedTestWebSite handleProduceSpeedTestWebSiteFailure(SpeedTestMetaData speedTestWebsite, BrowserFailedException e) {
+        logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
+        String failedTestSnapshot = takeScreenSnapshot();
+
+        return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
+                                   .setFailure()
+                                   .setMessage(e.getMessage())
+                                   .setWebSiteDownloadInfoSnapshot(failedTestSnapshot)
+                                   .setMD5(systemService.convertToMD5(new File(failedTestSnapshot)))
+                                   .build();
     }
 
     private void clickStartTestButton(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException {
