@@ -1,14 +1,15 @@
 package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
+import caseyellow.client.domain.analyze.model.ImageClassificationStatus;
 import caseyellow.client.domain.analyze.model.OcrResponse;
+import caseyellow.client.domain.analyze.model.VisionRequest;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.test.model.ConnectionDetails;
 import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
-import caseyellow.client.sevices.gateway.model.GoogleVisionKey;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -88,4 +89,13 @@ public interface GatewayRequests {
     })
     @POST("central/save-connection-details")
     Call<Void> saveConnectionDetails(@HeaderMap Map<String, String> headers, @Body ConnectionDetails connectionDetails);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("classify-image")
+    Call<ImageClassificationStatus> classifyImage(@HeaderMap Map<String, String> headers,
+                                                  @Query("identifier") String identifier,
+                                                  @Body VisionRequest visionRequest);
 }

@@ -1,16 +1,14 @@
 package caseyellow.client.domain.browser;
 
 import caseyellow.client.common.Utils;
-import caseyellow.client.domain.analyze.model.OcrResponse;
+import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.analyze.model.Point;
-import caseyellow.client.domain.analyze.model.DescriptionMatch;
-import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
 import caseyellow.client.domain.website.model.Command;
 import caseyellow.client.domain.website.model.Role;
 import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.exceptions.*;
-import caseyellow.client.domain.analyze.service.OcrService;
+import caseyellow.client.domain.analyze.service.ImageParsingService;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
@@ -63,7 +61,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     private String logPath;
     private WebDriver webDriver;
-    private OcrService ocrService;
+    private ImageParsingService imageParsingService;
     private TextAnalyzerService textAnalyzer;
 
     @PostConstruct
@@ -96,8 +94,8 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Autowired
-    public void setOcrService(OcrService ocrService) {
-        this.ocrService = ocrService;
+    public void setImageParsingService(ImageParsingService imageParsingService) {
+        this.imageParsingService = imageParsingService;
     }
 
     @Autowired
@@ -151,19 +149,33 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressFlashStartTestButton(Set<WordIdentifier> webSiteBtnIdentifiers) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException {
+    public void pressFlashStartTestButton(String identifier, Set<WordIdentifier> webSiteBtnIdentifiers) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException {
         checkBrowser();
 
         try {
             int waitForTestToFinishInSec = getWaitForTestToFinishInSec(waitForStartButton);
             int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForTestToFinishInSec;
-            waitForImageAppearance(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true, "Start button");
+
+            waitForImageAppearanceByImageClassification(identifier);
+            waitForImageAppearanceByImageAnalyze(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true, "Start button");
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);
-        } catch (RequestFailureException e) {
+        } catch (RequestFailureException | AnalyzeException e) {
             throw new BrowserFailedException(e.getMessage(), e);
         }
+    }
+    
+    private void waitForImageAppearanceByImageClassification(String identifier) throws AnalyzeException {
+        try {
+            VisionRequest visionRequest = new VisionRequest(takeScreenSnapshot());
+            ImageClassificationStatus status = imageParsingService.classifyImage(identifier, visionRequest);
+       
+        } catch (IOException e) {
+            logger.error(String.format("Failed to get ImageClassificationStatus: %s", e.getMessage()), e);
+            throw new AnalyzeException(e.getMessage(), e);
+        }
+
     }
 
     @Override
@@ -254,7 +266,7 @@ public class BrowserServiceImpl implements BrowserService {
             int waitForTestToFinishInterval = waitForFinishIdentifier < 1000 ? 1 : (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
             int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
 
-            waitForImageAppearance(identifiers, numOfAttempts, waitForFinishIdentifier, false, "finish");
+            waitForImageAppearanceByImageAnalyze(identifiers, numOfAttempts, waitForFinishIdentifier, false, "finish");
 
         } catch (WebDriverException e) {
             logger.error(e.getMessage());
@@ -301,7 +313,7 @@ public class BrowserServiceImpl implements BrowserService {
         return waitForStartButton < 1000 ? 1 : (int) TimeUnit.MILLISECONDS.toSeconds(waitForStartButton);
     }
 
-    private boolean waitForImageAppearance(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage, String findImageStatus) throws IOException, InterruptedException, BrowserFailedException, RequestFailureException {
+    private boolean waitForImageAppearanceByImageAnalyze(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage, String findImageStatus) throws IOException, InterruptedException, BrowserFailedException, RequestFailureException {
         int currentAttempt = 0;
 
         do {
@@ -328,7 +340,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException {
         Point point;
-        OcrResponse ocrResponse = ocrService.parseImage(takeScreenSnapshot());
+        OcrResponse ocrResponse = imageParsingService.parseImage(takeScreenSnapshot());
         checkNotNull(ocrResponse, "Ocr response is null");
 
         DescriptionMatch matchDescription = textAnalyzer.isDescriptionExist(textIdentifiers, ocrResponse.getTextAnnotations());

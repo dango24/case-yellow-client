@@ -1,15 +1,18 @@
 package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
+import caseyellow.client.domain.analyze.model.ImageClassificationStatus;
 import caseyellow.client.domain.analyze.model.OcrResponse;
+import caseyellow.client.domain.analyze.model.VisionRequest;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.data.access.DataAccessService;
-import caseyellow.client.domain.analyze.service.OcrService;
+import caseyellow.client.domain.analyze.service.ImageParsingService;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.test.model.*;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import caseyellow.client.exceptions.AnalyzeException;
 import caseyellow.client.exceptions.LoginException;
 import caseyellow.client.exceptions.OcrParsingException;
 import caseyellow.client.exceptions.RequestFailureException;
@@ -40,7 +43,7 @@ import static java.util.stream.Collectors.toList;
 
 @Profile("prod")
 @Service("gatewayService")
-public class GatewayServiceImpl implements GatewayService, DataAccessService, OcrService {
+public class GatewayServiceImpl implements GatewayService, DataAccessService, ImageParsingService {
 
     private Logger logger = Logger.getLogger(GatewayServiceImpl.class);
 
@@ -148,6 +151,19 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Oc
             logger.error(errorMessage);
 
             throw new OcrParsingException(errorMessage);
+        }
+    }
+
+    @Override
+    public ImageClassificationStatus classifyImage(String identifier, VisionRequest visionRequest) throws AnalyzeException {
+        try {
+            return requestHandler.execute(gatewayRequests.classifyImage(createTokenHeader(),identifier, visionRequest));
+
+        } catch (RequestFailureException e) {
+            String errorMessage = String.format("Failed to analyze image, error code: %s error message: %s", e.getErrorCode(), e.getMessage());
+            logger.error(errorMessage);
+
+            throw new AnalyzeException(errorMessage);
         }
     }
 
