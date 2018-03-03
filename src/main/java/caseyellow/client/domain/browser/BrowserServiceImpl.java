@@ -149,14 +149,14 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressFlashStartTestButton(String identifier, Set<WordIdentifier> webSiteBtnIdentifiers) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException {
+    public void pressFlashStartTestButton(String identifier, Set<WordIdentifier> webSiteBtnIdentifiers, int maxAttempts) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException {
         checkBrowser();
 
         try {
             int waitForTestToFinishInSec = getWaitForTestToFinishInSec(waitForStartButton);
             int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForTestToFinishInSec;
 
-            waitForImageAppearanceByImageClassification(identifier);
+            waitForImageAppearanceByImageClassification(identifier, 0, maxAttempts);
             waitForImageAppearanceByImageAnalyze(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true, "Start button");
 
         } catch (WebDriverException e) {
@@ -166,16 +166,30 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
     
-    private void waitForImageAppearanceByImageClassification(String identifier) throws AnalyzeException {
+    private void waitForImageAppearanceByImageClassification(String identifier, int attempt, int maxAttempts) throws AnalyzeException {
         try {
             VisionRequest visionRequest = new VisionRequest(takeScreenSnapshot());
             ImageClassificationStatus status = imageParsingService.classifyImage(identifier, visionRequest);
-       
-        } catch (IOException e) {
+
+            switch (status) {
+                case EXIST:
+                    return;
+
+                case RETRY:
+                    if (attempt < maxAttempts) {
+                        TimeUnit.SECONDS.sleep(8);
+                        waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts);
+                    } else {
+                        throw new AnalyzeException(String.format("Failed to classify image after reaching max attempts for identifier: %s", identifier));
+                    }
+                case FAILED:
+                    throw new AnalyzeException(String.format("Failed to classify image for identifier: %s", identifier));
+            }
+
+        } catch (IOException | InterruptedException e) {
             logger.error(String.format("Failed to get ImageClassificationStatus: %s", e.getMessage()), e);
             throw new AnalyzeException(e.getMessage(), e);
         }
-
     }
 
     @Override
