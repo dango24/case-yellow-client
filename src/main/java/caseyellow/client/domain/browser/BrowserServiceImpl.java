@@ -29,8 +29,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.Utils.*;
-import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.END_EXIST;
-import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.START_EXIST;
+import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.END;
+import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.START;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
 import static java.util.Objects.nonNull;
@@ -173,13 +173,17 @@ public class BrowserServiceImpl implements BrowserService {
             logger.info(String.format("ImageClassificationResult for identifier: %s, details: %s", identifier, imageClassificationResult));
 
             switch (status) {
-                case START_EXIST:
-                case END_EXIST:
+                case START:
+                case END:
                     handleExistStatus(identifier, status, isStartState);
                     break;
 
-                case RETRY:
-                    handleRetryStatus(identifier, attempt, maxAttempts, isStartState);
+                case UNREADY:
+                    handleRetryStatus(identifier, attempt, maxAttempts, isStartState, 8);
+                    break;
+
+                case MIDDLE:
+                    handleRetryStatus(identifier, attempt, maxAttempts, isStartState, 3);
                     break;
 
                 case FAILED:
@@ -195,7 +199,7 @@ public class BrowserServiceImpl implements BrowserService {
 
 
     private void handleExistStatus(String identifier, ImageClassificationStatus status, boolean isStartState) throws AnalyzeException {
-        if ( (isStartState && START_EXIST == status) || (!isStartState && END_EXIST == status) ) {
+        if ( (isStartState && START == status) || (!isStartState && END == status) ) {
             logger.info(String.format("Image exist classification found for identifier: %s", identifier));
             return;
 
@@ -204,10 +208,10 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
 
-    private void handleRetryStatus(String identifier, int attempt, int maxAttempts, boolean isStartState) throws InterruptedException, AnalyzeException {
+    private void handleRetryStatus(String identifier, int attempt, int maxAttempts, boolean isStartState, int sleepInSeconds) throws InterruptedException, AnalyzeException {
         if (attempt < maxAttempts) {
             logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, retry again", attempt, identifier));
-            TimeUnit.SECONDS.sleep(8);
+            TimeUnit.SECONDS.sleep(sleepInSeconds);
             waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts, isStartState);
             return;
         } else {
