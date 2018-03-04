@@ -166,7 +166,8 @@ public class BrowserServiceImpl implements BrowserService {
     
     private void waitForImageAppearanceByImageClassification(String identifier, int attempt, int maxAttempts, boolean isStartState) throws AnalyzeException {
         try {
-            VisionRequest visionRequest = new VisionRequest(takeScreenSnapshot());
+            String screenshot = takeScreenSnapshot();
+            VisionRequest visionRequest = new VisionRequest(screenshot);
             ImageClassificationResult imageClassificationResult = imageParsingService.classifyImage(identifier, visionRequest);
             ImageClassificationStatus status = imageClassificationResult.getStatus();
             logger.info(String.format("ImageClassificationResult for identifier: %s, details: %s", identifier, imageClassificationResult));
@@ -182,7 +183,8 @@ public class BrowserServiceImpl implements BrowserService {
                     break;
 
                 case FAILED:
-                    throw new AnalyzeException(String.format("Failed to classify image for identifier: %s", identifier));
+                    handleFailureStatus(identifier, attempt, maxAttempts, isStartState);
+                    break;
             }
 
         } catch (IOException | InterruptedException e) {
@@ -190,6 +192,7 @@ public class BrowserServiceImpl implements BrowserService {
             throw new AnalyzeException(e.getMessage(), e);
         }
     }
+
 
     private void handleExistStatus(String identifier, ImageClassificationStatus status, boolean isStartState) throws AnalyzeException {
         if ( (isStartState && START_EXIST == status) || (!isStartState && END_EXIST == status) ) {
@@ -212,8 +215,18 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
 
+    private void handleFailureStatus(String identifier, int attempt, int maxAttempts, boolean isStartState) throws AnalyzeException, InterruptedException {
+        if (attempt == 0) {
+            logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, retry again", attempt, identifier));
+            TimeUnit.SECONDS.sleep(8);
+            waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts, isStartState);
+        } else {
+            throw new AnalyzeException(String.format("Failed to classify image for identifier: %s", identifier));
+        }
+    }
+
     @Override
-    public String waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers, List<Role> roles) throws InterruptedException, BrowserFailedException {
+    public String waitForFlashTestToFinish(String identifier, String finishIdentifier, Set<WordIdentifier> identifiers, List<Role> roles) throws InterruptedException, BrowserFailedException {
         String logPayload;
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
         try {
@@ -223,10 +236,10 @@ public class BrowserServiceImpl implements BrowserService {
                 logPayload = Utils.readFile(logPath);
 
                 if (System.currentTimeMillis() > timeout) {
-                    throw new InterruptedException("Reached timeout, failed to find indicator: " + identifier + " in file: " + logPath);
+                    throw new InterruptedException("Reached timeout, failed to find indicator: " + finishIdentifier + " in file: " + logPath);
                 }
 
-            } while (!logPayload.contains(identifier));
+            } while (!logPayload.contains(finishIdentifier));
 
             waitForFlashTestToFinish(identifier, identifiers);
             return "SUCCESS";

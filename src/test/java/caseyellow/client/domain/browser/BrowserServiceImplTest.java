@@ -39,7 +39,7 @@ public class BrowserServiceImplTest {
         wordIdentifiers.add(wordIdentifier);
         wordIdentifiers.add(wordIdentifier2);
         Role role = new Role("cssSelector=img[data-role='close-button']", Command.CLICK, true);
-        browserService.waitForFlashTestToFinish("SpeedTetsAddDiagnostic", wordIdentifiers, Arrays.asList(role));
+        browserService.waitForFlashTestToFinish("bezeq", "SpeedTetsAddDiagnostic", wordIdentifiers, Arrays.asList(role));
     }
 
     private By getByIdentifier(String identifier) {
