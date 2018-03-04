@@ -1,9 +1,6 @@
 package caseyellow.client.sevices.gateway.services;
 
-import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
-import caseyellow.client.domain.analyze.model.ImageClassificationStatus;
-import caseyellow.client.domain.analyze.model.OcrResponse;
-import caseyellow.client.domain.analyze.model.VisionRequest;
+import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
@@ -158,7 +155,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
-    public ImageClassificationStatus classifyImage(String identifier, VisionRequest visionRequest) throws AnalyzeException {
+    public ImageClassificationResult classifyImage(String identifier, VisionRequest visionRequest) throws AnalyzeException {
         try {
             return requestHandler.execute(gatewayRequests.classifyImage(createTokenHeader(),identifier, visionRequest));
 

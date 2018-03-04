@@ -23,7 +23,7 @@ import static caseyellow.client.common.Utils.getTempFileFromResources;
 /**
  * Created by Dan on 7/7/2017.
  */
-public class MainFrameImpl implements MessagesService, MainFrame {
+public class MainFrameImpl implements MainFrame {
 
     private Logger logger = Logger.getLogger(MainFrameImpl.class);
 

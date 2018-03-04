@@ -67,7 +67,8 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
             } catch (ConnectionException e) {
                 logger.error("Connection with host failed, " + e.getMessage(), e);
-                handleLostConnection();
+                toProduceTests.set(false);
+                CompletableFuture.runAsync(() -> handleLostConnection());
 
             } catch (UserInterruptException e) {
                 logger.error("Stop to produce test, user interrupt action" + e.getMessage(), e);
@@ -96,11 +97,17 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     }
 
     @Override
-    public void handleLostConnection() throws InterruptedException {
-        stopProducingTests();
-        logger.info("Wait for 30 seconds before new attempt to produce new test");
-        TimeUnit.SECONDS.sleep(30);
-        startProducingTests();
+    public void handleLostConnection()  {
+        try {
+            stopProducingTests();
+            logger.info("Lost connection, wait for 35 seconds before new attempt to produce new test");
+            mainFrame.showMessage("Lost connection, wait for 35 seconds before new attempt to produce new test");
+            TimeUnit.SECONDS.sleep(35);
+            startProducingTests();
+
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     @Override

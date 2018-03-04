@@ -1,5 +1,6 @@
 package caseyellow.client.sevices.infrastrucre;
 
+import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.exceptions.UserInterruptException;
 import okhttp3.Headers;
@@ -9,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -24,7 +26,7 @@ public class RequestHandlerImpl implements RequestHandler {
 
 
     @Override
-    public <T extends Object> T execute(Call<T> request) throws RequestFailureException {
+    public <T extends Object> T execute(Call<T> request) throws RequestFailureException, ConnectionException {
         try {
             Response<T> response = request.execute();
 
@@ -43,6 +45,11 @@ public class RequestHandlerImpl implements RequestHandler {
                 logger.error(String.format("Request Failed, error code: %s, error message: %s", response.code(), response.errorBody().string()));
                 throw new RequestFailureException(response.errorBody().string(), response.code());
             }
+
+        } catch (ConnectException e) {
+            String errorMessage = String.format("Failed to produce connect to server, error: %s", e.getMessage());
+            logger.error(errorMessage, e);
+            throw new ConnectionException(errorMessage, e);
 
         } catch (IOException e) {
             if (e.getMessage().equals("Canceled")) {

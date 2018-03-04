@@ -20,7 +20,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -28,13 +27,12 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static caseyellow.client.common.Utils.*;
+import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.END_EXIST;
+import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.START_EXIST;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
@@ -156,7 +154,7 @@ public class BrowserServiceImpl implements BrowserService {
             int waitForTestToFinishInSec = getWaitForTestToFinishInSec(waitForStartButton);
             int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForTestToFinishInSec;
 
-            waitForImageAppearanceByImageClassification(identifier, 0, maxAttempts);
+            waitForImageAppearanceByImageClassification(identifier, 0, maxAttempts, true);
             waitForImageAppearanceByImageAnalyze(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true, "Start button");
 
         } catch (WebDriverException e) {
@@ -166,26 +164,22 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
     
-    private void waitForImageAppearanceByImageClassification(String identifier, int attempt, int maxAttempts) throws AnalyzeException {
+    private void waitForImageAppearanceByImageClassification(String identifier, int attempt, int maxAttempts, boolean isStartState) throws AnalyzeException {
         try {
             VisionRequest visionRequest = new VisionRequest(takeScreenSnapshot());
-            ImageClassificationStatus status = imageParsingService.classifyImage(identifier, visionRequest);
-
-            logger.info(String.format("ImageClassificationStatus for identifier: %s, status: %s", identifier, status));
+            ImageClassificationResult imageClassificationResult = imageParsingService.classifyImage(identifier, visionRequest);
+            ImageClassificationStatus status = imageClassificationResult.getStatus();
+            logger.info(String.format("ImageClassificationResult for identifier: %s, details: %s", identifier, imageClassificationResult));
 
             switch (status) {
-                case EXIST:
-                    return;
+                case START_EXIST:
+                case END_EXIST:
+                    handleExistStatus(identifier, status, isStartState);
+                    break;
 
                 case RETRY:
-                    if (attempt < maxAttempts) {
-                        logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, retry again", attempt, identifier));
-                        TimeUnit.SECONDS.sleep(8);
-                        waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts);
-                        break;
-                    } else {
-                        throw new AnalyzeException(String.format("Failed to classify image after reaching max attempts for identifier: %s", identifier));
-                    }
+                    handleRetryStatus(identifier, attempt, maxAttempts, isStartState);
+                    break;
 
                 case FAILED:
                     throw new AnalyzeException(String.format("Failed to classify image for identifier: %s", identifier));
@@ -194,6 +188,27 @@ public class BrowserServiceImpl implements BrowserService {
         } catch (IOException | InterruptedException e) {
             logger.error(String.format("Failed to get ImageClassificationStatus: %s", e.getMessage()), e);
             throw new AnalyzeException(e.getMessage(), e);
+        }
+    }
+
+    private void handleExistStatus(String identifier, ImageClassificationStatus status, boolean isStartState) throws AnalyzeException {
+        if ( (isStartState && START_EXIST == status) || (!isStartState && END_EXIST == status) ) {
+            logger.info(String.format("Image exist classification found for identifier: %s", identifier));
+            return;
+
+        } else {
+            throw new AnalyzeException(String.format("Failed to classify image exist status for identifier: %s, found status: %s", identifier, status));
+        }
+    }
+
+    private void handleRetryStatus(String identifier, int attempt, int maxAttempts, boolean isStartState) throws InterruptedException, AnalyzeException {
+        if (attempt < maxAttempts) {
+            logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, retry again", attempt, identifier));
+            TimeUnit.SECONDS.sleep(8);
+            waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts, isStartState);
+            return;
+        } else {
+            throw new AnalyzeException(String.format("Failed to classify image after reaching max attempts for identifier: %s", identifier));
         }
     }
 
@@ -213,7 +228,7 @@ public class BrowserServiceImpl implements BrowserService {
 
             } while (!logPayload.contains(identifier));
 
-            waitForFlashTestToFinish(identifiers);
+            waitForFlashTestToFinish(identifier, identifiers);
             return "SUCCESS";
 
         } catch (IOException e) {
@@ -278,14 +293,15 @@ public class BrowserServiceImpl implements BrowserService {
         throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + speedTestNonFlashMetaData.getFinishTextIdentifier());
     }
 
-    private void waitForFlashTestToFinish(Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
+    private void waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
         checkBrowser();
 
         try {
             int waitForTestToFinishInterval = waitForFinishIdentifier < 1000 ? 1 : (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
             int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
 
-            waitForImageAppearanceByImageAnalyze(identifiers, numOfAttempts, waitForFinishIdentifier, false, "finish");
+//            waitForImageAppearanceByImageAnalyze(identifiers, numOfAttempts, waitForFinishIdentifier, false, "finish");
+              waitForImageAppearanceByImageClassification(identifier, 0, 5, false);
 
         } catch (WebDriverException e) {
             logger.error(e.getMessage());

@@ -1,10 +1,11 @@
 package caseyellow.client.presentation;
 
+import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.exceptions.LoginException;
 
 import java.io.IOException;
 
-public interface MainFrame {
+public interface MainFrame extends MessagesService {
     void testDone();
     void testStopped();
     void formInitView();
