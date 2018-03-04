@@ -6,21 +6,45 @@ import caseyellow.client.domain.analyze.model.DescriptionLocation;
 import caseyellow.client.domain.analyze.model.DescriptionMatch;
 import caseyellow.client.domain.analyze.model.WordIdentifier;
 import caseyellow.client.exceptions.AnalyzeException;
+import caseyellow.client.exceptions.BrowserFailedException;
 import caseyellow.client.exceptions.InternalFailureException;
 import caseyellow.client.domain.analyze.model.WordData;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.*;
 
 @Service
 public class TextAnalyzerImp implements TextAnalyzerService {
 
     private Logger logger = Logger.getLogger(TextAnalyzerImp.class);
+
+    @Override
+    public String retrieveResultFromHtml(String htmlPayload, List<String> MbpsRegex, List<String> KbpsRegex, int groupNumber) throws BrowserFailedException {
+
+        boolean MbpsMatcher = verifyPatterns(MbpsRegex, htmlPayload);
+        boolean KbpsMatcher = verifyPatterns(KbpsRegex, htmlPayload);
+
+        if (MbpsMatcher && KbpsMatcher) {
+            throw new BrowserFailedException("Failure to find finish test identifier, Found Kbps and Mbps matchers");
+
+        } else if (MbpsMatcher) {
+            return retrieveLastMatcher(MbpsRegex, htmlPayload,groupNumber); // regex matcher result
+
+        } else if (KbpsMatcher) {
+            return convertKbpsToMbps(retrieveLastMatcher(KbpsRegex, htmlPayload, groupNumber));
+        }
+
+        return null;
+    }
 
     @Override
     public DescriptionMatch isDescriptionExist(Set<WordIdentifier> textIdentifiers, List<WordData> words) throws AnalyzeException {
@@ -30,6 +54,43 @@ public class TextAnalyzerImp implements TextAnalyzerService {
         }catch (Exception e) {
             throw new AnalyzeException(e.getMessage(), e);
         }
+    }
+
+    private boolean verifyPatterns(List<String> regexes, String payload) {
+        if (isNull(regexes) || regexes.isEmpty()) {
+            return false;
+        }
+
+        return regexes.stream()
+                      .filter(regex -> !StringUtils.isEmpty(regex))
+                      .map(Pattern::compile)
+                      .map(pattern -> pattern.matcher(payload))
+                      .allMatch(Matcher::find);
+    }
+
+
+    private String retrieveLastMatcher(List<String> regex, String payload, int groupNumber) {
+        if (isNull(regex) || regex.isEmpty() || StringUtils.isEmpty(regex.get(regex.size() -1))) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile(regex.get(regex.size() -1));
+        Matcher matcher = pattern.matcher(payload);
+
+        if (matcher.find()) {
+            return matcher.group(groupNumber); // regex matcher result
+        }
+
+        return null;
+    }
+
+    private String convertKbpsToMbps(String KbpsResultStr) {
+        if (StringUtils.isEmpty(KbpsResultStr)) {
+            return null;
+        }
+
+        double KbpsResult = Double.valueOf(KbpsResultStr) / 1_000.0;
+        return String.valueOf(KbpsResult);
     }
 
     private DescriptionMatch buildDescriptionMatch(Set<WordIdentifier> textIdentifiers, List<WordData> words) {

@@ -60,6 +60,9 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     @Value("${failed_tests_dir}")
     private String failedTestsDir;
 
+    @Value("${successful_tests_dir}")
+    private String successfulTestsDir;
+
     private String user;
     private String token;
     private RequestHandler requestHandler;
@@ -217,13 +220,15 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
                 .map(ComparisonInfo::getSpeedTestWebSite)
                 .collect(toList());
 
-        speedTestWebSites.forEach(speedTest -> speedTest.setPath(generateKey(test.getSystemInfo().getPublicIP(), speedTest)));
+        speedTestWebSites.forEach(speedTest -> speedTest.setPath(generateSuccessfulKey(test.getSystemInfo().getPublicIP(), speedTest)));
         speedTestWebSites.forEach(speedTest -> uploadObject(generatePreSignedUrl(speedTest.getPath()).getPreSignedUrl(), speedTest.getWebSiteDownloadInfoSnapshot()));
     }
 
-    private String generateKey(String ip, SpeedTestWebSite speedTest) {
+    private String generateSuccessfulKey(String ip, SpeedTestWebSite speedTest) {
 
-        return new StringBuilder().append(user)
+        return new StringBuilder().append(successfulTestsDir)
+                                  .append("/")
+                                  .append(user)
                                   .append(DELIMITER)
                                   .append(ip.replaceAll("\\.", "_"))
                                   .append(DELIMITER)
@@ -311,10 +316,5 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
         tokenHeader.put(USER_HEADER, user);
 
         return tokenHeader;
-    }
-
-    private SnapshotMetadata createSnapshotMetadata(String webSiteDownloadInfoSnapshot, String s3Path) {
-        String md5 = systemService.convertToMD5(new File(webSiteDownloadInfoSnapshot));
-        return new SnapshotMetadata(md5, s3Path);
     }
 }

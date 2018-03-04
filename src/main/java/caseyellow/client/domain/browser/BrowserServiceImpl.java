@@ -171,17 +171,22 @@ public class BrowserServiceImpl implements BrowserService {
             VisionRequest visionRequest = new VisionRequest(takeScreenSnapshot());
             ImageClassificationStatus status = imageParsingService.classifyImage(identifier, visionRequest);
 
+            logger.info(String.format("ImageClassificationStatus for identifier: %s, status: %s", identifier, status));
+
             switch (status) {
                 case EXIST:
                     return;
 
                 case RETRY:
                     if (attempt < maxAttempts) {
+                        logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, retry again", attempt, identifier));
                         TimeUnit.SECONDS.sleep(8);
                         waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts);
+                        break;
                     } else {
                         throw new AnalyzeException(String.format("Failed to classify image after reaching max attempts for identifier: %s", identifier));
                     }
+
                 case FAILED:
                     throw new AnalyzeException(String.format("Failed to classify image for identifier: %s", identifier));
             }
@@ -260,7 +265,7 @@ public class BrowserServiceImpl implements BrowserService {
 
         do {
             checkBrowser();
-            result = retrieveResultFromHtml(identifier, speedTestNonFlashMetaData.getFinishTextIdentifier(), speedTestNonFlashMetaData.getFinishIdentifierKbps(), 1);
+            result = textAnalyzer.retrieveResultFromHtml(getHTMLPayload(), speedTestNonFlashMetaData.getFinishTextIdentifier(), speedTestNonFlashMetaData.getFinishIdentifierKbps(), 1);
 
             if (nonNull(result)) {
                 return result;
@@ -391,61 +396,11 @@ public class BrowserServiceImpl implements BrowserService {
         jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
     }
 
-    private String retrieveResultFromHtml(String identifier, List<String> MbpsRegex, List<String> KbpsRegex, int groupNumber) throws BrowserFailedException {
+    private String getHTMLPayload() {
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         String htmlPayload = String.valueOf(jse.executeScript(GET_HTML_JS));
 
-        boolean MbpsMatcher = verifyPatterns(MbpsRegex, htmlPayload);
-        boolean KbpsMatcher = verifyPatterns(KbpsRegex, htmlPayload);
-
-        if (MbpsMatcher && KbpsMatcher) {
-            throw new BrowserFailedException("Failure to find finish test identifier, Found Kbps and Mbps matcher for identifier: " + identifier);
-
-        } else if (MbpsMatcher) {
-            return retrieveLastMatcher(MbpsRegex, htmlPayload,groupNumber); // regex matcher result
-
-        } else if (KbpsMatcher) {
-            return convertKbpsToMbps(retrieveLastMatcher(KbpsRegex, htmlPayload, groupNumber));
-        }
-
-        return null;
-    }
-
-    private boolean verifyPatterns(List<String> regexes, String payload) {
-        if (isNull(regexes) || regexes.isEmpty()) {
-            return false;
-        }
-
-        return regexes.stream()
-                      .filter(regex -> !StringUtils.isEmpty(regex))
-                      .map(Pattern::compile)
-                      .map(pattern -> pattern.matcher(payload))
-                      .allMatch(Matcher::find);
-    }
-
-
-    private String retrieveLastMatcher(List<String> regex, String payload, int groupNumber) {
-        if (isNull(regex) || regex.isEmpty() || StringUtils.isEmpty(regex.get(regex.size() -1))) {
-            return null;
-        }
-
-        Pattern pattern = Pattern.compile(regex.get(regex.size() -1));
-        Matcher matcher = pattern.matcher(payload);
-
-        if (matcher.find()) {
-            return matcher.group(groupNumber); // regex matcher result
-        }
-
-        return null;
-    }
-
-    private String convertKbpsToMbps(String KbpsResultStr) {
-        if (StringUtils.isEmpty(KbpsResultStr)) {
-            return null;
-        }
-
-        double KbpsResult = Double.valueOf(KbpsResultStr) / 1_000.0;
-        return String.valueOf(KbpsResult);
+        return htmlPayload;
     }
 
 }

@@ -4,6 +4,7 @@ spring.main.web-environment: false
 # Profiles: prod, integration, dev
 spring.profiles.active: prod
 
+successful_tests_dir: successful-tests
 failed_tests_dir: failed-tests
 
 numOfComparisonPerTest : 3
