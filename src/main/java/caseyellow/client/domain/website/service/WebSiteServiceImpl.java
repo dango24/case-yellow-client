@@ -4,6 +4,7 @@ import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
+import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.UserInterruptException;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
@@ -49,7 +50,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     @Override
     public SpeedTestWebSite produceSpeedTestWebSite(final SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
-        String result;
+        SpeedTestResult result;
         String websiteSnapshot;
         long startMeasuringTimestamp;
 
@@ -73,9 +74,9 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                        .setSucceed()
                                        .setStartDownloadingTimeSnapshot(startMeasuringTimestamp)
-                                       .setWebSiteDownloadInfoSnapshot(websiteSnapshot)
+                                       .setWebSiteDownloadInfoSnapshot(result.getSnapshot())
                                        .setURL(speedTestWebsite.getWebSiteUrl())
-                                       .setNonFlashResult(result)
+                                       .setNonFlashResult(result.getResult())
                                        .setMD5(systemService.convertToMD5(new File(websiteSnapshot)))
                                        .build();
 
@@ -119,7 +120,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         }
     }
 
-    private String waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
+    private SpeedTestResult waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
         if (speedTestWebsite.isFlashAble()) {
             speedTestWebsite.resetAllRules();
             return browserService.waitForFlashTestToFinish(speedTestWebsite.getIdentifier(),

@@ -4,9 +4,11 @@ import caseyellow.client.common.Utils;
 import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
+import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.Command;
 import caseyellow.client.domain.website.model.Role;
 import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
+import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
 import org.apache.log4j.Logger;
@@ -31,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import static caseyellow.client.common.Utils.*;
 import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.END;
 import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.START;
+import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.UNREADY;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.toIntExact;
 import static java.util.Objects.nonNull;
@@ -59,8 +62,16 @@ public class BrowserServiceImpl implements BrowserService {
 
     private String logPath;
     private WebDriver webDriver;
-    private ImageParsingService imageParsingService;
+    private SystemService systemService;
     private TextAnalyzerService textAnalyzer;
+    private ImageParsingService imageParsingService;
+
+    @Autowired
+    public BrowserServiceImpl(ImageParsingService imageParsingService, TextAnalyzerService textAnalyzer, SystemService systemService) {
+        this.textAnalyzer = textAnalyzer;
+        this.systemService = systemService;
+        this.imageParsingService = imageParsingService;
+    }
 
     @PostConstruct
     public void init() throws IOException {
@@ -89,16 +100,6 @@ public class BrowserServiceImpl implements BrowserService {
         options.setExperimentalOption("prefs", prefs);
 
         return options;
-    }
-
-    @Autowired
-    public void setImageParsingService(ImageParsingService imageParsingService) {
-        this.imageParsingService = imageParsingService;
-    }
-
-    @Autowired
-    public void setTextAnalyzer(TextAnalyzerService textAnalyzer) {
-        this.textAnalyzer = textAnalyzer;
     }
 
     @Override
@@ -164,10 +165,12 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
     
-    private void waitForImageAppearanceByImageClassification(String identifier, int attempt, int maxAttempts, boolean isStartState) throws AnalyzeException {
+    private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, int attempt, int maxAttempts, boolean isStartState) throws AnalyzeException {
         try {
             String screenshot = takeScreenSnapshot();
-            VisionRequest visionRequest = new VisionRequest(screenshot);
+            String md5 = systemService.convertToMD5(new File(screenshot));
+            VisionRequest visionRequest = new VisionRequest(screenshot, md5);
+
             ImageClassificationResult imageClassificationResult = imageParsingService.classifyImage(identifier, visionRequest);
             ImageClassificationStatus status = imageClassificationResult.getStatus();
             logger.info(String.format("ImageClassificationResult for identifier: %s, details: %s", identifier, imageClassificationResult));
@@ -178,12 +181,9 @@ public class BrowserServiceImpl implements BrowserService {
                     handleExistStatus(identifier, status, isStartState);
                     break;
 
-                case UNREADY:
-                    handleRetryStatus(identifier, attempt, maxAttempts, isStartState, 8);
-                    break;
-
                 case MIDDLE:
-                    handleRetryStatus(identifier, attempt, maxAttempts, isStartState, 3);
+                case UNREADY:
+                    handleRetryStatus(identifier, attempt, maxAttempts, status, isStartState);
                     break;
 
                 case FAILED:
@@ -191,31 +191,39 @@ public class BrowserServiceImpl implements BrowserService {
                     break;
             }
 
+            return new SpeedTestResult("SUCCESS", screenshot);
+
         } catch (IOException | InterruptedException e) {
             logger.error(String.format("Failed to get ImageClassificationStatus: %s", e.getMessage()), e);
             throw new AnalyzeException(e.getMessage(), e);
         }
+
     }
 
 
     private void handleExistStatus(String identifier, ImageClassificationStatus status, boolean isStartState) throws AnalyzeException {
+        String state = isStartState ? "start" : "end";
+
         if ( (isStartState && START == status) || (!isStartState && END == status) ) {
-            logger.info(String.format("Image exist classification found for identifier: %s", identifier));
+            logger.info(String.format("Image exist status classification found for identifier: %s, status: %s", identifier, status));
             return;
 
         } else {
-            throw new AnalyzeException(String.format("Failed to classify image exist status for identifier: %s, found status: %s", identifier, status));
+            throw new AnalyzeException(String.format("Failed to classify image exist status for identifier: %s, found status: %s, state: %s", identifier, status, state));
         }
     }
 
-    private void handleRetryStatus(String identifier, int attempt, int maxAttempts, boolean isStartState, int sleepInSeconds) throws InterruptedException, AnalyzeException {
+    private void handleRetryStatus(String identifier, int attempt, int maxAttempts, ImageClassificationStatus status, boolean isStartState) throws InterruptedException, AnalyzeException {
+        String state = isStartState ? "start" : "end";
+
         if (attempt < maxAttempts) {
-            logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, retry again", attempt, identifier));
+            int sleepInSeconds = status == UNREADY ? 8 : 2;
+            logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, status: %s, state: %s, retry again", attempt, identifier, status, state));
             TimeUnit.SECONDS.sleep(sleepInSeconds);
             waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts, isStartState);
             return;
         } else {
-            throw new AnalyzeException(String.format("Failed to classify image after reaching max attempts for identifier: %s", identifier));
+            throw new AnalyzeException(String.format("Failed to classify image after reaching max attempts of %s for identifier: %s, status: %s, state: %s", maxAttempts, identifier, status, state));
         }
     }
 
@@ -225,12 +233,12 @@ public class BrowserServiceImpl implements BrowserService {
             TimeUnit.SECONDS.sleep(8);
             waitForImageAppearanceByImageClassification(identifier, attempt+1, maxAttempts, isStartState);
         } else {
-            throw new AnalyzeException(String.format("Failed to classify image for identifier: %s", identifier));
+            throw new AnalyzeException(String.format("Failed to classify failure statues image for identifier: %s", identifier));
         }
     }
 
     @Override
-    public String waitForFlashTestToFinish(String identifier, String finishIdentifier, Set<WordIdentifier> identifiers, List<Role> roles) throws InterruptedException, BrowserFailedException {
+    public SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, Set<WordIdentifier> identifiers, List<Role> roles) throws InterruptedException, BrowserFailedException {
         String logPayload;
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
         try {
@@ -245,8 +253,7 @@ public class BrowserServiceImpl implements BrowserService {
 
             } while (!logPayload.contains(finishIdentifier));
 
-            waitForFlashTestToFinish(identifier, identifiers);
-            return "SUCCESS";
+            return waitForFlashTestToFinish(identifier, identifiers);
 
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
@@ -290,7 +297,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public String waitForTestToFinishByText(String identifier, SpeedTestNonFlashMetaData speedTestNonFlashMetaData) throws BrowserFailedException, InterruptedException {
+    public SpeedTestResult waitForTestToFinishByText(String identifier, SpeedTestNonFlashMetaData speedTestNonFlashMetaData) throws BrowserFailedException, InterruptedException {
         String result;
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
@@ -300,7 +307,7 @@ public class BrowserServiceImpl implements BrowserService {
             result = textAnalyzer.retrieveResultFromHtml(getHTMLPayload(), speedTestNonFlashMetaData.getFinishTextIdentifier(), speedTestNonFlashMetaData.getFinishIdentifierKbps(), 1);
 
             if (nonNull(result)) {
-                return result;
+                return new SpeedTestResult(result, takeScreenSnapshot());
             }
 
             TimeUnit.MILLISECONDS.sleep(waitForFinishIdentifier);
@@ -310,7 +317,7 @@ public class BrowserServiceImpl implements BrowserService {
         throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + speedTestNonFlashMetaData.getFinishTextIdentifier());
     }
 
-    private void waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
+    private SpeedTestResult waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
         checkBrowser();
 
         try {
@@ -318,7 +325,7 @@ public class BrowserServiceImpl implements BrowserService {
             int numOfAttempts = waitForTestToFinishInSec / waitForTestToFinishInterval;
 
 //            waitForImageAppearanceByImageAnalyze(identifiers, numOfAttempts, waitForFinishIdentifier, false, "finish");
-              waitForImageAppearanceByImageClassification(identifier, 0, 5, false);
+              return waitForImageAppearanceByImageClassification(identifier, 0, 5, false);
 
         } catch (WebDriverException e) {
             logger.error(e.getMessage());

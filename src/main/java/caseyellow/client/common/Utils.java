@@ -156,7 +156,7 @@ public class Utils {
             bot.mouseMove(x, y);
             bot.mousePress(InputEvent.BUTTON1_MASK);
             bot.mouseRelease(InputEvent.BUTTON1_MASK);
-            TimeUnit.MILLISECONDS.sleep(400);
+            TimeUnit.MILLISECONDS.sleep(350);
 
         } catch (AWTException | InterruptedException e) {
             throw new InternalFailureException(e.getMessage());

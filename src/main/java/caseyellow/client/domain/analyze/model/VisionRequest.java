@@ -18,8 +18,12 @@ public class VisionRequest {
     }
 
     public VisionRequest(String imgPath) throws IOException {
+        this(imgPath, null);
+    }
+
+    public VisionRequest(String imgPath, String md5) throws IOException {
         this();
-        image = new Image(new String(createImageBase64Encode(imgPath), "UTF-8"));
+        image = new Image(new String(createImageBase64Encode(imgPath), "UTF-8"), md5);
     }
 
     public Image getImage() {

@@ -31,7 +31,7 @@ public class BrowserServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        browserService = new BrowserServiceImpl();
+        browserService = new BrowserServiceImpl(null, null, null);
     }
 
     @Parameterized.Parameters
