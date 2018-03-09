@@ -57,6 +57,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
             browserService.openBrowser(speedTestWebsite.getWebSiteUrl());
             browserService.centralizedWebPage(speedTestWebsite.getCentralized());
+            moveMouseToStartingPoint();
 
             if (speedTestWebsite.isHaveStartButton()) {
                 clickStartTestButton(speedTestWebsite);
