@@ -148,7 +148,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressFlashStartTestButton(String identifier, Set<WordIdentifier> webSiteBtnIdentifiers, int maxAttempts) throws BrowserFailedException, UserInterruptException, IOException, InterruptedException {
+    public void pressFlashStartTestButton(String identifier, Set<WordIdentifier> webSiteBtnIdentifiers, int maxAttempts) throws BrowserFailedException, UserInterruptException, InterruptedException, AnalyzeException {
         checkBrowser();
 
         try {
@@ -160,20 +160,22 @@ public class BrowserServiceImpl implements BrowserService {
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);
-        } catch (RequestFailureException | AnalyzeException e) {
+        } catch (RequestFailureException | IOException e) {
             throw new BrowserFailedException(e.getMessage(), e);
         }
     }
     
     private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, int attempt, int maxAttempts, boolean isStartState) throws AnalyzeException {
+        String screenshot = takeScreenSnapshot();
+
         try {
-            String screenshot = takeScreenSnapshot();
             String md5 = systemService.convertToMD5(new File(screenshot));
             VisionRequest visionRequest = new VisionRequest(screenshot, md5);
+            logger.info(String.format("Start classify image: %s", md5));
 
             ImageClassificationResult imageClassificationResult = imageParsingService.classifyImage(identifier, visionRequest);
             ImageClassificationStatus status = imageClassificationResult.getStatus();
-            logger.info(String.format("ImageClassificationResult for identifier: %s, details: %s", identifier, imageClassificationResult));
+            logger.info(String.format("ImageClassificationResult for identifier: %s, md5: %s, details: %s", identifier, md5, imageClassificationResult));
 
             switch (status) {
                 case START:
@@ -193,9 +195,9 @@ public class BrowserServiceImpl implements BrowserService {
 
             return new SpeedTestResult("SUCCESS", screenshot);
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | AnalyzeException e) {
             logger.error(String.format("Failed to get ImageClassificationStatus: %s", e.getMessage()), e);
-            throw new AnalyzeException(e.getMessage(), e);
+            throw new AnalyzeException(e.getMessage(), screenshot, e);
         }
 
     }
@@ -238,7 +240,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, Set<WordIdentifier> identifiers, List<Role> roles) throws InterruptedException, BrowserFailedException {
+    public SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, Set<WordIdentifier> identifiers, List<Role> roles) throws InterruptedException, BrowserFailedException, AnalyzeException {
         String logPayload;
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
         try {
@@ -317,7 +319,7 @@ public class BrowserServiceImpl implements BrowserService {
         throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + speedTestNonFlashMetaData.getFinishTextIdentifier());
     }
 
-    private SpeedTestResult waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException {
+    private SpeedTestResult waitForFlashTestToFinish(String identifier, Set<WordIdentifier> identifiers) throws BrowserFailedException, UserInterruptException, AnalyzeException {
         checkBrowser();
 
         try {
@@ -331,6 +333,8 @@ public class BrowserServiceImpl implements BrowserService {
             logger.error(e.getMessage());
             throw new UserInterruptException(e.getMessage(), e);
 
+        } catch (AnalyzeException e) {
+            throw e;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new BrowserFailedException(e.getMessage(), e);
