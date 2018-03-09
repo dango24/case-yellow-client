@@ -5,6 +5,7 @@ public class FailedTestDetails {
     private String ip;
     private String path;
     private String errorMessage;
+    private String clientVersion;
 
     public FailedTestDetails() {
     }
@@ -37,6 +38,14 @@ public class FailedTestDetails {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getClientVersion() {
+        return clientVersion;
+    }
+
+    public void setClientVersion(String clientVersion) {
+        this.clientVersion = clientVersion;
     }
 
     public static class FailedTestDetailsBuilder {

@@ -8,7 +8,9 @@ import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.presentation.MainFrame;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
@@ -23,6 +25,9 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     private Logger logger = Logger.getLogger(TestGeneratorImpl.class);
 
     public static final int TOKEN_EXPIRED_CODE = 701;
+
+    @Value("${client.version}")
+    private String clientVersion;
 
     private MainFrame mainFrame;
     private Future<?> testTask;
@@ -62,6 +67,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         while (toProduceTests.get()) {
 
             try {
+                MDC.put("correlation-id", clientVersion);
                 test = testService.generateNewTest();
                 saveTest(test);
 
@@ -79,6 +85,9 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
             } catch (TestException e) {
                 logger.error(String.format("Failed to generate test, cause: %s", e.getMessage()), e);
+
+            } finally {
+                MDC.remove("correlation-id");
             }
         }
     }

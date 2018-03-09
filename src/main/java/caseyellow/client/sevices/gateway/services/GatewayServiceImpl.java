@@ -60,6 +60,9 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     @Value("${successful_tests_dir}")
     private String successfulTestsDir;
 
+    @Value("${client.version}")
+    private String clientVersion;
+
     private String user;
     private String token;
     private RequestHandler requestHandler;
@@ -132,6 +135,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
             if (nonNull(test)) {
                 uploadSnapshotImages(test);
                 systemService.saveSnapshotHashToDisk(test);
+                test.setClientVersion(clientVersion);
                 requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
                 logger.info(String.format("Save test succeed: %s", test));
             }
@@ -177,6 +181,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
             failedTestDetails = createFailedTestFromFileDownloadInfo(comparisonInfo.getFileDownloadInfo(), clientIP);
         }
 
+        failedTestDetails.setClientVersion(clientVersion);
         requestHandler.execute(gatewayRequests.failedTest(createTokenHeader(), failedTestDetails));
     }
 

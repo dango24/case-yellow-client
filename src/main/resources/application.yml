@@ -14,6 +14,7 @@ wait-for-start-button : 2
 wait-For-Finish-identifier : 10000
 chromeDriverExecutorPath : drivers/chromedriver.exe
 sleep_interval_in_seconds: 10
+client.version: 4.1.1
 
 google_vision_url : https://vision.googleapis.com/
 gateway_url : http://ec2-52-28-182-127.eu-central-1.compute.amazonaws.com:8008/
@@ -24,6 +25,6 @@ logging:
     org.springframework.web: ERROR
     caseyellow.client: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - %m%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - [%X{correlation-id}] - %m%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - [%X{correlation-id}] - %m%n"
   file: logs\\client_log

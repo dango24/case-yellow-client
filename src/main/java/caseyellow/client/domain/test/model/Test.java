@@ -8,6 +8,7 @@ import java.util.List;
 public class Test {
 
     private String testID;
+    private String clientVersion;
     private SystemInfo systemInfo;
     private String speedTestWebsiteIdentifier;
     private List<ComparisonInfo> comparisonInfoTests;
@@ -57,6 +58,14 @@ public class Test {
 
     public void addComparisonInfo(ComparisonInfo comparisonInfo) {
         comparisonInfoTests.add(comparisonInfo);
+    }
+
+    public String getClientVersion() {
+        return clientVersion;
+    }
+
+    public void setClientVersion(String clientVersion) {
+        this.clientVersion = clientVersion;
     }
 
     // TestBuilder Helper
