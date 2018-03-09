@@ -5,12 +5,9 @@ import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestResult;
-import caseyellow.client.exceptions.ConnectionException;
-import caseyellow.client.exceptions.UserInterruptException;
-import caseyellow.client.exceptions.WebSiteDownloadInfoException;
+import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.browser.BrowserService;
-import caseyellow.client.exceptions.BrowserFailedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +78,10 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .build();
 
         } catch (BrowserFailedException e) {
-            return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, e);
+            return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, takeScreenSnapshot(), e);
+
+        } catch (AnalyzeException e) {
+            return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, e.getSnapshot(), e);
 
         } catch (WebDriverException | InterruptedException e) {
             logger.error(String.format("InterruptedException, Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
@@ -100,9 +100,8 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         }
     }
 
-    private SpeedTestWebSite handleProduceSpeedTestWebSiteFailure(SpeedTestMetaData speedTestWebsite, BrowserFailedException e) {
+    private SpeedTestWebSite handleProduceSpeedTestWebSiteFailure(SpeedTestMetaData speedTestWebsite, String failedTestSnapshot, Exception e) {
         logger.error("Failed to complete speed test " + speedTestWebsite.getIdentifier() + ", " + e.getMessage(), e);
-        String failedTestSnapshot = takeScreenSnapshot();
 
         return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                    .setFailure()
@@ -112,7 +111,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                    .build();
     }
 
-    private void clickStartTestButton(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException {
+    private void clickStartTestButton(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException, AnalyzeException {
         if (speedTestWebsite.isFlashAble()) {
             browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier(), speedTestWebsite.getSpeedTestFlashMetaData().getButtonIds(), speedTestWebsite.getSpeedTestFlashMetaData().getMaxAttempts());
         } else {
@@ -120,7 +119,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         }
     }
 
-    private SpeedTestResult waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException {
+    private SpeedTestResult waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException, AnalyzeException {
         if (speedTestWebsite.isFlashAble()) {
             speedTestWebsite.resetAllRules();
             return browserService.waitForFlashTestToFinish(speedTestWebsite.getIdentifier(),
