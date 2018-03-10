@@ -3,7 +3,7 @@ package caseyellow.client.domain.test.service;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.file.service.DownloadFileService;
-import caseyellow.client.domain.data.access.DataAccessService;
+import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.test.model.ComparisonInfo;
@@ -15,7 +15,6 @@ import caseyellow.client.domain.website.service.WebSiteService;
 import caseyellow.client.exceptions.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

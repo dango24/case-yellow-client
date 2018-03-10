@@ -9,6 +9,8 @@ public class Test {
 
     private String testID;
     private String clientVersion;
+    private long startTime;
+    private long endTime;
     private SystemInfo systemInfo;
     private String speedTestWebsiteIdentifier;
     private List<ComparisonInfo> comparisonInfoTests;
@@ -22,7 +24,6 @@ public class Test {
         this.speedTestWebsiteIdentifier = testBuilder.speedTestWebsite;
         this.comparisonInfoTests = testBuilder.comparisonInfoTests;
     }
-
 
     public String getTestID() {
         return testID;
@@ -66,6 +67,22 @@ public class Test {
 
     public void setClientVersion(String clientVersion) {
         this.clientVersion = clientVersion;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
     }
 
     // TestBuilder Helper

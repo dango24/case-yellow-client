@@ -1,4 +1,4 @@
-package caseyellow.client.domain.data.access;
+package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.test.model.ComparisonInfo;

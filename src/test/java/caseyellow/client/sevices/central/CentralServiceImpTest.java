@@ -1,7 +1,7 @@
 package caseyellow.client.sevices.central;
 
 import caseyellow.client.App;
-import caseyellow.client.domain.data.access.DataAccessService;
+import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.test.model.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Ignore;

@@ -1,6 +1,6 @@
 package caseyellow.client.domain.test.service;
 
-import caseyellow.client.domain.data.access.DataAccessService;
+import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.system.ResponsiveService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
@@ -68,7 +68,14 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
             try {
                 MDC.put("correlation-id", clientVersion);
+
+                long startTest = System.currentTimeMillis();
                 test = testService.generateNewTest();
+                long endTest = System.currentTimeMillis();
+
+                test.setStartTime(startTest);
+                test.setEndTime(endTest);
+
                 saveTest(test);
 
             } catch (ConnectionException e) {

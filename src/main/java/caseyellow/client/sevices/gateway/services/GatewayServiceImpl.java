@@ -2,7 +2,6 @@ package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
-import caseyellow.client.domain.data.access.DataAccessService;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.system.SystemService;
@@ -200,7 +199,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
         return new FailedTestDetails.FailedTestDetailsBuilder()
                                     .addIp(clientIP)
                                     .addErrorMessage(message)
-                                    .addPath(preSignedUrl.getKey())
+                                    .addPath(preSignedUrl.getKey().replace(failedTestsDir, ""))
                                     .build();
     }
 
@@ -223,14 +222,12 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
                 .collect(toList());
 
         speedTestWebSites.forEach(speedTest -> speedTest.setPath(generateSuccessfulKey(test.getSystemInfo().getPublicIP(), speedTest)));
-        speedTestWebSites.forEach(speedTest -> uploadObject(generatePreSignedUrl(speedTest.getPath()).getPreSignedUrl(), speedTest.getWebSiteDownloadInfoSnapshot()));
+        speedTestWebSites.forEach(speedTest -> uploadObject(generatePreSignedUrl(successfulTestsDir + speedTest.getPath()).getPreSignedUrl(), speedTest.getWebSiteDownloadInfoSnapshot()));
     }
 
     private String generateSuccessfulKey(String ip, SpeedTestWebSite speedTest) {
 
-        return new StringBuilder().append(successfulTestsDir)
-                                  .append("/")
-                                  .append(user)
+        return new StringBuilder().append(user)
                                   .append(DELIMITER)
                                   .append(ip.replaceAll("\\.", "_"))
                                   .append(DELIMITER)
@@ -244,7 +241,6 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     private String generateFailureKey(SpeedTestWebSite speedTest) {
 
         return new StringBuilder().append(failedTestsDir)
-                                  .append("/")
                                   .append(user)
                                   .append(DELIMITER)
                                   .append(speedTest.getKey())

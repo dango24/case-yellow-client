@@ -1,6 +1,6 @@
 package caseyellow.client.domain.website.service;
 
-import caseyellow.client.domain.data.access.DataAccessService;
+import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
