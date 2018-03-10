@@ -202,7 +202,7 @@ public class BrowserServiceImpl implements BrowserService {
                 }
             }
 
-            throw new AnalyzeException(String.format("Failed to classify image after reaching timeout for identifier: %s, last md5 attempt: %s", identifier, md5));
+            throw new AnalyzeException(String.format("Failed to classify image after reaching timeout for identifier: %s, md5 : %s", identifier, md5));
 
         } catch (IOException | InterruptedException | AnalyzeException e) {
             logger.error(String.format("Failed to analyze image classification status: %s", e.getMessage()), e);
