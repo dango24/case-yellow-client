@@ -125,7 +125,6 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             speedTestWebsite.resetAllRules();
             return browserService.waitForFlashTestToFinish(speedTestWebsite.getIdentifier(),
                                                            speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifier(),
-                                                           speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifiers(),
                                                            speedTestWebsite.getRoles());
         } else {
             return browserService.waitForTestToFinishByText(speedTestWebsite.getSpeedTestNonFlashMetaData().getFinishIdentifier(),
