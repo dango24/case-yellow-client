@@ -123,8 +123,8 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public void closeBrowser() {
-        logger.warn("Browser close by user");
-        webDriver.quit();
+        logger.warn("Close browser");
+        webDriver.close();
     }
 
     @Override

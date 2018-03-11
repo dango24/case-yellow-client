@@ -14,7 +14,7 @@ wait-for-start-button : 2
 wait-For-Finish-identifier : 10000
 chromeDriverExecutorPath : drivers/chromedriver.exe
 sleep_interval_in_seconds: 10
-client.version: 4.1.3
+client.version: 4.1.4
 
 google_vision_url : https://vision.googleapis.com/
 gateway_url : http://ec2-52-28-182-127.eu-central-1.compute.amazonaws.com:8008/

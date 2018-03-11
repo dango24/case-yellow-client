@@ -58,10 +58,11 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
         } catch (Exception e) {
             logger.error("Produce tests failed" + e.getMessage(), e);
+            handleConnectionError();
         }
     }
 
-    private void produceTests() throws InterruptedException {
+    private void produceTests() {
         Test test;
 
         while (toProduceTests.get()) {
@@ -80,8 +81,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
             } catch (ConnectionException e) {
                 logger.error("Connection with host failed, " + e.getMessage(), e);
-                toProduceTests.set(false);
-                CompletableFuture.runAsync(() -> handleLostConnection());
+                handleConnectionError();
 
             } catch (UserInterruptException e) {
                 logger.error("Stop to produce test, user interrupt action" + e.getMessage(), e);
@@ -112,11 +112,15 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                          .thenAccept(dataAccessService::saveTest);
     }
 
-    @Override
-    public void handleLostConnection()  {
+    private void handleConnectionError() {
+        toProduceTests.set(false);
+        CompletableFuture.runAsync(() -> handleLostConnection());
+    }
+
+    private void handleLostConnection()  {
         try {
-            stopProducingTests();
             logger.info("Lost connection, wait for 35 seconds before new attempt to produce new test");
+            stopProducingTests();
             mainFrame.showMessage("Lost connection, wait for 35 seconds before new attempt to produce new test");
             TimeUnit.SECONDS.sleep(35);
             startProducingTests();

@@ -4,6 +4,7 @@ import caseyellow.client.App;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.message.MessageServiceImp;
 import caseyellow.client.domain.message.MessagesService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class DownloadFileServiceImplTest {
     private MessageServiceImp messagesService;
 
     @Test
+    @Ignore
     public void generateFileDownloadInfo() throws Exception {
 
         MessagesService presentationMessageService = mock(MessagesService.class);
