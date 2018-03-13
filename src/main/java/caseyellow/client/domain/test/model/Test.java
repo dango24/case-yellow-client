@@ -1,10 +1,19 @@
 package caseyellow.client.domain.test.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 /**
  * Created by Dan on 24/10/2016.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Test {
 
     private String testID;
@@ -15,74 +24,11 @@ public class Test {
     private String speedTestWebsiteIdentifier;
     private List<ComparisonInfo> comparisonInfoTests;
 
-    public Test() {
-    }
-
     private Test(TestBuilder testBuilder) {
         this.testID = testBuilder.testID;
         this.systemInfo = testBuilder.systemInfo;
         this.speedTestWebsiteIdentifier = testBuilder.speedTestWebsite;
         this.comparisonInfoTests = testBuilder.comparisonInfoTests;
-    }
-
-    public String getTestID() {
-        return testID;
-    }
-
-    public void setTestID(String testID) {
-        this.testID = testID;
-    }
-
-    public String getSpeedTestWebsiteIdentifier() {
-        return speedTestWebsiteIdentifier;
-    }
-
-    public void setSpeedTestWebsiteIdentifier(String speedTestWebsiteIdentifier) {
-        this.speedTestWebsiteIdentifier = speedTestWebsiteIdentifier;
-    }
-
-    public SystemInfo getSystemInfo() {
-        return systemInfo;
-    }
-
-    public void setSystemInfo(SystemInfo systemInfo) {
-        this.systemInfo = systemInfo;
-    }
-
-    public List<ComparisonInfo> getComparisonInfoTests() {
-        return comparisonInfoTests;
-    }
-
-    public void setComparisonInfoTests(List<ComparisonInfo> speedTests) {
-        this.comparisonInfoTests = speedTests;
-    }
-
-    public void addComparisonInfo(ComparisonInfo comparisonInfo) {
-        comparisonInfoTests.add(comparisonInfo);
-    }
-
-    public String getClientVersion() {
-        return clientVersion;
-    }
-
-    public void setClientVersion(String clientVersion) {
-        this.clientVersion = clientVersion;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
     }
 
     // TestBuilder Helper

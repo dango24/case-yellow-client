@@ -1,16 +1,19 @@
 package caseyellow.client.domain.website.model;
 
-import caseyellow.client.common.Utils;
 import caseyellow.client.exceptions.WebSiteDownloadInfoException;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.annotations.Expose;
-
-import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by Dan on 12/10/2016.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SpeedTestWebSite {
 
     @Expose
@@ -29,9 +32,6 @@ public class SpeedTestWebSite {
     private String path;
     private long startMeasuringTimestamp;
 
-    public SpeedTestWebSite() {
-    }
-
     public SpeedTestWebSite(String speedTestIdentifier,
                             boolean succeed,
                             long startDownloadingTime,
@@ -39,7 +39,7 @@ public class SpeedTestWebSite {
                             String urlAddress,
                             String result,
                             String message,
-                            String md5) throws IOException, NoSuchAlgorithmException {
+                            String md5) {
 
         this.succeed = succeed;
         this.speedTestIdentifier = speedTestIdentifier;
@@ -49,88 +49,6 @@ public class SpeedTestWebSite {
         this.nonFlashResult = result;
         this.message = message;
         this.key = md5;
-    }
-
-    public boolean isSucceed() {
-        return succeed;
-    }
-
-    public void setSucceed(boolean succeed) {
-        this.succeed = succeed;
-    }
-
-    public String getSpeedTestIdentifier() {
-        return speedTestIdentifier;
-    }
-
-    public void setSpeedTestIdentifier(String speedTestIdentifier) {
-        this.speedTestIdentifier = speedTestIdentifier;
-    }
-
-    public long getStartMeasuringTimestamp() {
-        return startMeasuringTimestamp;
-    }
-
-    public void setStartMeasuringTimestamp(long startMeasuringTimestamp) {
-        this.startMeasuringTimestamp = startMeasuringTimestamp;
-    }
-
-    public String getWebSiteDownloadInfoSnapshot() {
-        return webSiteDownloadInfoSnapshot;
-    }
-
-    public void setWebSiteDownloadInfoSnapshot(String webSiteDownloadInfoSnapshot) {
-        this.webSiteDownloadInfoSnapshot = webSiteDownloadInfoSnapshot;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getUrlAddress() {
-        return urlAddress;
-    }
-
-    public void setUrlAddress(String urlAddress) {
-        this.urlAddress = urlAddress;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getNonFlashResult() {
-        return nonFlashResult;
-    }
-
-    public void setNonFlashResult(String nonFlashResult) {
-        this.nonFlashResult = nonFlashResult;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    @Override
-    public String toString() {
-        return "SpeedTestWebSite{" +
-                "succeed=" + succeed +
-                ", speedTestIdentifier='" + speedTestIdentifier + '\'' +
-                ", startMeasuringTimestamp=" + startMeasuringTimestamp +
-                ", webSiteDownloadInfoSnapshot='" + webSiteDownloadInfoSnapshot + '\'' +
-                '}';
     }
 
     public static class SpeedTestWebSiteDownloadInfoBuilder {
@@ -189,14 +107,10 @@ public class SpeedTestWebSite {
         }
 
         public SpeedTestWebSite build() {
-            try {
+
                 return new SpeedTestWebSite(speedTestIdentifier, succeed,
                                             startDownloadingTime, webSiteDownloadInfoSnapshot,
                                             urlAddress, nonFlashResult, message, md5);
-
-            } catch (IOException | NoSuchAlgorithmException e) {
-                throw new WebSiteDownloadInfoException("Failed to build SpeedTestWebSite, cause: " + e.getMessage(), e);
-            }
         }
 
     }

@@ -1,5 +1,8 @@
 package caseyellow.client.domain.analyze.model;
 
+import lombok.Data;
+
+@Data
 public class DescriptionLocation {
 
     private String description;
@@ -11,22 +14,6 @@ public class DescriptionLocation {
 
     public DescriptionLocation(String word, Point center) {
         this.description = word;
-        this.center = center;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Point getCenter() {
-        return center;
-    }
-
-    public void setCenter(Point center) {
         this.center = center;
     }
 

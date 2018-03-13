@@ -2,11 +2,19 @@ package caseyellow.client.domain.test.model;
 
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.annotations.Expose;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by Dan on 12/10/2016.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ComparisonInfo {
 
     @Expose
@@ -15,40 +23,13 @@ public class ComparisonInfo {
     private SpeedTestWebSite speedTestWebSite;
     private FileDownloadInfo fileDownloadInfo;
 
-    public ComparisonInfo() {
-    }
-
     public ComparisonInfo(SpeedTestWebSite speedTestWebSiteDownloadInfo, FileDownloadInfo fileDownloadInfo) {
         this.fileDownloadInfo = fileDownloadInfo;
         this.speedTestWebSite = speedTestWebSiteDownloadInfo;
         this.success = speedTestWebSite.isSucceed() && fileDownloadInfo.isSucceed();
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
     public boolean failed() {
         return !success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-
-    public SpeedTestWebSite getSpeedTestWebSite() {
-        return speedTestWebSite;
-    }
-
-    public void setSpeedTestWebSite(SpeedTestWebSite speedTestWebSite) {
-        this.speedTestWebSite = speedTestWebSite;
-    }
-
-    public FileDownloadInfo getFileDownloadInfo() {
-        return fileDownloadInfo;
-    }
-
-    public void setFileDownloadInfo(FileDownloadInfo fileDownloadInfo) {
-        this.fileDownloadInfo = fileDownloadInfo;
     }
 }

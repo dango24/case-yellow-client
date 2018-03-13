@@ -1,10 +1,18 @@
 package caseyellow.client.domain.file.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.annotations.Expose;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by Dan on 04/10/2016.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileDownloadInfo {
 
     private String fileName;
@@ -20,8 +28,6 @@ public class FileDownloadInfo {
     @Expose
     private String message;
 
-    public FileDownloadInfo() {}
-
     public FileDownloadInfo(String fileName, String url) {
         this.fileName = fileName;
         this.fileURL = url;
@@ -35,68 +41,6 @@ public class FileDownloadInfo {
         fileDownloadedDurationTimeInMs = fileDownloadInfoBuilder.fileDownloadedDurationTimeInMs;
         startDownloadingTimestamp = fileDownloadInfoBuilder.startDownloadingTimestamp;
         succeed = fileDownloadInfoBuilder.succeed;
-    }
-
-    public String getFileURL() {
-        return fileURL;
-    }
-
-    public long getFileSizeInBytes() {
-        return fileSizeInBytes;
-    }
-
-    public void setFileSizeInBytes(long fileSizeInBytes) {
-        this.fileSizeInBytes = fileSizeInBytes;
-    }
-
-    public long getFileDownloadedDurationTimeInMs() { return fileDownloadedDurationTimeInMs; }
-
-    public void setFileDownloadedDurationTimeInMs(long fileDownloadedDurationTimeInMs) {
-        this.fileDownloadedDurationTimeInMs = fileDownloadedDurationTimeInMs;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public long getStartDownloadingTimestamp() {
-        return startDownloadingTimestamp;
-    }
-
-    public void setStartDownloadingTimestamp(long startDownloadingTimestamp) {
-        this.startDownloadingTimestamp = startDownloadingTimestamp;
-    }
-
-    public double getFileDownloadRateKBPerSec() {
-        return fileDownloadRateKBPerSec;
-    }
-
-    public void setFileDownloadRateKBPerSec(double fileDownloadRateKBPerSec) {
-        this.fileDownloadRateKBPerSec = fileDownloadRateKBPerSec;
-    }
-
-    public void setFileURL(String fileURL) {
-        this.fileURL = fileURL;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public boolean isSucceed() {
-        return succeed;
-    }
-
-    public void setSucceed(boolean succeed) {
-        this.succeed = succeed;
     }
 
     public static FileDownloadInfo errorFileDownloadInfo(String fileName, String url, String message) {

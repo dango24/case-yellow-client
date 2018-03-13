@@ -1,40 +1,23 @@
 package caseyellow.client.domain.test.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ConnectionDetails {
 
     private int speed;
     private String isp;
     private String infrastructure;
 
-    public ConnectionDetails() {
-    }
-
     public ConnectionDetails(String infrastructure, int speed) {
         this.speed = speed;
         this.infrastructure = infrastructure;
     }
 
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
-    public String getIsp() {
-        return isp;
-    }
-
-    public void setIsp(String isp) {
-        this.isp = isp;
-    }
-
-    public String getInfrastructure() {
-        return infrastructure;
-    }
-
-    public void setInfrastructure(String infrastructure) {
-        this.infrastructure = infrastructure;
-    }
 }

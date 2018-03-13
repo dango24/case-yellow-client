@@ -1,5 +1,14 @@
 package caseyellow.client.domain.test.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FailedTestDetails {
 
     private String ip;
@@ -7,45 +16,10 @@ public class FailedTestDetails {
     private String errorMessage;
     private String clientVersion;
 
-    public FailedTestDetails() {
-    }
-
     private FailedTestDetails(String ip, String path, String errorMessage) {
         this.path = path;
         this.errorMessage = errorMessage;
         this.ip = ip;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public String getClientVersion() {
-        return clientVersion;
-    }
-
-    public void setClientVersion(String clientVersion) {
-        this.clientVersion = clientVersion;
     }
 
     public static class FailedTestDetailsBuilder {
@@ -75,13 +49,5 @@ public class FailedTestDetails {
         public FailedTestDetails build() {
             return new FailedTestDetails(ip, path, errorMessage);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "FailedTestDetails{" +
-                "path='" + path + '\'' +
-                ", errorMessage='" + errorMessage + '\'' +
-                '}';
     }
 }
