@@ -168,7 +168,6 @@ public class SystemServiceImpl implements SystemService {
         try (InputStream inputStream = process.getInputStream()) {
 
             return IOUtils.toString(inputStream, UTF_8);
-
         }
     }
 

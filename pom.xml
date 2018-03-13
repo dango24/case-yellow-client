@@ -57,18 +57,18 @@
         </dependency>
 
         <!--Selenium for windows-->
-        <!--<dependency>-->
-            <!--<groupId>org.seleniumhq.selenium</groupId>-->
-            <!--<artifactId>selenium-java</artifactId>-->
-            <!--<version>2.53.0</version>-->
-        <!--</dependency>-->
-
-        <!--Selenium for linux-->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.9.1</version>
+            <version>2.53.0</version>
         </dependency>
+
+        <!--Selenium for linux-->
+        <!--<dependency>-->
+            <!--<groupId>org.seleniumhq.selenium</groupId>-->
+            <!--<artifactId>selenium-java</artifactId>-->
+            <!--<version>3.9.1</version>-->
+        <!--</dependency>-->
 
         <!--Retrofit2-->
         <dependency>

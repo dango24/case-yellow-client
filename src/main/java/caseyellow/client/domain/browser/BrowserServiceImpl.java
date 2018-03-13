@@ -439,7 +439,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     public String getDriverPath() {
         if (isWindows()) {
-            return "drivers/chromedriver";
+            return "drivers/chromedriver.exe";
         } else {
             return "drivers/chromedriver_linux";
         }
