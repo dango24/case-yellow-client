@@ -48,11 +48,18 @@
             <version>3.8.1</version>
         </dependency>
 
+        <!--&lt;!&ndash;Selenium&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.seleniumhq.selenium</groupId>-->
+            <!--<artifactId>selenium-java</artifactId>-->
+            <!--<version>2.53.0</version>-->
+        <!--</dependency>-->
+
         <!--Selenium-->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.53.0</version>
+            <version>3.9.1</version>
         </dependency>
 
         <!--Retrofit2-->
@@ -60,6 +67,13 @@
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
             <version>2.3.0</version>
+        </dependency>
+
+        <!--Google Guava-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
         </dependency>
 
         <!--Apache Commons IO-->
