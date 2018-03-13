@@ -35,6 +35,8 @@ import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.E
 import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.START;
 import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.UNREADY;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sun.jna.Platform.isLinux;
+import static com.sun.jna.Platform.isWindows;
 import static java.lang.Math.toIntExact;
 import static java.util.Objects.nonNull;
 
@@ -80,8 +82,13 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     private void initWebDriver() throws IOException {
-        String chromeDriver = getTempFileFromResources("drivers/chromedriver.exe").getAbsolutePath();
+        String driverPath = getDriverPath();
+        String chromeDriver = getTempFileFromResources(driverPath).getAbsolutePath();
         System.setProperty("webdriver.chrome.driver", chromeDriver);
+
+        if (isLinux()) {
+            systemService.runCommand("chmod +x " + chromeDriver);
+        }
 
         this.webDriver = new ChromeDriver(generateChromeOptions());
     }
@@ -430,4 +437,11 @@ public class BrowserServiceImpl implements BrowserService {
         return htmlPayload;
     }
 
+    public String getDriverPath() {
+        if (isWindows()) {
+            return "drivers/chromedriver";
+        } else {
+            return "drivers/chromedriver_linux";
+        }
+    }
 }

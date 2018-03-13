@@ -12,7 +12,7 @@ wait-for-test-to-finish-in-sec : 110
 wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2
 wait-For-Finish-identifier : 10000
-chromeDriverExecutorPath : drivers/chromedriver.exe
+chromeDriverExecutorPath : drivers/chromedriver_linux.exe
 sleep_interval_in_seconds: 10
 client.version: 4.1.4
 
