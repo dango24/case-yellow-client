@@ -83,7 +83,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     private void initWebDriver() throws IOException {
         String driverPath = getDriverPath();
-        String chromeDriver = getFileFromResources(driverPath).getAbsolutePath();
+        String chromeDriver = getDriverFromResources(driverPath).getAbsolutePath();
         System.setProperty("webdriver.chrome.driver", chromeDriver);
 
         if (isLinux()) {
@@ -103,7 +103,7 @@ public class BrowserServiceImpl implements BrowserService {
         prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
 
         if (isLinux()) {
-            options.addArguments("--ppapi-flash-path=" + getFileFromResources("drivers/libpepflashplayer.so"));
+            options.addArguments("--ppapi-flash-path=" + getDriverFromResources("libpepflashplayer.so"));
         }
 
         options.addArguments("--allow-outdated-plugins");
@@ -445,9 +445,9 @@ public class BrowserServiceImpl implements BrowserService {
 
     public String getDriverPath() {
         if (isWindows()) {
-            return "drivers/chromedriver.exe";
+            return "chromedriver.exe";
         } else {
-            return "drivers/chromedriver_linux";
+            return "chromedriver_linux";
         }
     }
 }

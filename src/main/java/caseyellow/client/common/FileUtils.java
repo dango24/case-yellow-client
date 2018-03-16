@@ -21,27 +21,32 @@ import static caseyellow.client.common.Utils.generateUniqueID;
 public class FileUtils {
 
     private static String tmpDirPath;
+    private static String driversDirPath;
 
     static {
-        try {
-            tmpDirPath = createRootTmpDir();
-        } catch (IOException e) {
-            String errorMessage = String.format("Failed to create case yellow tmp dir, cause: %s", e.getMessage());
-            log.error(errorMessage);
-            throw new InternalFailureException(errorMessage, e);
-        }
+        tmpDirPath = createRootTmpDir();
+        driversDirPath = new File("bin", "drivers").getAbsolutePath();
     }
 
-    private static String createRootTmpDir() throws IOException {
+    private static String createRootTmpDir() {
         File rootTmpFile = new File(System.getProperty("java.io.tmpdir"), "case-yellow-tmp-dir");
 
         if (!rootTmpFile.exists()) {
             rootTmpFile.mkdir();
         } else {
-            org.apache.commons.io.FileUtils.cleanDirectory(rootTmpFile);
+            cleanDirectory(rootTmpFile);
         }
 
         return rootTmpFile.getAbsolutePath();
+    }
+
+    private static void cleanDirectory(File file) {
+        try {
+            org.apache.commons.io.FileUtils.cleanDirectory(file);
+        } catch (IOException e) {
+            String errorMessage = String.format("Failed to clean case yellow tmp dir, cause: %s", e.getMessage());
+            log.error(errorMessage);
+        }
     }
 
     public static String takeScreenSnapshot() {
@@ -87,6 +92,10 @@ public class FileUtils {
         return tmpDir;
     }
 
+    public static File getFileFromResources(File file) throws IOException {
+        return getFileFromResources(file.getAbsolutePath());
+    }
+
     public static File getFileFromResources(String relativePath) throws IOException {
         Path path = Paths.get(relativePath);
         ClassLoader classLoader = Utils.class.getClassLoader();
@@ -94,6 +103,19 @@ public class FileUtils {
         InputStream resourceAsStream = classLoader.getResourceAsStream(relativePath);
         byte[] bytes = IOUtils.toByteArray(resourceAsStream);
         org.apache.commons.io.FileUtils.writeByteArrayToFile(file, bytes);
+
+        return file;
+    }
+
+    public static File getDriverFromResources(String path) throws IOException {
+        File file = new File(driversDirPath, path);
+
+        if (file.exists()) {
+            return file;
+        }
+
+        File tmpFile = getFileFromResources("drivers/" + path);
+        org.apache.commons.io.FileUtils.copyFileToDirectory(tmpFile, file.getParentFile());
 
         return file;
     }
