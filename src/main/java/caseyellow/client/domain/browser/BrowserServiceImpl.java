@@ -100,8 +100,19 @@ public class BrowserServiceImpl implements BrowserService {
         logPath = new File(Utils.createTmpDir(), "log_net").getAbsolutePath();
 
         String log_flag = "--log-net-log=" + logPath;
+        prefs.put("profile.default_content_setting_values.plugins", 1);
+        prefs.put("profile.content_settings.plugin_whitelist.adobe-flash-player", 1);
         prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
+        // Enable Flash for this site
+        prefs.put("PluginsAllowedForUrls", "https://*");
 
+        ClassLoader classLoader = getClass().getClassLoader();
+        File flashPath = new File(classLoader.getResource("libpepflashplayer.so").getFile());
+
+        options.addArguments("--ppapi-flash-path=" + flashPath);
+
+
+        options.setExperimentalOption("prefs", prefs);
         options.addArguments(log_flag);
         options.addArguments("disable-infobars");
         options.setExperimentalOption("prefs", prefs);
