@@ -1,6 +1,5 @@
 package caseyellow.client.presentation;
 
-import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.domain.test.model.ConnectionDetails;
@@ -18,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static caseyellow.client.common.Utils.getTempFileFromResources;
+import static caseyellow.client.common.FileUtils.getTempFileFromResources;
 
 /**
  * Created by Dan on 7/7/2017.

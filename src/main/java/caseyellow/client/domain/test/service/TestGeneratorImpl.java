@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -44,6 +45,11 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         this.responsiveService = responsiveService;
         this.toProduceTests = new AtomicBoolean(false);
         this.executorTestService = Executors.newSingleThreadExecutor();
+    }
+
+    @PostConstruct
+    private void init() {
+        logger.info(String.format("Run client version %s", clientVersion));
     }
 
     public void setMainFrame(MainFrame mainFrame) {

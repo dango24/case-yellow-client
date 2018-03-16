@@ -1,6 +1,5 @@
 package caseyellow.client.domain.browser;
 
-import caseyellow.client.common.Utils;
 import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
@@ -30,6 +29,7 @@ import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static caseyellow.client.common.FileUtils.*;
 import static caseyellow.client.common.Utils.*;
 import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.END;
 import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.START;
@@ -93,25 +93,20 @@ public class BrowserServiceImpl implements BrowserService {
         this.webDriver = new ChromeDriver(generateChromeOptions());
     }
 
-    private ChromeOptions generateChromeOptions() {
+    private ChromeOptions generateChromeOptions() throws IOException {
         Map<String, Object> prefs = new HashMap<>();
         ChromeOptions options = new ChromeOptions();
 
-        logPath = new File(Utils.createTmpDir(), "log_net").getAbsolutePath();
+        logPath = new File(createTmpDir(), "log_net").getAbsolutePath();
 
         String log_flag = "--log-net-log=" + logPath;
-        prefs.put("profile.default_content_setting_values.plugins", 1);
-        prefs.put("profile.content_settings.plugin_whitelist.adobe-flash-player", 1);
         prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
-        // Enable Flash for this site
-        prefs.put("PluginsAllowedForUrls", "https://*");
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        File flashPath = new File(classLoader.getResource("libpepflashplayer.so").getFile());
+        if (isLinux()) {
+            options.addArguments("--ppapi-flash-path=" + getTempFileFromResources("libpepflashplayer.so"));
+        }
 
-        options.addArguments("--ppapi-flash-path=" + flashPath);
-
-
+        options.addArguments("--allow-outdated-plugins");
         options.setExperimentalOption("prefs", prefs);
         options.addArguments(log_flag);
         options.addArguments("disable-infobars");
@@ -270,7 +265,7 @@ public class BrowserServiceImpl implements BrowserService {
             do {
                 TimeUnit.MILLISECONDS.sleep(800);
                 executeRoles(roles);
-                logPayload = Utils.readFile(logPath);
+                logPayload = readFile(logPath);
 
                 if (System.currentTimeMillis() > timeout) {
                     throw new InterruptedException("Reached timeout, failed to find indicator: " + finishIdentifier + " in file: " + logPath);
