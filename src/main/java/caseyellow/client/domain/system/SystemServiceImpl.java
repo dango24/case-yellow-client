@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static caseyellow.client.common.Utils.getSnapshotMetadataFile;
+import static caseyellow.client.common.FileUtils.getSnapshotMetadataFile;
 import static java.lang.StrictMath.toIntExact;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;

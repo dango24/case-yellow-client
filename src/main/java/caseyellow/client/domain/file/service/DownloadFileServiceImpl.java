@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static caseyellow.client.common.Utils.createTmpDir;
+import static caseyellow.client.common.FileUtils.createTmpDir;
 import static java.util.Objects.nonNull;
 
 /**

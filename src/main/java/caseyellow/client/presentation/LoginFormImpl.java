@@ -6,7 +6,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import static caseyellow.client.common.Utils.getTempFileFromResources;
+import static caseyellow.client.common.FileUtils.getTempFileFromResources;
 import static java.util.stream.Collectors.joining;
 
 public class LoginFormImpl extends JFrame implements LoginForm {

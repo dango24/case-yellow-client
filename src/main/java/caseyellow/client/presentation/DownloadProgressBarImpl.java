@@ -5,7 +5,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.io.IOException;
 
-import static caseyellow.client.common.Utils.getTempFileFromResources;
+import static caseyellow.client.common.FileUtils.getTempFileFromResources;
 
 public class DownloadProgressBarImpl implements DownloadProgressBar {
 

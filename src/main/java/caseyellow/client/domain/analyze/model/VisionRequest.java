@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static caseyellow.client.common.Utils.createImageBase64Encode;
+import static caseyellow.client.common.FileUtils.createImageBase64Encode;
 
 public class VisionRequest {
 

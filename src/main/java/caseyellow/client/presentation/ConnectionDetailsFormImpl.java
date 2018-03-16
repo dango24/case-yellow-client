@@ -5,11 +5,10 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static caseyellow.client.common.Utils.getTempFileFromResources;
+import static caseyellow.client.common.FileUtils.getTempFileFromResources;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetailsForm {
