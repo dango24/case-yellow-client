@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
+import static caseyellow.client.common.FileUtils.takeScreenSnapshot;
 import static caseyellow.client.common.Utils.moveMouseToStartingPoint;
-import static caseyellow.client.common.Utils.takeScreenSnapshot;
 
 /**
  * Created by dango on 6/3/17.
