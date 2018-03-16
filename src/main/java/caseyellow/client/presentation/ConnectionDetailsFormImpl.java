@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static caseyellow.client.common.FileUtils.getTempFileFromResources;
+import static caseyellow.client.common.FileUtils.getFileFromResources;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetailsForm {
@@ -31,7 +31,7 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
 
     private void setIcon() {
         try {
-            String pathToFileOnDisk = getTempFileFromResources("icon/connection_icon.png").getAbsolutePath();
+            String pathToFileOnDisk = getFileFromResources("icon/connection_icon.png").getAbsolutePath();
             ImageIcon img = new ImageIcon(pathToFileOnDisk);
             this.setIconImage(img.getImage());
         } catch (IOException e) {

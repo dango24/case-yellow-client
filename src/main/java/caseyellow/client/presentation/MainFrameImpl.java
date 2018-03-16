@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static caseyellow.client.common.FileUtils.getTempFileFromResources;
+import static caseyellow.client.common.FileUtils.getFileFromResources;
 
 /**
  * Created by Dan on 7/7/2017.
@@ -54,7 +54,7 @@ public class MainFrameImpl implements MainFrame {
     }
 
     private void setIcon() throws IOException {
-        String pathToFileOnDisk = getTempFileFromResources("icon/main_icon.png").getAbsolutePath();
+        String pathToFileOnDisk = getFileFromResources("icon/main_icon.png").getAbsolutePath();
         ImageIcon img = new ImageIcon(pathToFileOnDisk);
         mainFrame.setIconImage(img.getImage());
     }

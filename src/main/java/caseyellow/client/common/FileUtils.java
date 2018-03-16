@@ -87,7 +87,7 @@ public class FileUtils {
         return tmpDir;
     }
 
-    public static File getTempFileFromResources(String relativePath) throws IOException {
+    public static File getFileFromResources(String relativePath) throws IOException {
         Path path = Paths.get(relativePath);
         ClassLoader classLoader = Utils.class.getClassLoader();
         File file = new File(createTmpDir(), path.getFileName().toString());
