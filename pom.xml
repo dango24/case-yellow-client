@@ -5,7 +5,7 @@
 
     <groupId>com.icarusrises</groupId>
     <artifactId>case-yellow-client</artifactId>
-    <version>4.1.6-SNAPSHOT</version>
+    <version>4.1.7-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
