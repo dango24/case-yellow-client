@@ -13,7 +13,7 @@ wait-for-start-test-button-to-appear-in-sec : 20
 wait-for-start-button : 2
 wait-For-Finish-identifier : 10000
 sleep_interval_in_seconds: 10
-client.version: 4.1.7
+client.version: 4.1.8
 
 google_vision_url : https://vision.googleapis.com/
 gateway_url : http://ec2-52-28-182-127.eu-central-1.compute.amazonaws.com:8008/
