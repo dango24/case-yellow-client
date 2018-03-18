@@ -161,16 +161,6 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
-    @Override
-    public String runCommand(String command) throws IOException {
-        Process process = Runtime.getRuntime().exec(command);
-
-        try (InputStream inputStream = process.getInputStream()) {
-
-            return IOUtils.toString(inputStream, UTF_8);
-        }
-    }
-
     private String getOperationSystem() {
         return System.getProperty("os.name").toUpperCase();
     }
