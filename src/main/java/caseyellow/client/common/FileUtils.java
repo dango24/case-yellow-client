@@ -119,4 +119,12 @@ public class FileUtils {
 
         return file;
     }
+
+    public static void makeFileExecutable(String filePath) {
+        File file = new File(filePath);
+
+        file.setReadable(true, false);
+        file.setWritable(false, true);
+        file.setExecutable(true, false);
+    }
 }

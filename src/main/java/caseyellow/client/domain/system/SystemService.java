@@ -20,5 +20,4 @@ public interface SystemService extends URLToFileService {
     void deleteDirectory(File directory);
     String convertToMD5(File file);
     void saveSnapshotHashToDisk(Test test);
-    String runCommand(String command) throws IOException;
 }

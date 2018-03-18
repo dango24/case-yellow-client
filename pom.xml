@@ -5,7 +5,7 @@
 
     <groupId>com.icarusrises</groupId>
     <artifactId>case-yellow-client</artifactId>
-    <version>4.1.7-SNAPSHOT</version>
+    <version>4.1.8-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -89,6 +89,13 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
+        </dependency>
+
+        <!--Apache Commons lang3-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.6</version>
         </dependency>
 
         <!--Spring Boot Starter Test-->

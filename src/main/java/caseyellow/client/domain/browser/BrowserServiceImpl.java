@@ -1,5 +1,6 @@
 package caseyellow.client.domain.browser;
 
+import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
@@ -10,6 +11,7 @@ import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
@@ -86,8 +88,8 @@ public class BrowserServiceImpl implements BrowserService {
         String chromeDriver = getDriverFromResources(driverPath).getAbsolutePath();
         System.setProperty("webdriver.chrome.driver", chromeDriver);
 
-        if (isLinux()) {
-            systemService.runCommand("chmod +x " + chromeDriver);
+        if (SystemUtils.IS_OS_LINUX) {
+            FileUtils.makeFileExecutable(chromeDriver);
         }
 
         this.webDriver = new ChromeDriver(generateChromeOptions());
