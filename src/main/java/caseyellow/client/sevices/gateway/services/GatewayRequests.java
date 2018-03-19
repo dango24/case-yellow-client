@@ -69,13 +69,6 @@ public interface GatewayRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
-    @POST("ocr_request")
-    Call<OcrResponse> ocrRequest(@HeaderMap Map<String, String> headers, @Body GoogleVisionRequest googleVisionRequest);
-
-    @Headers({
-            "Accept: application/json",
-            "Content-Type: application/json"
-    })
     @GET("central/connection-details")
     Call<Map<String, List<String>>> getConnectionDetails(@HeaderMap Map<String, String> headers);
 
@@ -95,4 +88,23 @@ public interface GatewayRequests {
     Call<ImageClassificationResult> classifyImage(@HeaderMap Map<String, String> headers,
                                                   @Query("identifier") String identifier,
                                                   @Body VisionRequest visionRequest);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("is-description-exist")
+    Call<DescriptionMatch> isDescriptionExist(@HeaderMap Map<String, String> headers,
+                                              @Query("identifier")String identifier,
+                                              @Query("startTest")boolean startTest,
+                                              @Body GoogleVisionRequest visionRequest);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("parse-html")
+    Call<String> retrieveResultFromHtml(@HeaderMap Map<String, String> headers,
+                                        @Query("identifier")String identifier,
+                                        @Query("htmlPayload")String htmlPayload);
 }

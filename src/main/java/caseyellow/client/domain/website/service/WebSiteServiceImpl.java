@@ -114,7 +114,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     private void clickStartTestButton(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException, AnalyzeException {
         if (speedTestWebsite.isFlashAble()) {
-            browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier(), speedTestWebsite.getSpeedTestFlashMetaData().getButtonIds(), speedTestWebsite.getSpeedTestFlashMetaData().getMaxAttempts());
+            browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier());
         } else {
             browserService.pressStartButtonById(speedTestWebsite.getSpeedTestNonFlashMetaData().getButtonId());
         }
@@ -127,8 +127,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                                            speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifier(),
                                                            speedTestWebsite.getRoles());
         } else {
-            return browserService.waitForTestToFinishByText(speedTestWebsite.getSpeedTestNonFlashMetaData().getFinishIdentifier(),
-                                                            speedTestWebsite.getSpeedTestNonFlashMetaData());
+            return browserService.waitForTestToFinishByText(speedTestWebsite.getIdentifier());
         }
     }
 

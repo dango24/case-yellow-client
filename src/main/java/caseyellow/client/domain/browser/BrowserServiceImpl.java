@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -51,12 +50,6 @@ public class BrowserServiceImpl implements BrowserService {
     private static final String GET_HTML_JS = "return document.getElementsByTagName('html')[0].innerHTML";
 
     private Logger logger = Logger.getLogger(BrowserServiceImpl.class);
-
-    @Value("${wait-for-start-test-button-to-appear-in-sec}")
-    private final int waitForStartTestButtonToAppearInSec = 20;
-
-    @Value("${wait-for-start-button}")
-    private final int waitForStartButton = 900;
 
     @Value("${wait-for-test-to-finish-in-sec}")
     private final int waitForTestToFinishInSec = 120;
@@ -163,19 +156,17 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressFlashStartTestButton(String identifier, Set<WordIdentifier> webSiteBtnIdentifiers, int maxAttempts) throws BrowserFailedException, UserInterruptException, InterruptedException, AnalyzeException {
+    public void pressFlashStartTestButton(String identifier) throws BrowserFailedException, UserInterruptException, AnalyzeException {
+        SpeedTestResult speedTestResult;
         checkBrowser();
 
         try {
-            int waitForTestToFinishInSec = getWaitForTestToFinishInSec(waitForStartButton);
-            int numOfAttempts = waitForStartTestButtonToAppearInSec / waitForTestToFinishInSec;
-
-            waitForImageAppearanceByImageClassification(identifier, true);
-            waitForImageAppearanceByImageAnalyze(webSiteBtnIdentifiers, numOfAttempts, waitForTestToFinishInSec, true, "Start button");
+            speedTestResult = waitForImageAppearanceByImageClassification(identifier, true);
+            findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true);
 
         } catch (WebDriverException e) {
             throw new UserInterruptException(e.getMessage(), e);
-        } catch (RequestFailureException | IOException e) {
+        } catch (RequestFailureException e) {
             throw new BrowserFailedException(e.getMessage(), e);
         }
     }
@@ -319,16 +310,16 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public SpeedTestResult waitForTestToFinishByText(String identifier, SpeedTestNonFlashMetaData speedTestNonFlashMetaData) throws BrowserFailedException, InterruptedException {
+    public SpeedTestResult waitForTestToFinishByText(String identifier) throws BrowserFailedException, InterruptedException {
         String result;
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
 
         do {
             checkBrowser();
-            result = textAnalyzer.retrieveResultFromHtml(getHTMLPayload(), speedTestNonFlashMetaData.getFinishTextIdentifier(), speedTestNonFlashMetaData.getFinishIdentifierKbps(), 1);
+            result = textAnalyzer.retrieveResultFromHtml(identifier, getHTMLPayload());
 
-            if (nonNull(result)) {
+            if (!result.equals("FAILED")) {
                 return new SpeedTestResult(result, takeScreenSnapshot());
             }
 
@@ -336,7 +327,7 @@ public class BrowserServiceImpl implements BrowserService {
 
         } while (++currentAttempt < numOfAttempts);
 
-        throw new BrowserFailedException("Failure to find finish test identifier : " + identifier + " with text: " + speedTestNonFlashMetaData.getFinishTextIdentifier());
+        throw new BrowserFailedException("Failure to find finish test identifier for identifier: " + identifier);
     }
 
     private By getByIdentifier(String identifier) {
@@ -370,43 +361,9 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
 
-    private int getWaitForTestToFinishInSec(int waitForStartButton) {
-        return waitForStartButton < 1000 ? 1 : (int) TimeUnit.MILLISECONDS.toSeconds(waitForStartButton);
-    }
-
-    private boolean waitForImageAppearanceByImageAnalyze(Set<WordIdentifier> textIdentifiers, int numOfAttempts , int waitForImageInSec, boolean clickImage, String findImageStatus) throws IOException, InterruptedException, BrowserFailedException, RequestFailureException {
-        int currentAttempt = 0;
-
-        do {
-            try {
-                checkBrowser();
-                TimeUnit.MILLISECONDS.sleep(waitForImageInSec);
-
-                if (foundMatchingDescription(textIdentifiers, clickImage)) {
-                    return true;
-                }
-
-            } catch (SocketTimeoutException e) {
-                logger.error("Reached socket timeout, try new attempt, " + e.getMessage(), e);
-            } catch (AnalyzeException e) {
-                logger.error("Analyze failed, try new attempt, " + e.getMessage(), e);
-            } catch (OcrParsingException e) {
-                logger.error("OCR parsing failed, try new attempt, " + e.getMessage(), e);
-            }
-
-        } while (++currentAttempt < numOfAttempts);
-
-        throw new BrowserFailedException("Failure to find " + findImageStatus + " test identifiers: " + textIdentifiers);
-    }
-
-    private boolean foundMatchingDescription(Set<WordIdentifier> textIdentifiers, boolean clickImage) throws IOException, AnalyzeException, OcrParsingException {
+    private boolean findMatchingDescription(String identifier, boolean startTest, String screenshot, boolean clickImage) throws AnalyzeException{
         Point point;
-        OcrResponse ocrResponse = imageParsingService.parseImage(takeScreenSnapshot());
-        checkNotNull(ocrResponse, "Ocr response is null");
-
-        DescriptionMatch matchDescription = textAnalyzer.isDescriptionExist(textIdentifiers, ocrResponse.getTextAnnotations());
-        checkNotNull(matchDescription, "Match Description is null");
-        checkNotNull(matchDescription.getDescriptionLocation(), "Match Description location is null");
+        DescriptionMatch matchDescription = textAnalyzer.isDescriptionExist(identifier, startTest, screenshot);
 
         if (matchDescription.foundMatchedDescription()) {
 
@@ -419,7 +376,7 @@ public class BrowserServiceImpl implements BrowserService {
             return true;
 
         } else {
-            return false;
+            throw new AnalyzeException(String.format("Failed to find description in image for identifier: %s", identifier), screenshot);
         }
     }
 

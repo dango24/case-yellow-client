@@ -1,6 +1,7 @@
 package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.analyze.model.*;
+import caseyellow.client.domain.analyze.service.TextAnalyzerService;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
@@ -8,10 +9,7 @@ import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.test.model.*;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
-import caseyellow.client.exceptions.AnalyzeException;
-import caseyellow.client.exceptions.LoginException;
-import caseyellow.client.exceptions.OcrParsingException;
-import caseyellow.client.exceptions.RequestFailureException;
+import caseyellow.client.exceptions.*;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.ErrorMessage;
 import caseyellow.client.sevices.gateway.model.LoginDetails;
@@ -39,7 +37,7 @@ import static java.util.stream.Collectors.toList;
 
 @Profile("prod")
 @Service("gatewayService")
-public class GatewayServiceImpl implements GatewayService, DataAccessService, ImageParsingService {
+public class GatewayServiceImpl implements GatewayService, DataAccessService, ImageParsingService, TextAnalyzerService {
 
     private Logger logger = Logger.getLogger(GatewayServiceImpl.class);
 
@@ -129,6 +127,29 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
+    public DescriptionMatch isDescriptionExist(String identifier, boolean startTest, String screenshot) throws AnalyzeException {
+        try {
+            GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(screenshot);
+            return requestHandler.execute(gatewayRequests.isDescriptionExist(createTokenHeader(), identifier, startTest, googleVisionRequest));
+
+        } catch (RequestFailureException | IOException e) {
+
+            throw new AnalyzeException(e.getMessage(), screenshot);
+        }
+    }
+
+    @Override
+    public String retrieveResultFromHtml(String identifier, String htmlPayload) throws BrowserFailedException {
+        try {
+            return requestHandler.execute(gatewayRequests.retrieveResultFromHtml(createTokenHeader(), identifier, htmlPayload));
+
+        } catch (RequestFailureException e) {
+
+            throw new BrowserFailedException(e.getMessage());
+        }
+    }
+
+    @Override
     public void saveTest(Test test) throws RequestFailureException {
         try {
             if (nonNull(test)) {
@@ -140,20 +161,6 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
             }
         } catch (Exception e) {
             logger.error(String.format("Failed to save test, cause: %s", e.getMessage(), e));
-        }
-    }
-
-    @Override
-    public OcrResponse parseImage(String imgPath) throws IOException, OcrParsingException {
-        try {
-            GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(imgPath);
-            return requestHandler.execute(gatewayRequests.ocrRequest(createTokenHeader(), googleVisionRequest));
-
-        } catch (RequestFailureException e) {
-            String errorMessage = String.format("OCR request failed, error code: %s, error message: %s", e.getErrorCode(), e.getMessage());
-            logger.error(errorMessage);
-
-            throw new OcrParsingException(errorMessage);
         }
     }
 

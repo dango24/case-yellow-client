@@ -1,14 +1,11 @@
 package caseyellow.client.common;
 
-import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.exceptions.InternalFailureException;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 
 /**
@@ -61,48 +58,5 @@ public class Utils {
 
     public static void moveMouseToStartingPoint() {
         moveMouseTo(0,0);
-    }
-
-    public static Point getCenter(List<caseyellow.client.domain.analyze.model.Point> vertices) {
-        int minX = Utils.getMinX(vertices);
-        int minY = Utils.getMinY(vertices);
-        int maxX = Utils.getMaxX(vertices);
-        int maxY = Utils.getMaxY(vertices);
-
-        Point center = new caseyellow.client.domain.analyze.model.Point( (minX + maxX)/2, (minY + maxY)/2);
-
-        return center;
-    }
-
-    public static int getMinX(List<Point> vertices) {
-        return getMin(caseyellow.client.domain.analyze.model.Point::getX, vertices);
-    }
-
-    public static int getMinY(List<Point> vertices) {
-        return getMin(caseyellow.client.domain.analyze.model.Point::getY, vertices);
-    }
-
-    public static int getMaxX(List<Point> vertices) {
-        return getMax(caseyellow.client.domain.analyze.model.Point::getX, vertices);
-    }
-
-    public static int getMaxY(List<Point> vertices) {
-        return getMax(caseyellow.client.domain.analyze.model.Point::getY, vertices);
-    }
-
-    private static int getMin(ToIntFunction<? super Point> intMinFunction, List<Point> points) {
-
-        return points.stream()
-                     .mapToInt(intMinFunction)
-                     .min()
-                     .orElseThrow(() -> new InternalFailureException("There is no min point in points: " + points));
-    }
-
-    private static int getMax(ToIntFunction<? super Point> intMaxFunction, List<Point> points) {
-
-        return points.stream()
-                     .mapToInt(intMaxFunction)
-                     .max()
-                     .orElseThrow(() -> new InternalFailureException("There is no max point in points: " + points));
     }
 }
