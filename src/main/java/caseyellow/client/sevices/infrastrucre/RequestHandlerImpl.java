@@ -11,6 +11,7 @@ import retrofit2.Response;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -46,7 +47,7 @@ public class RequestHandlerImpl implements RequestHandler {
                 throw new RequestFailureException(response.errorBody().string(), response.code());
             }
 
-        } catch (ConnectException e) {
+        } catch (ConnectException | SocketTimeoutException e) {
             String errorMessage = String.format("Failed to produce connect to server, error: %s", e.getMessage());
             logger.error(errorMessage, e);
             throw new ConnectionException(errorMessage, e);

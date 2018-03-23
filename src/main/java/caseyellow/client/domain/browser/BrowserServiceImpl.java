@@ -7,7 +7,6 @@ import caseyellow.client.domain.analyze.service.TextAnalyzerService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.Command;
 import caseyellow.client.domain.website.model.Role;
-import caseyellow.client.domain.website.model.SpeedTestNonFlashMetaData;
 import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
@@ -99,6 +98,8 @@ public class BrowserServiceImpl implements BrowserService {
 
         if (isLinux()) {
             options.addArguments("--ppapi-flash-path=" + getDriverFromResources("libpepflashplayer.so"));
+        } else {
+            options.addArguments("--ppapi-flash-path=" + getDriverFromResources("pepflashplayer.dll"));
         }
 
         options.addArguments("--allow-outdated-plugins");
@@ -311,7 +312,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public SpeedTestResult waitForTestToFinishByText(String identifier) throws BrowserFailedException, InterruptedException {
-        String result;
+        HTMLParserResult result;
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
 
@@ -319,8 +320,8 @@ public class BrowserServiceImpl implements BrowserService {
             checkBrowser();
             result = textAnalyzer.retrieveResultFromHtml(identifier, getHTMLPayload());
 
-            if (!result.equals("FAILED")) {
-                return new SpeedTestResult(result, takeScreenSnapshot());
+            if (result.isSucceed()) {
+                return new SpeedTestResult(result.getResult(), takeScreenSnapshot());
             }
 
             TimeUnit.MILLISECONDS.sleep(waitForFinishIdentifier);

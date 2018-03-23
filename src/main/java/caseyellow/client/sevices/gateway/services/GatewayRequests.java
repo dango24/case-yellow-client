@@ -7,6 +7,7 @@ import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
+import caseyellow.client.sevices.gateway.model.HTMLPayload;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -104,7 +105,7 @@ public interface GatewayRequests {
             "Content-Type: application/json"
     })
     @POST("parse-html")
-    Call<String> retrieveResultFromHtml(@HeaderMap Map<String, String> headers,
-                                        @Query("identifier")String identifier,
-                                        @Query("htmlPayload")String htmlPayload);
+    Call<HTMLParserResult> retrieveResultFromHtml(@HeaderMap Map<String, String> headers,
+                                                  @Query("identifier")String identifier,
+                                                  @Body HTMLPayload htmlPayload);
 }

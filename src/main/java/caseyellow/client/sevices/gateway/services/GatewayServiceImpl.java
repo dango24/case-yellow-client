@@ -10,10 +10,7 @@ import caseyellow.client.domain.test.model.*;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.*;
-import caseyellow.client.sevices.gateway.model.AccountCredentials;
-import caseyellow.client.sevices.gateway.model.ErrorMessage;
-import caseyellow.client.sevices.gateway.model.LoginDetails;
-import caseyellow.client.sevices.gateway.model.PreSignedUrl;
+import caseyellow.client.sevices.gateway.model.*;
 import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -139,9 +136,9 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
-    public String retrieveResultFromHtml(String identifier, String htmlPayload) throws BrowserFailedException {
+    public HTMLParserResult retrieveResultFromHtml(String identifier, String htmlPayload) throws BrowserFailedException {
         try {
-            return requestHandler.execute(gatewayRequests.retrieveResultFromHtml(createTokenHeader(), identifier, htmlPayload));
+            return requestHandler.execute(gatewayRequests.retrieveResultFromHtml(createTokenHeader(), identifier, new HTMLPayload(htmlPayload)));
 
         } catch (RequestFailureException e) {
 
@@ -274,8 +271,10 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     private void uploadObject(HttpURLConnection connection, File fileToUpload) {
         int responseCode;
 
-        try (DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream())) {
-            dataStream.write(IOUtils.toByteArray(new FileInputStream(fileToUpload)));
+        try (DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream());
+             InputStream inputStream = new FileInputStream(fileToUpload)) {
+
+            dataStream.write(IOUtils.toByteArray(inputStream));
             responseCode = connection.getResponseCode(); // Invoke request
 
             if (isRequestSuccessful(responseCode)) {

@@ -1,19 +1,14 @@
-# App properties
 spring.main.web-environment: false
-
-# Profiles: prod, integration, dev
 spring.profiles.active: prod
 
 successful_tests_dir: successful-tests/
 failed_tests_dir: failed-tests/
 
-numOfComparisonPerTest : 3
 wait-for-test-to-finish-in-sec : 110
 wait-For-Finish-identifier : 10000
 sleep_interval_in_seconds: 10
 client.version: 5.0.0
 
-google_vision_url : https://vision.googleapis.com/
 gateway_url : http://ec2-52-28-182-127.eu-central-1.compute.amazonaws.com:8008/
 #gateway_url : http://localhost:8008/
 
