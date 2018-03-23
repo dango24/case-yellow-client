@@ -5,7 +5,6 @@ import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.AnalyzeException;
 import caseyellow.client.exceptions.BrowserFailedException;
 import caseyellow.client.exceptions.UserInterruptException;
-
 import java.io.IOException;
 import java.util.List;
 
