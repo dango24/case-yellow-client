@@ -1,5 +1,6 @@
 package caseyellow.client.sevices.gateway.model;
 
+import caseyellow.client.domain.analyze.model.GoogleVisionRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HTMLPayload {
+public class HTMLParserRequest {
 
     private String payload;
+    private GoogleVisionRequest googleVisionRequest;
 }

@@ -17,7 +17,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.FileUtils.takeScreenSnapshot;
 import static caseyellow.client.common.Utils.moveMouseToStartingPoint;
@@ -27,8 +26,6 @@ import static caseyellow.client.common.Utils.moveMouseToStartingPoint;
  */
 @Service
 public class WebSiteServiceImpl implements WebSiteService, Closeable {
-
-    public static final int DELAY_TIME_BEFORE_SNAPSHOT = 1200;
 
     private Logger logger = Logger.getLogger(WebSiteServiceImpl.class);
 
@@ -48,7 +45,6 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     @Override
     public SpeedTestWebSite produceSpeedTestWebSite(final SpeedTestMetaData speedTestWebsite) throws UserInterruptException, ConnectionException {
         SpeedTestResult result;
-        String websiteSnapshot;
         long startMeasuringTimestamp;
 
         try {
@@ -66,8 +62,6 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             moveMouseToStartingPoint();
             startMeasuringTimestamp = System.currentTimeMillis();
             result = waitForTestToFinish(speedTestWebsite);
-            TimeUnit.MILLISECONDS.sleep(DELAY_TIME_BEFORE_SNAPSHOT);
-            websiteSnapshot = takeScreenSnapshot();
 
             return new SpeedTestWebSite.SpeedTestWebSiteDownloadInfoBuilder(speedTestWebsite.getIdentifier())
                                        .setSucceed()
@@ -75,16 +69,16 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .setWebSiteDownloadInfoSnapshot(result.getSnapshot())
                                        .setURL(speedTestWebsite.getWebSiteUrl())
                                        .setNonFlashResult(result.getResult())
-                                       .setMD5(systemService.convertToMD5(new File(websiteSnapshot)))
+                                       .setMD5(systemService.convertToMD5(new File(result.getSnapshot())))
                                        .build();
 
-        } catch (BrowserFailedException e) {
+        } catch (BrowserFailedException | WebDriverException e) {
             return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, takeScreenSnapshot(), e);
 
         } catch (AnalyzeException e) {
             return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, e.getSnapshot(), e);
 
-        } catch (WebDriverException | InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.error(String.format("InterruptedException, Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
             throw new UserInterruptException(e.getMessage(), e);
 
@@ -127,7 +121,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                                            speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifier(),
                                                            speedTestWebsite.getRoles());
         } else {
-            return browserService.waitForTestToFinishByText(speedTestWebsite.getIdentifier());
+            return browserService.waitForTestToFinishByText(speedTestWebsite.getIdentifier(), speedTestWebsite.getRoles());
         }
     }
 

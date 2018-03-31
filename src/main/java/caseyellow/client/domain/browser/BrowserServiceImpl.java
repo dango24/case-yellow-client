@@ -98,8 +98,6 @@ public class BrowserServiceImpl implements BrowserService {
 
         if (isLinux()) {
             options.addArguments("--ppapi-flash-path=" + getDriverFromResources("libpepflashplayer.so"));
-        } else {
-            options.addArguments("--ppapi-flash-path=" + getDriverFromResources("pepflashplayer.dll"));
         }
 
         options.addArguments("--allow-outdated-plugins");
@@ -295,7 +293,7 @@ public class BrowserServiceImpl implements BrowserService {
                 }
 
             } catch (NoSuchElementException e) {
-                logger.info("Not Found the requested element");
+               // logger.info("Not Found the requested element");
             }
         }
     }
@@ -311,17 +309,20 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public SpeedTestResult waitForTestToFinishByText(String identifier) throws BrowserFailedException, InterruptedException {
+    public SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws BrowserFailedException, InterruptedException {
+        String screenshot;
         HTMLParserResult result;
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
 
         do {
             checkBrowser();
-            result = textAnalyzer.retrieveResultFromHtml(identifier, getHTMLPayload());
+            executeRoles(roles);
+            screenshot = takeScreenSnapshot();
+            result = textAnalyzer.retrieveResultFromHtml(identifier, getHTMLPayload(), screenshot);
 
             if (result.isSucceed()) {
-                return new SpeedTestResult(result.getResult(), takeScreenSnapshot());
+                return new SpeedTestResult(result.getResult(), screenshot);
             }
 
             TimeUnit.MILLISECONDS.sleep(waitForFinishIdentifier);
@@ -387,13 +388,14 @@ public class BrowserServiceImpl implements BrowserService {
 
         if (centralized > 0) {
             scrollDown(toIntExact(centralized));
-            TimeUnit.MILLISECONDS.sleep(1300);
+            TimeUnit.MILLISECONDS.sleep(800);
         }
     }
 
     private void scrollDown(int scrollDownPixel) {
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
-        jse.executeScript("window.scrollBy(0," + scrollDownPixel + ")", "");
+        String scrollDownCommand = String.format("window.scrollBy(0,%s)", String.valueOf(scrollDownPixel));
+        jse.executeScript(scrollDownCommand, "");
     }
 
     private String getHTMLPayload() {

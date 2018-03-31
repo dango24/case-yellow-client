@@ -18,5 +18,5 @@ public interface BrowserService {
     void pressFlashStartTestButton(String identifier) throws BrowserFailedException, UserInterruptException, AnalyzeException;
     void pressStartButtonById(String btnId) throws BrowserFailedException;
     SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles) throws BrowserFailedException, UserInterruptException, InterruptedException, AnalyzeException;
-    SpeedTestResult waitForTestToFinishByText(String identifier) throws BrowserFailedException, InterruptedException;
+    SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws BrowserFailedException, InterruptedException;
 }

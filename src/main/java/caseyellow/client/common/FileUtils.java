@@ -57,6 +57,7 @@ public class FileUtils {
             ImageIO.write(capture, "png", screenshotFile);
 
             return screenshotFile.getAbsolutePath();
+
         } catch (Exception e) {
             throw new InternalFailureException(e.getMessage(), e);
         }
