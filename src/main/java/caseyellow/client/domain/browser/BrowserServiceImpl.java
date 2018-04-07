@@ -97,7 +97,7 @@ public class BrowserServiceImpl implements BrowserService {
         prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
 
         if (isLinux()) {
-            options.addArguments("--ppapi-flash-path=" + getDriverFromResources("libpepflashplayer.so"));
+            options.addArguments("--ppapi-flash-path=" + getDriverFromResources("flash_29.0.0.113.so"));
         }
 
         options.addArguments("--allow-outdated-plugins");
