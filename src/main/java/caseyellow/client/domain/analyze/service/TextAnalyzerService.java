@@ -7,5 +7,5 @@ import caseyellow.client.exceptions.BrowserFailedException;
 
 public interface TextAnalyzerService {
     DescriptionMatch isDescriptionExist(String identifier, boolean startTest, String screenshot) throws AnalyzeException;
-    HTMLParserResult retrieveResultFromHtml(String identifier, String htmlPayload, String screenshot) throws BrowserFailedException;
+    HTMLParserResult parseHtml(String identifier, String htmlPayload, String screenshot) throws BrowserFailedException;
 }

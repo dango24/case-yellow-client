@@ -50,6 +50,7 @@ public class DownloadProgressBarImpl implements DownloadProgressBar {
     @Override
     public void stopDownloading() {
         frame.setVisible(false);
+        progressBar.setValue(0);
     }
 
     @Override

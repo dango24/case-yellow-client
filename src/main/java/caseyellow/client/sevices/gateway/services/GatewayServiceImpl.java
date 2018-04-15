@@ -136,7 +136,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
-    public HTMLParserResult retrieveResultFromHtml(String identifier, String htmlPayload, String screenshot) throws BrowserFailedException {
+    public HTMLParserResult parseHtml(String identifier, String htmlPayload, String screenshot) throws BrowserFailedException {
         try {
             GoogleVisionRequest googleVisionRequest = new GoogleVisionRequest(screenshot);
             return requestHandler.execute(gatewayRequests.retrieveResultFromHtml(createTokenHeader(), identifier, new HTMLParserRequest(htmlPayload, googleVisionRequest)));

@@ -286,9 +286,9 @@ public class BrowserServiceImpl implements BrowserService {
             try {
                 WebElement webElement = webDriver.findElement(by);
                 executeCommand(webElement, role.getCommand());
+                logger.info("Role: " + role + " has executed");
 
                 if (role.isMono()) {
-                    logger.info("Role: " + role + " has executed");
                     role.done();
                 }
 
@@ -319,7 +319,7 @@ public class BrowserServiceImpl implements BrowserService {
             checkBrowser();
             executeRoles(roles);
             screenshot = takeScreenSnapshot();
-            result = textAnalyzer.retrieveResultFromHtml(identifier, getHTMLPayload(), screenshot);
+            result = textAnalyzer.parseHtml(identifier, getHTMLPayload(), screenshot);
 
             if (result.isSucceed()) {
                 return new SpeedTestResult(result.getResult(), screenshot);
