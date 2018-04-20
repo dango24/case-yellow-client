@@ -64,7 +64,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
         } catch (Exception e) {
             logger.error("Produce tests failed" + e.getMessage(), e);
-            handleConnectionError();
+            sleep(30);
         }
     }
 
@@ -124,16 +124,11 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     }
 
     private void handleLostConnection()  {
-        try {
-            logger.info("Lost connection, wait for 35 seconds before new attempt to produce new test");
-            stopProducingTests();
-            mainFrame.showMessage("Lost connection, wait for 35 seconds before new attempt to produce new test");
-            TimeUnit.SECONDS.sleep(35);
-            startProducingTests();
-
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-        }
+        logger.info("Lost connection, wait for 35 seconds before new attempt to produce new test");
+        stopProducingTests();
+        mainFrame.showMessage("Lost connection, wait for 35 seconds before new attempt to produce new test");
+        sleep(35);
+        startProducingTests();
     }
 
     @Override
@@ -154,6 +149,15 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
         } catch (Exception e) {
             logger.error("Error occurred while user cancel request, " + e.getMessage(), e);
+        }
+    }
+
+    private void sleep(long timeoutInSec) {
+        try {
+            mainFrame.showMessage(String.format("Sleep for %s seconds", timeoutInSec));
+            TimeUnit.SECONDS.sleep(timeoutInSec);
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
         }
     }
 }

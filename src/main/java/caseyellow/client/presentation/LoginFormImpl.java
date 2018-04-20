@@ -1,6 +1,8 @@
 package caseyellow.client.presentation;
 
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -89,7 +91,8 @@ public class LoginFormImpl extends JFrame implements LoginForm {
             mainFrame.login(userName, password);
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Failed to login, " + e.getMessage());
+            String errorMessage = StringUtils.isNotEmpty(e.getMessage()) ? ", " + e.getMessage() : "";
+            JOptionPane.showMessageDialog(null, "Failed to login" + errorMessage);
         }
     }
 
