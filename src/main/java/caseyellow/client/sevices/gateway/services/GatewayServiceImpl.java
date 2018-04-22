@@ -151,10 +151,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     public void saveTest(Test test) throws RequestFailureException {
         try {
             if (nonNull(test)) {
-                uploadSnapshotImages(test);
+                generateSnapshotPath(test);
                 systemService.saveSnapshotHashToDisk(test);
                 test.setClientVersion(clientVersion);
                 requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
+                uploadSnapshotImages(test);
                 logger.info(String.format("Save test succeed: %s", test));
             }
         } catch (Exception e) {
@@ -219,15 +220,22 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
                                     .build();
     }
 
-    private void uploadSnapshotImages(Test test) {
-        List<SpeedTestWebSite> speedTestWebSites =
-            test.getComparisonInfoTests()
-                .stream()
-                .map(ComparisonInfo::getSpeedTestWebSite)
-                .collect(toList());
-
+    private void generateSnapshotPath(Test test) {
+        List<SpeedTestWebSite> speedTestWebSites = getSpeedTestWebSiteFromTest(test);
         speedTestWebSites.forEach(speedTest -> speedTest.setPath(generateSuccessfulKey(test.getSystemInfo().getPublicIP(), speedTest)));
+    }
+
+    private void uploadSnapshotImages(Test test) {
+        List<SpeedTestWebSite> speedTestWebSites = getSpeedTestWebSiteFromTest(test);
         speedTestWebSites.forEach(speedTest -> uploadObject(generatePreSignedUrl(successfulTestsDir + speedTest.getPath()).getPreSignedUrl(), speedTest.getWebSiteDownloadInfoSnapshot()));
+    }
+
+    private List<SpeedTestWebSite> getSpeedTestWebSiteFromTest(Test test) {
+
+        return test.getComparisonInfoTests()
+                   .stream()
+                   .map(ComparisonInfo::getSpeedTestWebSite)
+                   .collect(toList());
     }
 
     private String generateSuccessfulKey(String ip, SpeedTestWebSite speedTest) {
