@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.stream.Stream;
 
@@ -34,7 +36,7 @@ public class LoginFormImpl extends JFrame implements LoginForm {
 
 
     private void init() {
-        this.setSize(300, 170);
+        this.setSize(300, 190);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
@@ -73,7 +75,28 @@ public class LoginFormImpl extends JFrame implements LoginForm {
         cancelButton.setBounds(180, 80, 80, 25);
         panel.add(cancelButton);
 
+//        addSignInLink(panel);
+
         this.getRootPane().setDefaultButton(loginButton);
+    }
+
+    private void addSignInLink(JPanel panel) {
+        final String strURL = "http://www.yahoo.com";
+        final JLabel label = new JLabel("<html><a href=\" " + strURL + "\">sign in</a></html>");
+        label.setBounds(30, 110, 40, 25);
+        panel.add(label);
+
+        label.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent me) {
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+            public void mouseExited(MouseEvent me) {
+                label.setCursor(Cursor.getDefaultCursor());
+            }
+            public void mouseClicked(MouseEvent me) {
+                JOptionPane.showMessageDialog(null, "Here come the heroes");
+            }
+        });
     }
 
     private void loginCommand() {
