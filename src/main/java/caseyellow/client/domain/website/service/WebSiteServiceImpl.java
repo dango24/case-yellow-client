@@ -110,7 +110,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         if (speedTestWebsite.isFlashAble()) {
             browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier());
         } else {
-            browserService.pressStartButtonById(speedTestWebsite.getSpeedTestNonFlashMetaData().getButtonId());
+            browserService.pressStartButtonById(speedTestWebsite.getIdentifier(), speedTestWebsite.getSpeedTestNonFlashMetaData().getButtonId());
         }
     }
 

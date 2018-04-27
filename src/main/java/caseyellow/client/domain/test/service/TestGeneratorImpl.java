@@ -9,6 +9,7 @@ import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.presentation.MainFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
+import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -62,19 +63,24 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
             Thread.currentThread().setName("Test-Producer");
             produceTests();
 
+        } catch (WebDriverException e) {
+            logger.warn(String.format("Web driver error accrued %s", e.getMessage()), e);
+            stopProducingTests();
         } catch (Exception e) {
-            logger.error("Produce tests failed" + e.getMessage(), e);
+            logger.error(String.format("Produce tests failed: %s", e.getMessage()), e);
             sleep(30);
         }
     }
 
     private void produceTests() {
         Test test;
+        String correlationId;
 
         while (toProduceTests.get()) {
 
             try {
-                MDC.put("correlation-id", clientVersion);
+                correlationId = String.format("%s-%s", dataAccessService.getUser(), clientVersion);
+                MDC.put("correlation-id", correlationId);
 
                 long startTest = System.currentTimeMillis();
                 test = testService.generateNewTest();

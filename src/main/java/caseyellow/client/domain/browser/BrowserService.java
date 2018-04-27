@@ -16,7 +16,7 @@ public interface BrowserService {
     void closeBrowser();
     void centralizedWebPage(int centralized) throws InterruptedException, BrowserFailedException;
     void pressFlashStartTestButton(String identifier) throws BrowserFailedException, UserInterruptException, AnalyzeException;
-    void pressStartButtonById(String btnId) throws BrowserFailedException;
+    void pressStartButtonById(String identifier, String btnId) throws BrowserFailedException;
     SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles) throws BrowserFailedException, UserInterruptException, InterruptedException, AnalyzeException;
-    SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws BrowserFailedException, InterruptedException;
+    SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws AnalyzeException, BrowserFailedException, InterruptedException;
 }

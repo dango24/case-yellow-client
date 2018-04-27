@@ -113,6 +113,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
+    public String getUser() {
+        return user;
+    }
+
+    @Override
     public Map<String, List<String>> getConnectionDetails() {
         return requestHandler.execute(gatewayRequests.getConnectionDetails(createTokenHeader()));
     }
