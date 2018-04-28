@@ -160,7 +160,7 @@ public class BrowserServiceImpl implements BrowserService {
         findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true);
     }
     
-    private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, boolean isStartState) throws AnalyzeException {
+    private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, boolean isStartState) throws AnalyzeException, ConnectionException {
         String md5 = null;
         String screenshot = null;
         VisionRequest visionRequest;
@@ -198,6 +198,9 @@ public class BrowserServiceImpl implements BrowserService {
             }
 
             throw new AnalyzeException(String.format("Failed to classify image after reaching timeout for identifier: %s, md5 : %s", identifier, md5));
+
+        } catch (ConnectionException e) {
+            throw e;
 
         } catch (Exception e) {
             logger.error(String.format("Failed to analyze image classification status: %s", e.getMessage()), e);

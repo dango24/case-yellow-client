@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -93,7 +94,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
             } catch (ConnectionException e) {
                 logger.error("Connection with host failed, " + e.getMessage(), e);
-                handleConnectionError();
+                handleLostConnection();
 
             } catch (UserInterruptException e) {
                 logger.error("Stop to produce test, user interrupt action" + e.getMessage(), e);
@@ -116,6 +117,10 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
             case TOKEN_EXPIRED_CODE:
                 mainFrame.disableApp(true);
                 break;
+
+            default:
+                handleLostConnection();
+                break;
         }
     }
 
@@ -124,17 +129,15 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                          .thenAccept(dataAccessService::saveTest);
     }
 
-    private void handleConnectionError() {
-        toProduceTests.set(false);
-        CompletableFuture.runAsync(() -> handleLostConnection());
-    }
-
-    private void handleLostConnection()  {
-        logger.info("Lost connection, wait for 35 seconds before new attempt to produce new test");
-        stopProducingTests();
-        mainFrame.showMessage("Lost connection, wait for 35 seconds before new attempt to produce new test");
-        sleep(35);
-        startProducingTests();
+    private void handleLostConnection() {
+        String errorMessage = "Lost connection, wait for 35 seconds before new attempt to produce new test";
+        logger.warn(errorMessage);
+        try {
+            testService.stop();
+        } catch (WebDriverException | IOException e) {
+            logger.warn(String.format("Stop web driver while lost connection, ", e.getMessage()), e);
+        }
+        sleep(35, errorMessage);
     }
 
     @Override
@@ -159,8 +162,12 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     }
 
     private void sleep(long timeoutInSec) {
+        sleep(timeoutInSec, String.format("Sleep for %s seconds", timeoutInSec));
+    }
+
+    private void sleep(long timeoutInSec, String message) {
         try {
-            mainFrame.showMessage(String.format("Sleep for %s seconds", timeoutInSec));
+            mainFrame.showMessage(message);
             TimeUnit.SECONDS.sleep(timeoutInSec);
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
