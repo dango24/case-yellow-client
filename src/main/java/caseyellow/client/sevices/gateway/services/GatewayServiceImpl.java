@@ -205,22 +205,21 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
         PreSignedUrl preSignedUrl = generatePreSignedUrl(generateFailureKey(failedSpeedTestWebSite));
         uploadObject(preSignedUrl.getPreSignedUrl(), failedSpeedTestWebSite.getWebSiteDownloadInfoSnapshot());
 
-        String message = "Identifier: " + failedSpeedTestWebSite.getSpeedTestIdentifier() + ", cause: " + failedSpeedTestWebSite.getMessage();
-
         return new FailedTestDetails.FailedTestDetailsBuilder()
                                     .addIp(clientIP)
-                                    .addErrorMessage(message)
+                                    .addIdentifier(failedSpeedTestWebSite.getSpeedTestIdentifier())
+                                    .addErrorMessage(failedSpeedTestWebSite.getMessage())
                                     .addPath(preSignedUrl.getKey().replace(failedTestsDir, ""))
                                     .build();
     }
 
     private FailedTestDetails createFailedTestFromFileDownloadInfo(FileDownloadInfo failedFileDownloadInfo, String clientIP) {
         logger.error("Receive failed test: " + failedFileDownloadInfo);
-        String message = "Identifier: " + failedFileDownloadInfo.getFileName() + ", cause: " + failedFileDownloadInfo.getMessage();
 
         return new FailedTestDetails.FailedTestDetailsBuilder()
                                     .addIp(clientIP)
-                                    .addErrorMessage(message)
+                                    .addIdentifier(failedFileDownloadInfo.getFileName())
+                                    .addErrorMessage(failedFileDownloadInfo.getMessage())
                                     .addPath(failedFileDownloadInfo.getFileURL())
                                     .build();
     }

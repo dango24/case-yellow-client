@@ -13,10 +13,12 @@ public class FailedTestDetails {
 
     private String ip;
     private String path;
+    private String identifier;
     private String errorMessage;
     private String clientVersion;
 
-    private FailedTestDetails(String ip, String path, String errorMessage) {
+    private FailedTestDetails(String identifier, String ip, String path, String errorMessage) {
+        this.identifier = identifier;
         this.path = path;
         this.errorMessage = errorMessage;
         this.ip = ip;
@@ -27,6 +29,7 @@ public class FailedTestDetails {
         private String ip;
         private String path;
         private String errorMessage;
+        private String speedTestIdentifier;
 
         public FailedTestDetailsBuilder() {
         }
@@ -46,8 +49,13 @@ public class FailedTestDetails {
             return this;
         }
 
+        public FailedTestDetailsBuilder addIdentifier(String speedTestIdentifier) {
+            this.speedTestIdentifier = speedTestIdentifier;
+            return this;
+        }
+
         public FailedTestDetails build() {
-            return new FailedTestDetails(ip, path, errorMessage);
+            return new FailedTestDetails(speedTestIdentifier, ip, path, errorMessage);
         }
     }
 }
