@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.Map;
@@ -51,6 +52,9 @@ public class RequestHandlerImpl implements RequestHandler {
             String errorMessage = String.format("Failed to produce connect to server, error: %s", e.getMessage());
             logger.error(errorMessage, e);
             throw new ConnectionException(errorMessage, e);
+
+        } catch (InterruptedIOException e) {
+            throw new UserInterruptException(e.getMessage(), e);
 
         } catch (IOException e) {
             if (e.getMessage().equals("Canceled")) {

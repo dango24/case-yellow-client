@@ -45,7 +45,7 @@ public class MainFrameImpl implements MainFrame {
     private GatewayService gatewayService;
 
     public MainFrameImpl() throws IOException {
-        mainFrame = new JFrame("Speed Test Detective");
+        mainFrame = new JFrame("Servile");
         currentTest = 0;
         downloadProgressBar = new DownloadProgressBarImpl();
         setIcon();
