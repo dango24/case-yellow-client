@@ -82,7 +82,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             logger.error(String.format("InterruptedException, Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
             throw new UserInterruptException(e.getMessage(), e);
 
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | ConnectionException e) {
             logger.error(String.format("Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
             throw new ConnectionException(e.getMessage(), e);
 
@@ -110,7 +110,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         if (speedTestWebsite.isFlashAble()) {
             browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier());
         } else {
-            browserService.pressStartButtonById(speedTestWebsite.getSpeedTestNonFlashMetaData().getButtonId());
+            browserService.pressStartButtonById(speedTestWebsite.getIdentifier(), speedTestWebsite.getSpeedTestNonFlashMetaData().getButtonId());
         }
     }
 

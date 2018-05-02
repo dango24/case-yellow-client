@@ -18,6 +18,7 @@ public class Test {
 
     private String testID;
     private String clientVersion;
+    private String isp;
     private long startTime;
     private long endTime;
     private SystemInfo systemInfo;
@@ -26,6 +27,7 @@ public class Test {
 
     private Test(TestBuilder testBuilder) {
         this.testID = testBuilder.testID;
+        this.isp = testBuilder.isp;
         this.systemInfo = testBuilder.systemInfo;
         this.speedTestWebsiteIdentifier = testBuilder.speedTestWebsite;
         this.comparisonInfoTests = testBuilder.comparisonInfoTests;
@@ -36,6 +38,7 @@ public class Test {
 
         // Fields
         private String testID;
+        private String isp;
         private SystemInfo systemInfo;
         private String speedTestWebsite;
         private List<ComparisonInfo> comparisonInfoTests;
@@ -59,8 +62,14 @@ public class Test {
             return this;
         }
 
+        public TestBuilder addISP(String isp) {
+            this.isp = isp;
+            return this;
+        }
+
         public Test build() {
             return new Test(this);
         }
+
     }
 }

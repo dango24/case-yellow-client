@@ -18,4 +18,5 @@ public interface DataAccessService {
     SpeedTestMetaData getNextSpeedTestWebSite();
     List<FileDownloadProperties> getNextUrls();
     PreSignedUrl generatePreSignedUrl(String fileKey);
+    String getUser();
 }

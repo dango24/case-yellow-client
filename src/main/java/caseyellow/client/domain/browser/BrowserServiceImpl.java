@@ -135,7 +135,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressStartButtonById(String btnIdentifier) throws BrowserFailedException {
+    public void pressStartButtonById(String identifier, String btnIdentifier) throws BrowserFailedException {
         checkBrowser();
         try {
             TimeUnit.MILLISECONDS.sleep(900);
@@ -146,31 +146,21 @@ public class BrowserServiceImpl implements BrowserService {
             WebElement webElement = webDriver.findElement(by);
             webElement.click();
 
-        } catch (WebDriverException e) {
-            throw new UserInterruptException(e.getMessage(), e);
-
         } catch (Exception e) {
-            throw new BrowserFailedException(e.getMessage(), e);
+            String errorMessage = String.format("Failed to press start button by id for identifier: %s, button identifier: %s, cause: %s", identifier, btnIdentifier, e.getMessage());
+            logger.error(errorMessage, e);
+            throw new BrowserFailedException(errorMessage, e);
         }
     }
 
     @Override
     public void pressFlashStartTestButton(String identifier) throws BrowserFailedException, UserInterruptException, AnalyzeException {
-        SpeedTestResult speedTestResult;
         checkBrowser();
-
-        try {
-            speedTestResult = waitForImageAppearanceByImageClassification(identifier, true);
-            findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true);
-
-        } catch (WebDriverException e) {
-            throw new UserInterruptException(e.getMessage(), e);
-        } catch (RequestFailureException e) {
-            throw new BrowserFailedException(e.getMessage(), e);
-        }
+        SpeedTestResult speedTestResult = waitForImageAppearanceByImageClassification(identifier, true);
+        findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true);
     }
     
-    private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, boolean isStartState) throws AnalyzeException {
+    private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, boolean isStartState) throws AnalyzeException, ConnectionException {
         String md5 = null;
         String screenshot = null;
         VisionRequest visionRequest;
@@ -209,11 +199,13 @@ public class BrowserServiceImpl implements BrowserService {
 
             throw new AnalyzeException(String.format("Failed to classify image after reaching timeout for identifier: %s, md5 : %s", identifier, md5));
 
-        } catch (IOException | InterruptedException | AnalyzeException e) {
+        } catch (ConnectionException e) {
+            throw e;
+
+        } catch (Exception e) {
             logger.error(String.format("Failed to analyze image classification status: %s", e.getMessage()), e);
             throw new AnalyzeException(e.getMessage(), screenshot, e);
         }
-
     }
 
     private boolean handleExistStatus(String identifier, ImageClassificationStatus status, boolean isStartState) throws AnalyzeException {
@@ -253,6 +245,7 @@ public class BrowserServiceImpl implements BrowserService {
     public SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles) throws InterruptedException, BrowserFailedException, AnalyzeException {
         String logPayload;
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
+
         try {
             do {
                 TimeUnit.MILLISECONDS.sleep(800);
@@ -268,8 +261,9 @@ public class BrowserServiceImpl implements BrowserService {
             return waitForImageAppearanceByImageClassification(identifier,  false);
 
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            throw new BrowserFailedException(e.getMessage(), e);
+            String errorMessage = String.format("Error occurred while waiting for flash test to finish for identifier: %s, with finish identifier: %s, cause: %s", identifier, finishIdentifier, e.getMessage());
+            logger.error(errorMessage, e);
+            throw new BrowserFailedException(errorMessage, e);
         }
     }
 
@@ -309,7 +303,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws BrowserFailedException, InterruptedException {
+    public SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws AnalyzeException, BrowserFailedException, InterruptedException {
         String screenshot;
         HTMLParserResult result;
         int currentAttempt = 0;
@@ -329,7 +323,7 @@ public class BrowserServiceImpl implements BrowserService {
 
         } while (++currentAttempt < numOfAttempts);
 
-        throw new BrowserFailedException("Failure to find finish test identifier for identifier: " + identifier);
+        throw new AnalyzeException(String.format("Failure to find finish test identifier for identifier: %s", identifier), screenshot);
     }
 
     private By getByIdentifier(String identifier) {

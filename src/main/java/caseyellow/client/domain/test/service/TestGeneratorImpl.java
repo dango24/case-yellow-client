@@ -9,11 +9,13 @@ import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.presentation.MainFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
+import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -62,19 +64,24 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
             Thread.currentThread().setName("Test-Producer");
             produceTests();
 
+        } catch (WebDriverException e) {
+            logger.warn(String.format("Web driver error accrued %s", e.getMessage()), e);
+            stopProducingTests();
         } catch (Exception e) {
-            logger.error("Produce tests failed" + e.getMessage(), e);
+            logger.error(String.format("Produce tests failed: %s", e.getMessage()), e);
             sleep(30);
         }
     }
 
     private void produceTests() {
         Test test;
+        String correlationId;
 
         while (toProduceTests.get()) {
 
             try {
-                MDC.put("correlation-id", clientVersion);
+                correlationId = String.format("%s-%s", dataAccessService.getUser(), clientVersion);
+                MDC.put("correlation-id", correlationId);
 
                 long startTest = System.currentTimeMillis();
                 test = testService.generateNewTest();
@@ -87,7 +94,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
             } catch (ConnectionException e) {
                 logger.error("Connection with host failed, " + e.getMessage(), e);
-                handleConnectionError();
+                handleLostConnection();
 
             } catch (UserInterruptException e) {
                 logger.error("Stop to produce test, user interrupt action" + e.getMessage(), e);
@@ -110,6 +117,10 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
             case TOKEN_EXPIRED_CODE:
                 mainFrame.disableApp(true);
                 break;
+
+            default:
+                handleLostConnection();
+                break;
         }
     }
 
@@ -118,17 +129,15 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                          .thenAccept(dataAccessService::saveTest);
     }
 
-    private void handleConnectionError() {
-        toProduceTests.set(false);
-        CompletableFuture.runAsync(() -> handleLostConnection());
-    }
-
-    private void handleLostConnection()  {
-        logger.info("Lost connection, wait for 35 seconds before new attempt to produce new test");
-        stopProducingTests();
-        mainFrame.showMessage("Lost connection, wait for 35 seconds before new attempt to produce new test");
-        sleep(35);
-        startProducingTests();
+    private void handleLostConnection() {
+        String errorMessage = "Lost connection, wait for 35 seconds before new attempt to produce new test";
+        logger.warn(errorMessage);
+        try {
+            testService.stop();
+        } catch (WebDriverException | IOException e) {
+            logger.warn(String.format("Stop web driver while lost connection, ", e.getMessage()), e);
+        }
+        sleep(35, errorMessage);
     }
 
     @Override
@@ -153,8 +162,12 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     }
 
     private void sleep(long timeoutInSec) {
+        sleep(timeoutInSec, String.format("Sleep for %s seconds", timeoutInSec));
+    }
+
+    private void sleep(long timeoutInSec, String message) {
         try {
-            mainFrame.showMessage(String.format("Sleep for %s seconds", timeoutInSec));
+            mainFrame.showMessage(message);
             TimeUnit.SECONDS.sleep(timeoutInSec);
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
