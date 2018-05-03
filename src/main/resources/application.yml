@@ -12,6 +12,10 @@ client.version: 5.0.9
 gateway_url : http://ec2-52-28-182-127.eu-central-1.compute.amazonaws.com:8008/
 #gateway_url : http://localhost:8008/
 
+statsd.host: 35.157.172.33
+statsd.port: 8125
+statsd.prefix: servile.info
+
 logging:
   level:
     org.springframework.web: ERROR
