@@ -1,5 +1,8 @@
 package caseyellow.client.domain.test.service;
 
+import caseyellow.client.common.FileUtils;
+import caseyellow.client.domain.test.model.ComparisonInfo;
+import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.system.ResponsiveService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
@@ -90,7 +93,8 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                 test.setStartTime(startTest);
                 test.setEndTime(endTest);
 
-                saveTest(test);
+                dataAccessService.saveTest(test);
+                deleteTestSnapshots(test);
 
             } catch (ConnectionException e) {
                 logger.error("Connection with host failed, " + e.getMessage(), e);
@@ -115,6 +119,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     private void handleRequestFailure(int errorCode) {
         switch (errorCode) {
             case TOKEN_EXPIRED_CODE:
+                logger.warn("Token expired disable app");
                 mainFrame.disableApp(true);
                 break;
 
@@ -122,11 +127,6 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                 handleLostConnection();
                 break;
         }
-    }
-
-    private void saveTest(Test test) {
-        CompletableFuture.supplyAsync(() -> test)
-                         .thenAccept(dataAccessService::saveTest);
     }
 
     private void handleLostConnection() {
@@ -173,4 +173,14 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
             logger.error(e.getMessage(), e);
         }
     }
+
+    private void deleteTestSnapshots(Test test) {
+
+        test.getComparisonInfoTests()
+            .stream()
+            .map(ComparisonInfo::getSpeedTestWebSite)
+            .map(SpeedTestWebSite::getWebSiteDownloadInfoSnapshot)
+            .forEach(FileUtils::deleteFile);
+    }
+
 }

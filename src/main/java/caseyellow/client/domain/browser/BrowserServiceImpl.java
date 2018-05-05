@@ -113,15 +113,17 @@ public class BrowserServiceImpl implements BrowserService {
     public void openBrowser(String url) throws IOException {
 
         try {
+            logger.info(String.format("Start open browser with url: %s", url));
             webDriver.get(url);
 
         } catch (Exception e) {
-            logger.warn("Failed to open browser, reattempt again with new driver" + e);
+            logger.warn("Failed to open browser, reattempt again with new driver");
             initWebDriver();
             webDriver.get(url);
         }
 
         maximizeBrowserWindow();
+        logger.info(String.format("Successfully open browser for url: %s", url));
     }
 
     private void maximizeBrowserWindow() {
@@ -137,7 +139,9 @@ public class BrowserServiceImpl implements BrowserService {
     @Override
     public void pressStartButtonById(String identifier, String btnIdentifier) throws BrowserFailedException {
         checkBrowser();
+
         try {
+            logger.info(String.format("Start press start button by id process for identifier: %s with button identifier: %s", identifier, btnIdentifier));
             TimeUnit.MILLISECONDS.sleep(900);
             By by = getByIdentifier(btnIdentifier);
 
@@ -145,6 +149,7 @@ public class BrowserServiceImpl implements BrowserService {
             wait.until(ExpectedConditions.elementToBeClickable(by));
             WebElement webElement = webDriver.findElement(by);
             webElement.click();
+            logger.info(String.format("Pressed start button by id for identifier: %s with button identifier: %s", identifier, btnIdentifier));
 
         } catch (Exception e) {
             String errorMessage = String.format("Failed to press start button by id for identifier: %s, button identifier: %s, cause: %s", identifier, btnIdentifier, e.getMessage());
@@ -156,23 +161,30 @@ public class BrowserServiceImpl implements BrowserService {
     @Override
     public void pressFlashStartTestButton(String identifier) throws BrowserFailedException, UserInterruptException, AnalyzeException {
         checkBrowser();
+        logger.info(String.format("Start press start flash button process for identifier: %s", identifier));
         SpeedTestResult speedTestResult = waitForImageAppearanceByImageClassification(identifier, true);
         findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true);
+        FileUtils.deleteFile(speedTestResult.getSnapshot());
+
+        logger.info(String.format("Pressed start flash button for identifier: %s", identifier));
     }
     
     private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, boolean isStartState) throws AnalyzeException, ConnectionException {
         String md5 = null;
-        String screenshot = null;
+        File screenshot = null;
         VisionRequest visionRequest;
         int attempt = 0;
+        String state = isStartState ? "start" : "end";
         long imageClassificationTimeout = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2);
 
         try {
+            logger.info(String.format("Wait for image appearance by image classification for identifier: %s, with state: %s", identifier, state));
+
             while(System.currentTimeMillis() < imageClassificationTimeout) {
 
                 screenshot = takeScreenSnapshot();
-                md5 = systemService.convertToMD5(new File(screenshot));
-                visionRequest = new VisionRequest(screenshot, md5);
+                md5 = systemService.convertToMD5(screenshot);
+                visionRequest = new VisionRequest(screenshot.getAbsolutePath(), md5);
                 logger.info(String.format("Start classify image: %s", md5));
 
                 ImageClassificationResult imageClassificationResult = imageParsingService.classifyImage(identifier, visionRequest);
@@ -200,11 +212,12 @@ public class BrowserServiceImpl implements BrowserService {
             throw new AnalyzeException(String.format("Failed to classify image after reaching timeout for identifier: %s, md5 : %s", identifier, md5));
 
         } catch (ConnectionException e) {
+            FileUtils.deleteFile(screenshot);
             throw e;
 
         } catch (Exception e) {
             logger.error(String.format("Failed to analyze image classification status: %s", e.getMessage()), e);
-            throw new AnalyzeException(e.getMessage(), screenshot, e);
+            throw new AnalyzeException(e.getMessage(), screenshot.getAbsolutePath(), e);
         }
     }
 
@@ -247,6 +260,8 @@ public class BrowserServiceImpl implements BrowserService {
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
 
         try {
+            logger.info(String.format("Wait for flash test to finish for identifier: %s, with finish identifier: %s", identifier, finishIdentifier));
+
             do {
                 TimeUnit.MILLISECONDS.sleep(800);
                 executeRoles(roles);
@@ -304,18 +319,21 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws AnalyzeException, BrowserFailedException, InterruptedException {
-        String screenshot;
+        File screenshot;
         HTMLParserResult result;
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
 
         do {
+            logger.info(String.format("Wait for test to finish by text for identifier: %s", identifier));
+
             checkBrowser();
             executeRoles(roles);
             screenshot = takeScreenSnapshot();
-            result = textAnalyzer.parseHtml(identifier, getHTMLPayload(), screenshot);
+            result = textAnalyzer.parseHtml(identifier, getHTMLPayload(), screenshot.getAbsolutePath());
 
             if (result.isSucceed()) {
+                logger.info(String.format("Successfully wait for test to finish by text for identifier: %s", identifier));
                 return new SpeedTestResult(result.getResult(), screenshot);
             }
 
@@ -323,7 +341,7 @@ public class BrowserServiceImpl implements BrowserService {
 
         } while (++currentAttempt < numOfAttempts);
 
-        throw new AnalyzeException(String.format("Failure to find finish test identifier for identifier: %s", identifier), screenshot);
+        throw new AnalyzeException(String.format("Failure to find finish test identifier for identifier: %s", identifier), screenshot.getAbsolutePath());
     }
 
     private By getByIdentifier(String identifier) {
@@ -359,6 +377,9 @@ public class BrowserServiceImpl implements BrowserService {
 
     private boolean findMatchingDescription(String identifier, boolean startTest, String screenshot, boolean clickImage) throws AnalyzeException{
         Point point;
+        String testState = startTest ? "start" : "end";
+        logger.info(String.format("Start analyzing %s test image to find matching description for identifier: %s", identifier, testState));
+
         DescriptionMatch matchDescription = textAnalyzer.isDescriptionExist(identifier, startTest, screenshot);
 
         if (matchDescription.foundMatchedDescription()) {
@@ -372,7 +393,9 @@ public class BrowserServiceImpl implements BrowserService {
             return true;
 
         } else {
-            throw new AnalyzeException(String.format("Failed to find description in image for identifier: %s", identifier), screenshot);
+            String errorMessage = String.format("Failed to find description in image for identifier: %s", identifier);
+            logger.error(errorMessage);
+            throw new AnalyzeException(errorMessage, screenshot);
         }
     }
 

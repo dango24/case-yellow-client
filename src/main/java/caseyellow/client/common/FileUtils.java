@@ -11,11 +11,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 
 import static caseyellow.client.common.Utils.generateUniqueID;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 public class FileUtils {
@@ -49,14 +51,14 @@ public class FileUtils {
         }
     }
 
-    public static String takeScreenSnapshot() {
+    public static File takeScreenSnapshot() {
         try {
             Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
             BufferedImage capture = new Robot().createScreenCapture(screenRect);
             File screenshotFile = new File(createTmpDir(), "screenshot.png");
             ImageIO.write(capture, "png", screenshotFile);
 
-            return screenshotFile.getAbsolutePath();
+            return screenshotFile;
 
         } catch (Exception e) {
             throw new InternalFailureException(e.getMessage(), e);
@@ -76,14 +78,6 @@ public class FileUtils {
 
     public static File getSnapshotMetadataFile() {
         return new File("logs", "snapshotFile");
-    }
-
-    public static String getScreenResolution() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = (int)screenSize.getWidth();
-        int height = (int)screenSize.getHeight();
-
-        return width + "_" + height;
     }
 
     public static File createTmpDir() {
@@ -127,5 +121,19 @@ public class FileUtils {
         file.setReadable(true, false);
         file.setWritable(false, true);
         file.setExecutable(true, false);
+    }
+
+    public static void deleteFile(String path) {
+        deleteFile(new File(path));
+    }
+
+    public static void deleteFile(File file) {
+        try {
+            if (nonNull(file) && file.exists()) {
+                Files.deleteIfExists(file.toPath());
+            }
+        } catch (IOException e) {
+            log.error(String.format("Failed to delete file: %s", e.getMessage()));
+        }
     }
 }

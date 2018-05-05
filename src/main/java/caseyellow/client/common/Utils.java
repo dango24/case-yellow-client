@@ -1,6 +1,8 @@
 package caseyellow.client.common;
 
 import caseyellow.client.exceptions.InternalFailureException;
+import lombok.extern.slf4j.Slf4j;
+
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.*;
@@ -11,6 +13,7 @@ import java.util.stream.IntStream;
 /**
  * Created by Dan on 6/20/2017.
  */
+@Slf4j
 public class Utils {
 
     private static ReentrantLock mouseEventLock;
@@ -25,6 +28,7 @@ public class Utils {
 
     public static void click(int x, int y) {
         IntStream.range(0, 3).forEach(attempt -> clickImage(x, y));
+        log.info("Successfully clicked image");
     }
 
     private static void clickImage(int x, int y) {

@@ -1,5 +1,6 @@
 package caseyellow.client.domain.test.service;
 
+import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.file.service.DownloadFileService;
@@ -92,6 +93,7 @@ public class TestServiceImpl implements TestService {
         if (comparisonInfo.failed()) {
             messagesService.testDone();
             dataAccessService.notifyFailedTest(comparisonInfo, clientIP);
+            FileUtils.deleteFile(comparisonInfo.getSpeedTestWebSite().getWebSiteDownloadInfoSnapshot());
 
             throw new TestException("Failed to generate test");
         }

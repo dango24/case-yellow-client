@@ -36,7 +36,7 @@ public class LoginFormImpl extends JFrame implements LoginForm {
 
 
     private void init() {
-        this.setSize(300, 190);
+        this.setSize(300, 170);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.stream.IntStream;
 
-@Service
+//@Service
 public class StatsDService {
 
     @Value("${statsd.prefix}")
@@ -25,11 +25,12 @@ public class StatsDService {
     @PostConstruct
     private void init() {
         statsDClient = new NonBlockingStatsDClient(statsDprefix, statsDHost, statsDPort);
-        statsDClient.incrementCounter("bar");
-        IntStream.range(0, 100).forEach( (i) -> statsDClient.count("dango", 10));
-        statsDClient.recordGaugeValue("baz", 100);
-        statsDClient.count("dango", 10);
-        statsDClient.recordExecutionTime("bag", 25);
-        statsDClient.recordSetEvent("qux", "one");
+//        statsDClient.incrementCounter("bar");
+        IntStream.range(0, 100).forEach( (i) -> statsDClient.count("test.dango", 10));
+//        statsDClient.recordGaugeValue("baz", 100);
+        statsDClient.count("test.dango", 10);
+        statsDClient.count("test.dango", 10);
+//        statsDClient.recordExecutionTime("bag", 25);
+//        statsDClient.recordSetEvent("qux", "one");
     }
 }

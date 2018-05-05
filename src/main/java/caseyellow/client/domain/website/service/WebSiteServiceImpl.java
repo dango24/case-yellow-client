@@ -73,7 +73,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
                                        .build();
 
         } catch (BrowserFailedException | WebDriverException e) {
-            return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, takeScreenSnapshot(), e);
+            return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, takeScreenSnapshot().getAbsolutePath(), e);
 
         } catch (AnalyzeException e) {
             return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, e.getSnapshot(), e);

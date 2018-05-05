@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.File;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,4 +15,8 @@ public class SpeedTestResult {
 
     private String result;
     private String snapshot;
+
+    public SpeedTestResult(String result, File snapshotFile) {
+        this(result, snapshotFile.getAbsolutePath());
+    }
 }
