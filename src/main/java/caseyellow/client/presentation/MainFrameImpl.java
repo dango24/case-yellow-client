@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static caseyellow.client.common.FileUtils.getFileFromResources;
+import static com.sun.jna.Platform.isLinux;
 
 /**
  * Created by Dan on 7/7/2017.
@@ -69,7 +70,13 @@ public class MainFrameImpl implements MainFrame {
         panel.add(stopButton);
         panel.add(editorScrollPane);
         mainFrame.add(panel);
-        mainFrame.setSize(370, 260);
+
+        if(isLinux()) {
+            mainFrame.setSize(355, 230);
+        } else {
+            mainFrame.setSize(370, 260);
+        }
+
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginForm = new LoginFormImpl(this);
         connectionDetailsForm = new ConnectionDetailsFormImpl(this);
