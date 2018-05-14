@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import static caseyellow.client.common.FileUtils.getFileFromResources;
+import static com.sun.jna.Platform.isLinux;
 import static java.util.stream.Collectors.joining;
 
 public class LoginFormImpl extends JFrame implements LoginForm {
@@ -37,7 +38,13 @@ public class LoginFormImpl extends JFrame implements LoginForm {
 
 
     private void init() {
-        this.setSize(300, 170);
+
+        if(isLinux()) {
+            this.setSize(290, 140);
+        } else {
+            this.setSize(300, 170);
+        }
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
