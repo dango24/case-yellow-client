@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.stream.Stream;
 
@@ -29,7 +30,7 @@ public class LoginFormImpl extends JFrame implements LoginForm {
     }
 
     private void setIcon() throws IOException {
-        String pathToFileOnDisk = getFileFromResources("icon/login_icon.png").getAbsolutePath();
+        String pathToFileOnDisk = getFileFromResources(new File("bin", "icons"), "icon/login_icon.png").getAbsolutePath();
         ImageIcon img = new ImageIcon(pathToFileOnDisk);
         this.setIconImage(img.getImage());
     }

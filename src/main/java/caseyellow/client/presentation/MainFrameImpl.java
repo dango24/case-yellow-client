@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class MainFrameImpl implements MainFrame {
     private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
     private static final String BOOT_MESSAGE = "On The Side Of Angles";
     private static final String dateFormatter = "HH:mm:ss";
-    private static final String LOADING_APP_MESSAGE = "loading app...  Please wait";
+    private static final String LOADING_APP_MESSAGE = "loading app... Please wait";
 
     private int currentTest;
     private JFrame mainFrame;
@@ -54,7 +55,7 @@ public class MainFrameImpl implements MainFrame {
     }
 
     private void setIcon() throws IOException {
-        String pathToFileOnDisk = getFileFromResources("icon/main_icon.png").getAbsolutePath();
+        String pathToFileOnDisk = getFileFromResources(new File("bin", "icons"), "icon/main_icon.png").getAbsolutePath();
         ImageIcon img = new ImageIcon(pathToFileOnDisk);
         mainFrame.setIconImage(img.getImage());
     }
@@ -78,7 +79,7 @@ public class MainFrameImpl implements MainFrame {
     private void buildEditorScrollPane() {
         editorPane = new JEditorPane();
         editorPane.setEditable(false);
-        showMessage(LOADING_APP_MESSAGE);
+        showMessageToUser(LOADING_APP_MESSAGE);
         editorScrollPane = new JScrollPane(editorPane);
         editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         editorScrollPane.setPreferredSize(new Dimension(250, 145));

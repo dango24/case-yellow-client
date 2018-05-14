@@ -91,6 +91,7 @@ public class BrowserServiceImpl implements BrowserService {
         Map<String, Object> prefs = new HashMap<>();
         ChromeOptions options = new ChromeOptions();
 
+        FileUtils.deleteFile(logPath);
         logPath = new File(createTmpDir(), "log_net").getAbsolutePath();
 
         String log_flag = "--log-net-log=" + logPath;
@@ -132,8 +133,13 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public void closeBrowser() {
-        logger.warn("Close browser");
-        webDriver.close();
+        try {
+            logger.warn("Close browser");
+            webDriver.close();
+
+        } catch (Exception e) {
+            logger.info(String.format("Error accrued while closing browser: %s", e.getMessage()));
+        }
     }
 
     @Override
@@ -164,8 +170,6 @@ public class BrowserServiceImpl implements BrowserService {
         logger.info(String.format("Start press start flash button process for identifier: %s", identifier));
         SpeedTestResult speedTestResult = waitForImageAppearanceByImageClassification(identifier, true);
         findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true);
-        FileUtils.deleteFile(speedTestResult.getSnapshot());
-
         logger.info(String.format("Pressed start flash button for identifier: %s", identifier));
     }
     
@@ -268,7 +272,7 @@ public class BrowserServiceImpl implements BrowserService {
                 logPayload = readFile(logPath);
 
                 if (System.currentTimeMillis() > timeout) {
-                    throw new InterruptedException("Reached timeout, failed to find indicator: " + finishIdentifier + " in file: " + logPath);
+                    throw new InterruptedException(String.format("Reached timeout, failed to find indicator: %s  in file: %s", finishIdentifier, logPath));
                 }
 
             } while (!logPayload.contains(finishIdentifier));
@@ -323,10 +327,9 @@ public class BrowserServiceImpl implements BrowserService {
         HTMLParserResult result;
         int currentAttempt = 0;
         int numOfAttempts = waitForTestToFinishInSec / (int)TimeUnit.MILLISECONDS.toSeconds(waitForFinishIdentifier);
+        logger.info(String.format("Wait for test to finish by text for identifier: %s", identifier));
 
         do {
-            logger.info(String.format("Wait for test to finish by text for identifier: %s", identifier));
-
             checkBrowser();
             executeRoles(roles);
             screenshot = takeScreenSnapshot();

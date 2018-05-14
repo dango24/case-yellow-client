@@ -51,16 +51,24 @@ public class FileUtils {
         }
     }
 
+    public static void cleanRootDir() {
+        cleanDirectory(new File(tmpDirPath));
+    }
+
     public static File takeScreenSnapshot() {
+        File screenshotFile = null;
+
         try {
             Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
             BufferedImage capture = new Robot().createScreenCapture(screenRect);
-            File screenshotFile = new File(createTmpDir(), "screenshot.png");
+            screenshotFile = new File(createTmpDir(), "screenshot.png");
             ImageIO.write(capture, "png", screenshotFile);
+            log.info(String.format("Create snapshot: %s", screenshotFile.getAbsolutePath()));
 
             return screenshotFile;
 
         } catch (Exception e) {
+            deleteFile(screenshotFile);
             throw new InternalFailureException(e.getMessage(), e);
         }
     }
@@ -92,9 +100,13 @@ public class FileUtils {
     }
 
     public static File getFileFromResources(String relativePath) throws IOException {
+        return getFileFromResources(createTmpDir(), relativePath);
+    }
+
+    public static File getFileFromResources(File rootDir, String relativePath) throws IOException {
         Path path = Paths.get(relativePath);
         ClassLoader classLoader = Utils.class.getClassLoader();
-        File file = new File(createTmpDir(), path.getFileName().toString());
+        File file = new File(rootDir, path.getFileName().toString());
         InputStream resourceAsStream = classLoader.getResourceAsStream(relativePath);
         byte[] bytes = IOUtils.toByteArray(resourceAsStream);
         org.apache.commons.io.FileUtils.writeByteArrayToFile(file, bytes);
@@ -111,6 +123,7 @@ public class FileUtils {
 
         File tmpFile = getFileFromResources("drivers/" + path);
         org.apache.commons.io.FileUtils.copyFileToDirectory(tmpFile, file.getParentFile());
+        FileUtils.deleteFile(tmpFile);
 
         return file;
     }
@@ -124,13 +137,20 @@ public class FileUtils {
     }
 
     public static void deleteFile(String path) {
-        deleteFile(new File(path));
+        if (nonNull(path)) {
+            deleteFile(new File(path));
+        }
     }
 
     public static void deleteFile(File file) {
         try {
             if (nonNull(file) && file.exists()) {
-                Files.deleteIfExists(file.toPath());
+
+                if (file.isDirectory()) {
+                    org.apache.commons.io.FileUtils.deleteDirectory(file);
+                } else {
+                    Files.deleteIfExists(file.toPath());
+                }
             }
         } catch (IOException e) {
             log.error(String.format("Failed to delete file: %s", e.getMessage()));

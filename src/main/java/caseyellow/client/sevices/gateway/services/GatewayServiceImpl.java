@@ -291,15 +291,18 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
             responseCode = connection.getResponseCode(); // Invoke request
 
             if (isRequestSuccessful(responseCode)) {
-                logger.info("Upload object succeed, Service returned response code " + responseCode);
+                logger.info(String.format("Upload object: %s succeed, Service returned response code: %s", fileToUpload.getAbsolutePath(), responseCode));
             } else {
-                logger.error("Failed to upload file, responseCode is " + responseCode);
-                throw new RequestFailureException("Failed to upload file, responseCode is " + responseCode);
+                String errorMessage = String.format("Failed to upload file: %s, responseCode is: ", fileToUpload.getAbsolutePath(), responseCode);
+                logger.error(errorMessage);
+                throw new RequestFailureException(errorMessage);
             }
 
         } catch (IOException e) {
-            logger.error("Failed to upload file, " + e.getMessage(), e);
-            throw new RequestFailureException("Failed to upload file, " + e.getMessage(), e);
+            String errorMessage = String.format("Failed to upload file: %s, cause: %s", fileToUpload.getAbsolutePath(), e.getMessage());
+            logger.error(errorMessage, e);
+
+            throw new RequestFailureException(errorMessage, e);
         }
     }
 
@@ -316,6 +319,8 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
             switch (statusCode) {
                 case 401:
                     ErrorMessage errorMessage = new ObjectMapper().readValue(message, ErrorMessage.class);
+                    logger.error(String.format("Handle error with status code: %s, cause: %s", statusCode, errorMessage.getMessage()));
+
                     throw new LoginException(errorMessage.getError() + " " + errorMessage.getMessage());
 
                 default:

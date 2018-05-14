@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static caseyellow.client.common.FileUtils.cleanRootDir;
+
 /**
  * Created by dango on 6/3/17.
  */
@@ -94,7 +96,6 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                 test.setEndTime(endTest);
 
                 dataAccessService.saveTest(test);
-                deleteTestSnapshots(test);
 
             } catch (ConnectionException e) {
                 logger.error("Connection with host failed, " + e.getMessage(), e);
@@ -111,6 +112,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                 logger.error(String.format("Failed to generate test, cause: %s", e.getMessage()), e);
 
             } finally {
+                cleanRootDir();
                 MDC.remove("correlation-id");
             }
         }
@@ -173,14 +175,4 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
             logger.error(e.getMessage(), e);
         }
     }
-
-    private void deleteTestSnapshots(Test test) {
-
-        test.getComparisonInfoTests()
-            .stream()
-            .map(ComparisonInfo::getSpeedTestWebSite)
-            .map(SpeedTestWebSite::getWebSiteDownloadInfoSnapshot)
-            .forEach(FileUtils::deleteFile);
-    }
-
 }

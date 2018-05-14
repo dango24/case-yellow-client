@@ -1,5 +1,6 @@
 package caseyellow.client.domain.file.service;
 
+import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.message.MessagesService;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import static caseyellow.client.common.FileUtils.createTmpDir;
-import static java.util.Objects.nonNull;
 
 /**
  * Created by dango on 6/3/17.
@@ -87,9 +87,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             return FileDownloadInfo.errorFileDownloadInfo(fileDownloadProperties.getIdentifier(), fileDownloadProperties.getUrl(), errorMessage);
 
         } finally {
-            if (nonNull(tmpFile)) {
-                systemService.deleteDirectory(tmpFile.getParentFile());
-            }
+            FileUtils.deleteFile(tmpFile);
         }
     }
 

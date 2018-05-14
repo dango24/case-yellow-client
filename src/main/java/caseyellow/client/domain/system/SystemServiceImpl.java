@@ -7,7 +7,6 @@ import caseyellow.client.domain.test.model.SystemInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.*;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,17 +58,6 @@ public class SystemServiceImpl implements SystemService {
         String browser = getBrowser();
 
         return new SystemInfo(os, browser, ipAddress, connection);
-    }
-
-    @Override
-    public void deleteDirectory(File directory) {
-        try {
-            if (nonNull(directory)) {
-                FileUtils.deleteDirectory(directory);
-            }
-        } catch (IOException e) {
-            log.error("Failed to delete file, cause: " + e.getMessage(), e);
-        }
     }
 
     @Override
