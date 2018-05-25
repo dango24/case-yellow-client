@@ -95,6 +95,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                 test.setStartTime(startTest);
                 test.setEndTime(endTest);
 
+                mainFrame.showMessage("Save test");
                 dataAccessService.saveTest(test);
 
             } catch (ConnectionException e) {
@@ -102,7 +103,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                 handleLostConnection();
 
             } catch (UserInterruptException e) {
-                logger.error("Stop to produce test, user interrupt action" + e.getMessage(), e);
+                logger.error("Stop to produce test, user interrupt action" + e.getMessage());
 
             } catch (RequestFailureException e) {
                 logger.error("Request failed with status code: " + e.getErrorCode() + ", error message: " + e.getMessage());

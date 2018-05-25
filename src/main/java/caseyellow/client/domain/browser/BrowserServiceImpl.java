@@ -7,6 +7,7 @@ import caseyellow.client.domain.analyze.service.TextAnalyzerService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.Command;
 import caseyellow.client.domain.website.model.Role;
+import caseyellow.client.domain.website.model.SpeedTestFlashMetaData;
 import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
@@ -31,13 +32,12 @@ import java.util.concurrent.TimeUnit;
 
 import static caseyellow.client.common.FileUtils.*;
 import static caseyellow.client.common.Utils.*;
-import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.END;
-import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.START;
-import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.UNREADY;
+import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jna.Platform.isLinux;
 import static com.sun.jna.Platform.isWindows;
 import static java.lang.Math.toIntExact;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 /**
@@ -165,19 +165,21 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public void pressFlashStartTestButton(String identifier) throws BrowserFailedException, UserInterruptException, AnalyzeException {
+    public void pressFlashStartTestButton(String identifier, SpeedTestFlashMetaData speedTestFlashMetaData) throws BrowserFailedException, UserInterruptException, AnalyzeException {
         checkBrowser();
         logger.info(String.format("Start press start flash button process for identifier: %s", identifier));
-        SpeedTestResult speedTestResult = waitForImageAppearanceByImageClassification(identifier, true);
-        findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true);
+        SpeedTestResult speedTestResult = waitForImageAppearanceByImageClassification(identifier, true, speedTestFlashMetaData.getImageCenterPoint());
+        findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true, speedTestFlashMetaData);
         logger.info(String.format("Pressed start flash button for identifier: %s", identifier));
     }
     
-    private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, boolean isStartState) throws AnalyzeException, ConnectionException {
+    private SpeedTestResult waitForImageAppearanceByImageClassification(String identifier, boolean isStartState, Point imageCenterPoint) throws AnalyzeException, ConnectionException {
         String md5 = null;
         File screenshot = null;
-        VisionRequest visionRequest;
+        VisionRequest visionRequest = null;
         int attempt = 0;
+        ImageClassificationResult imageClassificationResult = null;
+        ImageClassificationStatus status = null;
         String state = isStartState ? "start" : "end";
         long imageClassificationTimeout = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2);
 
@@ -191,14 +193,14 @@ public class BrowserServiceImpl implements BrowserService {
                 visionRequest = new VisionRequest(screenshot.getAbsolutePath(), md5);
                 logger.info(String.format("Start classify image: %s", md5));
 
-                ImageClassificationResult imageClassificationResult = imageParsingService.classifyImage(identifier, visionRequest);
-                ImageClassificationStatus status = imageClassificationResult.getStatus();
+                imageClassificationResult = imageParsingService.classifyImage(identifier, visionRequest);
+                status = imageClassificationResult.getStatus();
                 logger.info(String.format("ImageClassificationResult for identifier: %s, md5: %s, details: %s", identifier, md5, imageClassificationResult));
 
                 switch (status) {
                     case START:
                     case END:
-                        if (handleExistStatus(identifier, status, isStartState)) {
+                        if (handleExistStatus(identifier, status, isStartState, imageCenterPoint, visionRequest)) {
                             return new SpeedTestResult("SUCCESS", screenshot);
                         }
                         break;
@@ -206,11 +208,26 @@ public class BrowserServiceImpl implements BrowserService {
                     case MIDDLE:
                     case UNREADY:
                         attempt = handleRetryStatus(identifier, status, attempt, isStartState);
+
+                        if (nonNull(imageCenterPoint) && MIDDLE == status) {
+                            textAnalyzer.startButtonSuccessfullyFound(identifier, imageCenterPoint, visionRequest);
+                        }
+
                         break;
 
                     case FAILED:
                         attempt = handleFailureStatus(identifier, attempt);
+
+                        if (nonNull(imageCenterPoint)) {
+                            textAnalyzer.startButtonFailed(identifier, imageCenterPoint, visionRequest);
+                        }
+
+                        break;
                 }
+            }
+
+            if (nonNull(imageCenterPoint) && isMiddleState(isStartState, status)) {
+                textAnalyzer.startButtonFailed(identifier, imageCenterPoint, visionRequest);
             }
 
             throw new AnalyzeException(String.format("Failed to classify image after reaching timeout for identifier: %s, md5 : %s", identifier, md5));
@@ -225,11 +242,20 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
 
-    private boolean handleExistStatus(String identifier, ImageClassificationStatus status, boolean isStartState) throws AnalyzeException {
+    private boolean isMiddleState(boolean isStartState, ImageClassificationStatus status) {
+        return nonNull(status) && status == ImageClassificationStatus.START && !isStartState;
+    }
+
+    private boolean handleExistStatus(String identifier, ImageClassificationStatus status, boolean isStartState, Point imageCenterPoint, VisionRequest visionRequest) throws AnalyzeException {
         String state = isStartState ? "start" : "end";
 
         if ( (isStartState && START == status) || (!isStartState && END == status) ) {
             logger.info(String.format("Image exist status classification found for identifier: %s, status: %s", identifier, status));
+
+            if (nonNull(imageCenterPoint) && END == status) {
+                textAnalyzer.startButtonSuccessfullyFound(identifier, imageCenterPoint, visionRequest);
+            }
+
             return true;
 
         } else {
@@ -259,7 +285,7 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     @Override
-    public SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles) throws InterruptedException, BrowserFailedException, AnalyzeException {
+    public SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles, Point imageCenterPoint) throws InterruptedException, BrowserFailedException, AnalyzeException {
         String logPayload;
         long timeout = new Date().getTime() + TimeUnit.MINUTES.toMillis(4);
 
@@ -277,7 +303,7 @@ public class BrowserServiceImpl implements BrowserService {
 
             } while (!logPayload.contains(finishIdentifier));
 
-            return waitForImageAppearanceByImageClassification(identifier,  false);
+            return waitForImageAppearanceByImageClassification(identifier,  false, imageCenterPoint);
 
         } catch (IOException e) {
             String errorMessage = String.format("Error occurred while waiting for flash test to finish for identifier: %s, with finish identifier: %s, cause: %s", identifier, finishIdentifier, e.getMessage());
@@ -378,18 +404,24 @@ public class BrowserServiceImpl implements BrowserService {
         }
     }
 
-    private boolean findMatchingDescription(String identifier, boolean startTest, String screenshot, boolean clickImage) throws AnalyzeException{
+    private boolean findMatchingDescription(String identifier, boolean startTest, String screenshot, boolean clickImage, SpeedTestFlashMetaData speedTestFlashMetaData) throws AnalyzeException{
         Point point;
+        DescriptionMatch matchDescription;
         String testState = startTest ? "start" : "end";
         logger.info(String.format("Start analyzing %s test image to find matching description for identifier: %s", identifier, testState));
 
-        DescriptionMatch matchDescription = textAnalyzer.isDescriptionExist(identifier, startTest, screenshot);
+        if (isNull(speedTestFlashMetaData.getImageCenterPoint())) {
+            matchDescription = textAnalyzer.isDescriptionExist(identifier, startTest, screenshot);
+        } else {
+            matchDescription = new DescriptionMatch(speedTestFlashMetaData.getImageCenterPoint());
+        }
 
         if (matchDescription.foundMatchedDescription()) {
 
             if (clickImage) {
                 point = matchDescription.getDescriptionLocation().getCenter();
                 checkNotNull(point, "Matched description center point is null");
+                speedTestFlashMetaData.setImageCenterPoint(point);
                 click(point.getX(), point.getY());
             }
 

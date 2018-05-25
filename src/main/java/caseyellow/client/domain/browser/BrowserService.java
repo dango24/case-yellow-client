@@ -1,6 +1,8 @@
 package caseyellow.client.domain.browser;
 
+import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.website.model.Role;
+import caseyellow.client.domain.website.model.SpeedTestFlashMetaData;
 import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.AnalyzeException;
 import caseyellow.client.exceptions.BrowserFailedException;
@@ -15,8 +17,8 @@ public interface BrowserService {
     void openBrowser(String url) throws IOException;
     void closeBrowser();
     void centralizedWebPage(int centralized) throws InterruptedException, BrowserFailedException;
-    void pressFlashStartTestButton(String identifier) throws BrowserFailedException, UserInterruptException, AnalyzeException;
+    void pressFlashStartTestButton(String identifier, SpeedTestFlashMetaData speedTestFlashMetaData) throws BrowserFailedException, UserInterruptException, AnalyzeException;
     void pressStartButtonById(String identifier, String btnId) throws BrowserFailedException;
-    SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles) throws BrowserFailedException, UserInterruptException, InterruptedException, AnalyzeException;
+    SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles, Point imageCenterPoint) throws BrowserFailedException, UserInterruptException, InterruptedException, AnalyzeException;
     SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws AnalyzeException, BrowserFailedException, InterruptedException;
 }

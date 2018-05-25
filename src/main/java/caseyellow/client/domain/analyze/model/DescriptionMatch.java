@@ -12,6 +12,10 @@ public class DescriptionMatch {
     private boolean isMatchedDescription;
     private DescriptionLocation descriptionLocation;
 
+    public DescriptionMatch(Point point) {
+        this(true, new DescriptionLocation(point));
+    }
+
     public boolean foundMatchedDescription() {
         return isMatchedDescription;
     }

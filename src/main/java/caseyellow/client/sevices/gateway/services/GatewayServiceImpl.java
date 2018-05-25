@@ -153,6 +153,16 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
+    public void startButtonSuccessfullyFound(String identifier, Point imageCenterPoint, VisionRequest visionRequest) {
+        requestHandler.execute(gatewayRequests.startButtonSuccessfullyFound(createTokenHeader(), identifier, imageCenterPoint.getX(), imageCenterPoint.getY(), visionRequest));
+    }
+
+    @Override
+    public void startButtonFailed(String identifier, Point imageCenterPoint, VisionRequest visionRequest) {
+        requestHandler.execute(gatewayRequests.startButtonFailed(createTokenHeader(), identifier, imageCenterPoint.getX(), imageCenterPoint.getY(), visionRequest));
+    }
+
+    @Override
     public void saveTest(Test test) throws RequestFailureException {
         try {
             if (nonNull(test)) {

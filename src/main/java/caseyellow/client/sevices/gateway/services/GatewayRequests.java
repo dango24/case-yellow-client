@@ -108,4 +108,26 @@ public interface GatewayRequests {
     Call<HTMLParserResult> retrieveResultFromHtml(@HeaderMap Map<String, String> headers,
                                                   @Query("identifier")String identifier,
                                                   @Body HTMLParserRequest htmlParserRequest);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("start-button-successfully-found")
+    Call<Void> startButtonSuccessfullyFound(@HeaderMap Map<String, String> tokenHeader,
+                                            @Query("identifier")String identifier,
+                                            @Query("x")int x,
+                                            @Query("y")int y,
+                                            @Body VisionRequest visionRequest);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("start-button-failed")
+    Call<Void> startButtonFailed(@HeaderMap Map<String, String> tokenHeader,
+                                 @Query("identifier")String identifier,
+                                 @Query("x")int x,
+                                 @Query("y")int y,
+                                 @Body VisionRequest visionRequest);
 }

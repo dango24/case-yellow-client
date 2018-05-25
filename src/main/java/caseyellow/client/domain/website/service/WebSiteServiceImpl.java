@@ -79,7 +79,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             return handleProduceSpeedTestWebSiteFailure(speedTestWebsite, e.getSnapshot(), e);
 
         } catch (InterruptedException e) {
-            logger.error(String.format("InterruptedException, Failed to produce SpeedTestWebSite, error: %s", e.getMessage()), e);
+            logger.error(String.format("InterruptedException, Failed to produce SpeedTestWebSite, error: %s", e.getMessage()));
             throw new UserInterruptException(e.getMessage(), e);
 
         } catch (UnknownHostException | ConnectionException e) {
@@ -108,7 +108,7 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
     private void clickStartTestButton(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, IOException, InterruptedException, AnalyzeException {
         if (speedTestWebsite.isFlashAble()) {
-            browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier());
+            browserService.pressFlashStartTestButton(speedTestWebsite.getIdentifier(),speedTestWebsite.getSpeedTestFlashMetaData());
         } else {
             browserService.pressStartButtonById(speedTestWebsite.getIdentifier(), speedTestWebsite.getSpeedTestNonFlashMetaData().getButtonId());
         }
@@ -120,7 +120,8 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
         if (speedTestWebsite.isFlashAble()) {
             return browserService.waitForFlashTestToFinish(speedTestWebsite.getIdentifier(),
                                                            speedTestWebsite.getSpeedTestFlashMetaData().getFinishIdentifier(),
-                                                           speedTestWebsite.getRoles());
+                                                           speedTestWebsite.getRoles(),
+                                                           speedTestWebsite.getSpeedTestFlashMetaData().getImageCenterPoint());
         } else {
             return browserService.waitForTestToFinishByText(speedTestWebsite.getIdentifier(), speedTestWebsite.getRoles());
         }

@@ -12,6 +12,10 @@ public class DescriptionLocation {
         this("", new Point(0,0));
     }
 
+    public DescriptionLocation(Point center) {
+        this("SUCCESS", center);
+    }
+
     public DescriptionLocation(String word, Point center) {
         this.description = word;
         this.center = center;
