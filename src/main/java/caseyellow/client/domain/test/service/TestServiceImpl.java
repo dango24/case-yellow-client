@@ -47,14 +47,21 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public Test generateNewTest() throws UserInterruptException, FileDownloadInfoException, RequestFailureException {
+        String isp;
+        SystemInfo systemInfo;
+        SpeedTestMetaData speedTestWebSite;
+        List<ComparisonInfo> comparisonInfoList;
+        List<FileDownloadProperties> fileDownloadProperties;
 
-        String isp = systemService.getISP();
-        SystemInfo systemInfo = systemService.getSystemInfo();
-        SpeedTestMetaData speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        List<FileDownloadProperties> fileDownloadProperties = dataAccessService.getNextUrls();
+        isp = systemService.getISP();
+        systemInfo = systemService.getSystemInfo();
+        logger.info(String.format("System info is: %s. ISP is: %s", systemInfo,isp));
+
+        speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
+        fileDownloadProperties = dataAccessService.getNextUrls();
         logger.info(String.format("Start producing test with speed-test: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
 
-        List<ComparisonInfo> comparisonInfoList =
+        comparisonInfoList =
                 fileDownloadProperties.stream()
                                       .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
                                       .peek(comparisonInfo -> checkFailedTest(comparisonInfo, systemInfo.getPublicIP()))

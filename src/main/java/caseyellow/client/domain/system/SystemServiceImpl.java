@@ -8,6 +8,7 @@ import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.*;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -30,7 +32,6 @@ import static java.lang.StrictMath.toIntExact;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
-import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -41,7 +42,8 @@ public class SystemServiceImpl implements SystemService {
 
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
 
-    private static final String ETHERNET_IDENTIFIER = "eth";
+    private static final String ETHERNET_IDENTIFIER_WIN = "eth";
+    private static final String ETHERNET_IDENTIFIER_LINUX = "eno1";
 
     private MessagesService messagesService;
 
@@ -193,11 +195,16 @@ public class SystemServiceImpl implements SystemService {
     }
 
     private String getConnection() {
-        NetworkInterface networkInterface;
+        List<NetworkInterface> networkInterfaces;
 
         try {
-            networkInterface = getInternetConnection();
-            return isEthernetConnection(networkInterface) ? LAN_CONNECTION : WIFI_CONNECTION;
+            networkInterfaces = getInternetConnections();
+
+            if (networkInterfaces.stream().anyMatch(this::isEthernetConnection)) {
+                return LAN_CONNECTION;
+            } else {
+                return WIFI_CONNECTION;
+            }
 
         } catch (Exception e) {
             log.error("Failed to find client connection type" + e.getMessage(), e);
@@ -205,14 +212,13 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
-    private NetworkInterface getInternetConnection() throws SocketException {
+    private List<NetworkInterface> getInternetConnections() throws SocketException {
 
         return Collections.list(NetworkInterface.getNetworkInterfaces())
                           .stream()
                           .filter(this::isUp)
                           .filter(this::isHardwareAddress)
-                          .findFirst()
-                          .orElseThrow(() -> new ConnectionTypeException("Unknown connection"));
+                          .collect(Collectors.toList());
     }
 
     private boolean isUp(NetworkInterface networkInterface) {
@@ -236,8 +242,9 @@ public class SystemServiceImpl implements SystemService {
         return Stream.of(networkInterface)
                      .filter(Objects::nonNull)
                      .map(NetworkInterface::getName)
-                     .filter(Objects::nonNull)
-                     .anyMatch(connectionName -> connectionName.contains(ETHERNET_IDENTIFIER));
+                     .filter(StringUtils::isNotEmpty)
+                     .anyMatch(connectionName -> connectionName.contains(ETHERNET_IDENTIFIER_WIN) ||
+                                                 connectionName.contains(ETHERNET_IDENTIFIER_LINUX));
     }
 
     private String getBrowser() {

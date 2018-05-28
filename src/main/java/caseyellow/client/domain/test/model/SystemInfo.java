@@ -19,4 +19,14 @@ public class SystemInfo {
     private String browser;
     private String publicIP;
     private String connection; // LAN / Wifi connection
+
+    @Override
+    public String toString() {
+        return "{" +
+                "operatingSystem = '" + operatingSystem + '\'' +
+                ", browser = '" + browser + '\'' +
+                ", publicIP = '" + publicIP + '\'' +
+                ", connection = '" + connection + '\'' +
+                '}';
+    }
 }
