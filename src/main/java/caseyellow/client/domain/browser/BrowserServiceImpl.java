@@ -216,12 +216,7 @@ public class BrowserServiceImpl implements BrowserService {
                         break;
 
                     case FAILED:
-                        attempt = handleFailureStatus(identifier, attempt);
-
-                        if (nonNull(imageCenterPoint)) {
-                            textAnalyzer.startButtonFailed(identifier, imageCenterPoint, visionRequest);
-                        }
-
+                        attempt = handleFailureStatus(identifier, attempt, imageCenterPoint, visionRequest);
                         break;
                 }
             }
@@ -272,7 +267,7 @@ public class BrowserServiceImpl implements BrowserService {
         return attempt+1;
     }
 
-    private int handleFailureStatus(String identifier, int attempt) throws AnalyzeException, InterruptedException {
+    private int handleFailureStatus(String identifier, int attempt, Point imageCenterPoint, VisionRequest visionRequest) throws AnalyzeException, InterruptedException {
         if (attempt == 0) {
             logger.info(String.format("Failed to classify image after %s attempts for identifier: %s, retry again", attempt, identifier));
             TimeUnit.SECONDS.sleep(8);
@@ -280,6 +275,11 @@ public class BrowserServiceImpl implements BrowserService {
             return attempt+1;
 
         } else {
+
+            if (nonNull(imageCenterPoint)) {
+                textAnalyzer.startButtonFailed(identifier, imageCenterPoint, visionRequest);
+            }
+
             throw new AnalyzeException(String.format("Failed to classify failure statues image for identifier: %s", identifier));
         }
     }

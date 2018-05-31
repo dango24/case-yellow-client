@@ -29,7 +29,7 @@ public class MainFrameImpl implements MainFrame {
     private Logger logger = Logger.getLogger(MainFrameImpl.class);
 
     private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
-    private static final String BOOT_MESSAGE = "On The Side Of Angles";
+    private static final String BOOT_MESSAGE = "Turn on, tune in, drop out";
     private static final String dateFormatter = "HH:mm:ss";
     private static final String LOADING_APP_MESSAGE = "loading app... Please wait";
 
