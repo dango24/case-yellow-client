@@ -7,7 +7,7 @@ failed_tests_dir: failed-tests/
 wait-for-test-to-finish-in-sec : 110
 wait-For-Finish-identifier : 10000
 sleep_interval_in_seconds: 10
-client.version: 5.3.0
+client.version: 5.3.1
 
 gateway_url : http://ec2-52-28-182-127.eu-central-1.compute.amazonaws.com:8008/
 #gateway_url : http://localhost:8008/
