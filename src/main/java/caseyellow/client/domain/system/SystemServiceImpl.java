@@ -19,9 +19,7 @@ import java.net.*;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,8 +40,7 @@ public class SystemServiceImpl implements SystemService {
 
     private Logger log = Logger.getLogger(SystemServiceImpl.class);
 
-    private static final String ETHERNET_IDENTIFIER_WIN = "eth";
-    private static final String ETHERNET_IDENTIFIER_LINUX = "eno1";
+    private static final List<String> ETHERNET_IDENTIFIERS = Arrays.asList("eth", "eno", "enp", "ens", "enx");
 
     private MessagesService messagesService;
 
@@ -243,8 +240,9 @@ public class SystemServiceImpl implements SystemService {
                      .filter(Objects::nonNull)
                      .map(NetworkInterface::getName)
                      .filter(StringUtils::isNotEmpty)
-                     .anyMatch(connectionName -> connectionName.contains(ETHERNET_IDENTIFIER_WIN) ||
-                                                 connectionName.contains(ETHERNET_IDENTIFIER_LINUX));
+                     .anyMatch(connectionName -> ETHERNET_IDENTIFIERS
+                                                     .stream()
+                                                     .anyMatch(prefix -> connectionName.contains(prefix)));
     }
 
     private String getBrowser() {
