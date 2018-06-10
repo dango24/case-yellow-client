@@ -240,9 +240,11 @@ public class SystemServiceImpl implements SystemService {
                      .filter(Objects::nonNull)
                      .map(NetworkInterface::getName)
                      .filter(StringUtils::isNotEmpty)
-                     .anyMatch(connectionName -> ETHERNET_IDENTIFIERS
-                                                     .stream()
-                                                     .anyMatch(prefix -> connectionName.contains(prefix)));
+                     .anyMatch(this::isConnectionExist);
+    }
+
+    private boolean isConnectionExist(String connectionName) {
+        return ETHERNET_IDENTIFIERS.stream().anyMatch(prefix -> connectionName.contains(prefix));
     }
 
     private String getBrowser() {
