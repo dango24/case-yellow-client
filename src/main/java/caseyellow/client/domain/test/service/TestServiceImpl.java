@@ -59,6 +59,7 @@ public class TestServiceImpl implements TestService {
 
         speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
         fileDownloadProperties = dataAccessService.getNextUrls();
+        dataAccessService.startTest(speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(toList()));
         logger.info(String.format("Start producing test with speed-test: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
 
         comparisonInfoList =

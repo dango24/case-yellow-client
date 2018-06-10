@@ -15,6 +15,7 @@ import java.util.List;
 public interface DataAccessService {
     void notifyFailedTest(ComparisonInfo comparisonInfo, String clientIP);
     void saveTest(Test test) throws RequestFailureException;
+    void startTest(String identifier, List<String> urls);
     SpeedTestMetaData getNextSpeedTestWebSite();
     List<FileDownloadProperties> getNextUrls();
     PreSignedUrl generatePreSignedUrl(String fileKey);

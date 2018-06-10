@@ -9,6 +9,7 @@ import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.HTMLParserRequest;
 import caseyellow.client.sevices.gateway.model.PreSignedUrl;
+import caseyellow.client.sevices.gateway.model.StartTestDetails;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -58,6 +59,13 @@ public interface GatewayRequests {
     })
     @POST("central/save-test")
     Call<Void> saveTest(@HeaderMap Map<String, String> headers, @Body Test test);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("central/start-test")
+    Call<Void> startTest(@HeaderMap Map<String, String> headers, @Body StartTestDetails startTestDetails);
 
     @Headers({
             "Accept: application/json",

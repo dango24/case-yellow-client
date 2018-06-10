@@ -179,6 +179,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
+    public void startTest(String identifier, List<String> urls) throws RequestFailureException {
+        requestHandler.execute(gatewayRequests.startTest(createTokenHeader(), new StartTestDetails(user, identifier, urls)));
+    }
+
+    @Override
     public ImageClassificationResult classifyImage(String identifier, VisionRequest visionRequest) throws AnalyzeException {
         try {
             return requestHandler.execute(gatewayRequests.classifyImage(createTokenHeader(),identifier, visionRequest));

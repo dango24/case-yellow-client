@@ -140,7 +140,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         } catch (WebDriverException | IOException e) {
             logger.warn(String.format("Stop web driver while lost connection, ", e.getMessage()), e);
         }
-        sleep(35, errorMessage);
+        sleep(20, errorMessage);
     }
 
     @Override
