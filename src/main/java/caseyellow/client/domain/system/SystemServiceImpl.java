@@ -30,6 +30,7 @@ import static java.lang.StrictMath.toIntExact;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -228,7 +229,9 @@ public class SystemServiceImpl implements SystemService {
 
     private boolean isHardwareAddress(NetworkInterface networkInterface) {
         try {
-            return networkInterface.getHardwareAddress() != null;
+            return nonNull(networkInterface.getHardwareAddress()) &&
+                   !networkInterface.toString().toLowerCase().contains("virtual");
+
         } catch (SocketException e) {
             throw new ConnectionTypeException(e.getMessage());
         }

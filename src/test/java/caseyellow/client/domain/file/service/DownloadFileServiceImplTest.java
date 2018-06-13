@@ -32,6 +32,6 @@ public class DownloadFileServiceImplTest {
         MessagesService presentationMessageService = mock(MessagesService.class);
         messagesService.setPresentationMessagesService(presentationMessageService);
         downloadFileService.setMessagesService(messagesService);
-        downloadFileService.generateFileDownloadInfo(new FileDownloadProperties("quicktime", "https://secure-appldnld.apple.com/QuickTime/031-43075-20160107-C0844134-B3CD-11E5-B1C0-43CA8D551951/QuickTimeInstaller.exe"));
+        downloadFileService.generateFileDownloadInfo(new FileDownloadProperties("amaznon", "https://d2td7dqidlhjx7.cloudfront.net/prod/global/windows/Amazon+WorkSpaces.msi"));
     }
 }
