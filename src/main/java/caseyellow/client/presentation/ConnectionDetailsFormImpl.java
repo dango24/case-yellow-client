@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static caseyellow.client.common.FileUtils.getFileFromResources;
+import static com.sun.jna.Platform.isWindows;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetailsForm {
@@ -41,7 +42,7 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
     }
 
     private void init() {
-        this.setSize(290, 170);
+        setSize();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
@@ -50,22 +51,44 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
         this.setLocationRelativeTo(null);
     }
 
+    private void setSize() {
+        if (isWindows()) {
+            this.setSize(290, 170);
+        } else {
+            this.setSize(290, 130);
+        }
+    }
+
     private void placeComponents(JPanel panel) {
         panel.setLayout(null);
 
         JLabel infrastructureLabel = new JLabel("Infrastructure");
-        infrastructureLabel.setBounds(10, 10, 80, 25);
+
+        if (isWindows()) {
+            infrastructureLabel.setBounds(10, 10, 80, 25);
+        } else {
+            infrastructureLabel.setBounds(10, 10, 100, 25);
+        }
+
         panel.add(infrastructureLabel);
 
         infrastructureCombo = new JComboBox();
         infrastructureCombo.insertItemAt("Choose", 0);
         infrastructureCombo.setSelectedIndex(0);
         infrastructureCombo.setMaximumRowCount(5);
-        infrastructureCombo.setBounds(100, 10, 160, 25);
+
+        if (isWindows()) {
+            infrastructureCombo.setBounds(100, 10, 160, 25);
+        } else {
+            infrastructureCombo.setBounds(120, 10, 160, 25);
+        }
+
         panel.add(infrastructureCombo);
 
 
         JLabel speedLabel= new JLabel("Speed");
+
+
         speedLabel.setBounds(10, 40, 80, 25);
         panel.add(speedLabel);
 
@@ -73,17 +96,35 @@ public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetai
         speedCombo.insertItemAt("Choose", 0);
         speedCombo.setSelectedIndex(0);
         speedCombo.setMaximumRowCount(5);
-        speedCombo.setBounds(100, 40, 160, 25);
+
+        if (isWindows()) {
+            speedCombo.setBounds(100, 40, 160, 25);
+        } else {
+            speedCombo.setBounds(120, 40, 160, 25);
+        }
+
         panel.add(speedCombo);
 
         saveButton = new JButton("Save");
         saveButton.addActionListener(l -> saveCommand());
-        saveButton.setBounds(10, 80, 80, 25);
+
+        if (isWindows()) {
+            saveButton.setBounds(10, 80, 80, 25);
+        } else {
+            saveButton.setBounds(30, 80, 80, 25);
+        }
+
         panel.add(saveButton);
 
-        cancelButton = new JButton("cancel");
+        cancelButton = new JButton("Cancel");
         cancelButton.addActionListener( l -> cancelCommand());
-        cancelButton.setBounds(180, 80, 80, 25);
+
+        if (isWindows()) {
+            cancelButton.setBounds(180, 80, 80, 25);
+        } else {
+            cancelButton.setBounds(160, 80, 90, 25);
+        }
+
         panel.add(cancelButton);
     }
 
