@@ -133,14 +133,15 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     }
 
     private void handleLostConnection() {
-        String errorMessage = "Lost connection, wait for 35 seconds before new attempt to produce new test";
+        int sleepTimeInSec = 20;
+        String errorMessage = String.format("Lost connection, wait for %s seconds before new attempt to produce new test", sleepTimeInSec);
         logger.warn(errorMessage);
         try {
             testService.stop();
         } catch (WebDriverException | IOException e) {
             logger.warn(String.format("Stop web driver while lost connection, ", e.getMessage()), e);
         }
-        sleep(20, errorMessage);
+        sleep(sleepTimeInSec, errorMessage);
     }
 
     @Override
