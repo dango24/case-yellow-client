@@ -1,8 +1,6 @@
 package caseyellow.client.domain.test.service;
 
 import caseyellow.client.common.FileUtils;
-import caseyellow.client.domain.test.model.ComparisonInfo;
-import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.system.ResponsiveService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
@@ -94,6 +92,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
                 test.setStartTime(startTest);
                 test.setEndTime(endTest);
+                test.setComputerIdentifier(FileUtils.getComputerIdentifier());
 
                 mainFrame.showMessage("Save test");
                 dataAccessService.saveTest(test);

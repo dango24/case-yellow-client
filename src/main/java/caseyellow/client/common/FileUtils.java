@@ -3,6 +3,7 @@ package caseyellow.client.common;
 import caseyellow.client.exceptions.InternalFailureException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 import static caseyellow.client.common.Utils.generateUniqueID;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -86,6 +88,30 @@ public class FileUtils {
 
     public static File getSnapshotMetadataFile() {
         return new File("logs", "snapshotFile");
+    }
+
+    public static String getComputerIdentifier() {
+        return getComputerIdentifier("");
+    }
+
+    public static String getComputerIdentifier(String fileType) {
+        try {
+            File file = new File("bin", "computer_identifier" + fileType);
+
+            if (isNull(file) || !file.exists()) {
+
+                if (StringUtils.isEmpty(fileType)) {
+                    return getComputerIdentifier(".txt");
+                }
+
+                return "UNKNOWN";
+            }
+
+            return readFile(file.getAbsolutePath());
+
+        } catch (IOException e) {
+            return "UNKNOWN";
+        }
     }
 
     public static File createTmpDir() {
