@@ -298,7 +298,7 @@ public class BrowserServiceImpl implements BrowserService {
                 logPayload = readFile(logPath);
 
                 if (System.currentTimeMillis() > timeout) {
-                    throw new InterruptedException(String.format("Reached timeout, failed to find indicator: %s  in file: %s", finishIdentifier, logPath));
+                    throw new BrowserFailedException(String.format("Reached timeout, failed to find indicator: %s  in file: %s", finishIdentifier, logPath));
                 }
 
             } while (!logPayload.contains(finishIdentifier));
