@@ -93,7 +93,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
 
         } catch (RequestFailureException e) {
             handleError(e.getErrorCode(), e.getMessage());
-            return new LoginDetails(false);
+            return LoginDetails.LoginDetailsFailed();
         }
     }
 

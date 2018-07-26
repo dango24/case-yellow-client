@@ -32,4 +32,8 @@ public class LoginDetails {
     public void setRegistration(boolean registration) {
         this.registration = registration;
     }
+
+    public static LoginDetails LoginDetailsFailed() {
+        return new LoginDetails(false);
+    }
 }

@@ -35,6 +35,7 @@ import static caseyellow.client.common.Utils.*;
 import static caseyellow.client.domain.analyze.model.ImageClassificationStatus.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jna.Platform.isLinux;
+import static com.sun.jna.Platform.isMac;
 import static com.sun.jna.Platform.isWindows;
 import static java.lang.Math.toIntExact;
 import static java.util.Objects.isNull;
@@ -80,7 +81,7 @@ public class BrowserServiceImpl implements BrowserService {
         String chromeDriver = getDriverFromResources(driverPath).getAbsolutePath();
         System.setProperty("webdriver.chrome.driver", chromeDriver);
 
-        if (SystemUtils.IS_OS_LINUX) {
+        if (isLinux() || isMac()) {
             FileUtils.makeFileExecutable(chromeDriver);
         }
 
@@ -460,6 +461,10 @@ public class BrowserServiceImpl implements BrowserService {
     public String getDriverPath() {
         if (isWindows()) {
             return "chromedriver.exe";
+
+        } else if (isMac()) {
+            return "chromedriver_mac";
+
         } else {
             return "chromedriver_linux";
         }
