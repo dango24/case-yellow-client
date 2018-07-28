@@ -22,7 +22,7 @@ public class CmdLineMessageImpl implements MessagesService {
 
     @Override
     public void showDownloadFileProgress(long currentFileSize, long fullFileSize) {
-        System.out.print(String.format("\rdownloading file %%%f", ((double)currentFileSize / (double) fullFileSize) * 100));
+        System.out.print(String.format("\rdownloading file %.2f%%", ((double)currentFileSize / (double) fullFileSize) * 100));
     }
 
     @Override
