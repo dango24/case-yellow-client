@@ -106,4 +106,8 @@ public class TestServiceImpl implements TestService {
             throw new TestException("Failed to generate test");
         }
     }
+
+    public void setMessagesService(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
 }
