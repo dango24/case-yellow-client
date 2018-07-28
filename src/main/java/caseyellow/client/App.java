@@ -95,13 +95,14 @@ public class App {
                         int speed = Integer.valueOf(rawFields[3].trim());
                         gatewayService.saveConnectionDetails(new ConnectionDetails(infra, speed));
                     }
+
+                    testGenerator.startProducingTests() ;
+                    return;
                 }
-                testGenerator.startProducingTests() ;
+                else System.out.println("Failed to login, Aborting...");
                 return;
-
             }
-
-
+            
             testGenerator.setMainFrame(mainForm);
             messagesService.setPresentationMessagesService(mainForm);
             mainForm.setStartProducingTestsCommand(testGenerator);
