@@ -131,4 +131,8 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     public void close() {
         browserService.closeBrowser();
     }
+
+    public void setMessagesService(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
 }

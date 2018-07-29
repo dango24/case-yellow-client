@@ -259,4 +259,7 @@ public class SystemServiceImpl implements SystemService {
         return new SnapshotMetadata(md5, s3Path);
     }
 
+    public void setMessagesService(MessagesService messagesService) {
+        this.messagesService = messagesService;
+    }
 }
