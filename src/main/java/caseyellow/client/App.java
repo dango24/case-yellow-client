@@ -45,7 +45,7 @@ public class App {
                 initView();
             }
 
-            initApplicationContext(args);
+            startApp(args);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -57,7 +57,7 @@ public class App {
         mainForm.view();
     }
 
-    private static void initApplicationContext(String[] args) {
+    private static void startApp(String[] args) {
 
         try {
             ApplicationContext ctx = SpringApplication.run(App.class, args);
