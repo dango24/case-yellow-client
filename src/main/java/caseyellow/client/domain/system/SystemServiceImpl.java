@@ -196,7 +196,14 @@ public class SystemServiceImpl implements SystemService {
         List<NetworkInterface> networkInterfaces;
 
         try {
-            networkInterfaces = getInternetConnections();
+            networkInterfaces = getInternetConnections().stream().filter(inter -> {
+                try {
+                    return inter.isUp() && !inter.isLoopback();
+                } catch (SocketException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }).collect(toList());
 
             if (networkInterfaces.stream().anyMatch(this::isEthernetConnection)) {
                 return LAN_CONNECTION;
