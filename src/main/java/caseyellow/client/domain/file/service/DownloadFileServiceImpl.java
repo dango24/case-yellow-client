@@ -99,7 +99,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
 
     private double calculateDownloadRateKBPerSec(long fileDownloadedTimeInMs, long fileSizeInBytes) {
 
-        double fileDownloadTimeElapsedInSec = fileDownloadedTimeInMs /1000;
+        double fileDownloadTimeElapsedInSec = fileDownloadedTimeInMs /1000.0;
         double bytesPerSec = fileSizeInBytes /fileDownloadTimeElapsedInSec;
 
         return bytesPerSec / Math.pow(2, 10); // Transform to KB
