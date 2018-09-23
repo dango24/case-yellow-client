@@ -92,7 +92,7 @@ public class BrowserServiceImpl implements BrowserService {
         Map<String, Object> prefs = new HashMap<>();
         ChromeOptions options = new ChromeOptions();
 
-        FileUtils.deleteFile(logPath);
+//        FileUtils.deleteFile(logPath);
         logPath = new File(createTmpDir(), "log_net").getAbsolutePath();
 
         String log_flag = "--log-net-log=" + logPath;
