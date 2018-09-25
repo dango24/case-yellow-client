@@ -24,10 +24,15 @@ public class SpeedTestMetaData {
     private SpeedTestFlashMetaData speedTestFlashMetaData;
     private SpeedTestNonFlashMetaData speedTestNonFlashMetaData;
     private List<Role> roles;
+    private List<Role> preStartButtonRoles;
 
     public void resetAllRules() {
         if (nonNull(roles)) {
             roles.forEach(role -> role.setExecuted(false));
+        }
+
+        if (nonNull(preStartButtonRoles)) {
+            preStartButtonRoles.forEach(role -> role.setExecuted(false));
         }
     }
 }

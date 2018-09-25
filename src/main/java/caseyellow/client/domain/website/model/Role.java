@@ -11,6 +11,7 @@ public class Role {
     private Command command;
     private boolean executed;
     private boolean mono;
+    private boolean deprecated;
 
     public Role() {
         this.executed = false;

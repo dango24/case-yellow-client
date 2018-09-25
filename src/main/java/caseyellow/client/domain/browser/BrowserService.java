@@ -21,4 +21,5 @@ public interface BrowserService {
     void pressStartButtonById(String identifier, String btnId) throws BrowserFailedException;
     SpeedTestResult waitForFlashTestToFinish(String identifier, String finishIdentifier, List<Role> roles, Point imageCenterPoint) throws BrowserFailedException, UserInterruptException, InterruptedException, AnalyzeException;
     SpeedTestResult waitForTestToFinishByText(String identifier, List<Role> roles) throws AnalyzeException, BrowserFailedException, InterruptedException;
+    void executePreStartButtonRules(List<Role> preStartButtonRoles) throws InterruptedException;
 }

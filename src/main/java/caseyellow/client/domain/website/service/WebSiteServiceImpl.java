@@ -54,8 +54,10 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
             browserService.openBrowser(speedTestWebsite.getWebSiteUrl());
             browserService.centralizedWebPage(speedTestWebsite.getCentralized());
             moveMouseToStartingPoint();
+            speedTestWebsite.resetAllRules();
 
             if (speedTestWebsite.isHaveStartButton()) {
+                browserService.executePreStartButtonRules(speedTestWebsite.getPreStartButtonRoles());
                 clickStartTestButton(speedTestWebsite);
             }
 
@@ -115,7 +117,6 @@ public class WebSiteServiceImpl implements WebSiteService, Closeable {
     }
 
     private SpeedTestResult waitForTestToFinish(SpeedTestMetaData speedTestWebsite) throws BrowserFailedException, InterruptedException, AnalyzeException {
-        speedTestWebsite.resetAllRules();
 
         if (speedTestWebsite.isFlashAble()) {
             return browserService.waitForFlashTestToFinish(speedTestWebsite.getIdentifier(),

@@ -7,15 +7,11 @@ failed_tests_dir: failed-tests/
 wait-for-test-to-finish-in-sec : 110
 wait-For-Finish-identifier : 10000
 sleep_interval_in_seconds: 10
-client.version: 7.0.0
+client.version: 7.0.1
 
 # Gateway host
 gateway_url : http://servile.live:8008/
 #gateway_url : http://localhost:8008/
-
-statsd.host: 35.157.172.33
-statsd.port: 8125
-statsd.prefix: servile.info
 
 logging:
   level:

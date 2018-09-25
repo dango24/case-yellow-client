@@ -14,10 +14,10 @@ import caseyellow.client.presentation.MainFrameImpl;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.LoginDetails;
 import caseyellow.client.sevices.gateway.services.GatewayService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.apache.log4j.Logger;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -30,11 +30,10 @@ import java.io.IOException;
 /**
  * Created by dango on 6/2/17.
  */
+@Slf4j
 @EnableScheduling
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 public class App {
-
-    private final static Logger logger = Logger.getLogger(App.class);
 
     private static MainFrameImpl mainForm;
 
@@ -48,7 +47,7 @@ public class App {
             startApp(args);
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -66,14 +65,16 @@ public class App {
             GatewayService gatewayService = (GatewayService) ctx.getBean("gatewayService");
 
             if (isCmdLineMode(args)) {
+                log.info("Start Case Yellow App in ghost mode");
                 executeCmdLineMode(args[0], ctx, testGenerator, gatewayService);
             } else {
+                log.info("Start Case Yellow App");
                 executeGUIMode(testGenerator, messagesService, gatewayService);
             }
 
 
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             JOptionPane.showMessageDialog(null, "The best app ever failed to initialized, " + e.getMessage());
             mainForm.terminate();
         }

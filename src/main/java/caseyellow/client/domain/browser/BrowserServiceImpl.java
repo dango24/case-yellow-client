@@ -11,7 +11,6 @@ import caseyellow.client.domain.website.model.SpeedTestFlashMetaData;
 import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
@@ -148,7 +147,7 @@ public class BrowserServiceImpl implements BrowserService {
         checkBrowser();
 
         try {
-            logger.info(String.format("Start press start button by id process for identifier: %s with button identifier: %s", identifier, btnIdentifier));
+            logger.info(String.format("Start press start button by id for identifier: %s with button identifier: %s", identifier, btnIdentifier));
             TimeUnit.MILLISECONDS.sleep(900);
             By by = getByIdentifier(btnIdentifier);
 
@@ -168,7 +167,7 @@ public class BrowserServiceImpl implements BrowserService {
     @Override
     public void pressFlashStartTestButton(String identifier, SpeedTestFlashMetaData speedTestFlashMetaData) throws BrowserFailedException, UserInterruptException, AnalyzeException {
         checkBrowser();
-        logger.info(String.format("Start press start flash button process for identifier: %s", identifier));
+        logger.info(String.format("Start press start flash button for identifier: %s", identifier));
         SpeedTestResult speedTestResult = waitForImageAppearanceByImageClassification(identifier, true, speedTestFlashMetaData.getImageCenterPoint());
         findMatchingDescription(identifier, true, speedTestResult.getSnapshot(), true, speedTestFlashMetaData);
         logger.info(String.format("Pressed start flash button for identifier: %s", identifier));
@@ -314,33 +313,36 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     private void executeRoles(List<Role> roles) {
-        if (nonNull(roles)) {
-            roles.forEach(this::executeRole);
+        if (nonNull(roles) && !roles.isEmpty()) {
+
+            roles.stream()
+                 .filter(role -> !role.isDeprecated())
+                 .filter(role -> !role.isExecuted())
+                 .forEach(this::executeRole);
         }
     }
 
     private void executeRole(Role role) {
-        if (!role.isExecuted()) {
-            By by = getByIdentifier(role.getIdentifier());
+        By by = getByIdentifier(role.getIdentifier());
 
-            try {
-                WebElement webElement = webDriver.findElement(by);
-                executeCommand(webElement, role.getCommand());
-                logger.info("Role: " + role + " has executed");
+        try {
+            WebElement webElement = webDriver.findElement(by);
+            executeCommand(webElement, role.getCommand());
+            logger.info("Role: " + role + " has executed");
 
-                if (role.isMono()) {
-                    role.done();
-                }
-
-            } catch (NoSuchElementException e) {
-               // logger.info("Not Found the requested element");
+            if (role.isMono()) {
+                role.done();
             }
+
+        } catch (NoSuchElementException e) {
+            logger.info("Not Found the requested element");
         }
     }
 
     private void executeCommand(WebElement webElement, Command command) {
         switch (command) {
             case CLICK:
+
                 WebDriverWait wait = new WebDriverWait(webDriver, 30);
                 wait.until(ExpectedConditions.elementToBeClickable(webElement));
                 webElement.click();
@@ -374,6 +376,11 @@ public class BrowserServiceImpl implements BrowserService {
         throw new AnalyzeException(String.format("Failure to find finish test identifier for identifier: %s", identifier), screenshot.getAbsolutePath());
     }
 
+    @Override
+    public void executePreStartButtonRules(List<Role> preStartButtonRoles) throws InterruptedException {
+        executeRoles(preStartButtonRoles);
+    }
+
     private By getByIdentifier(String identifier) {
         String[] identifiers = identifier.split("=");
 
@@ -385,6 +392,8 @@ public class BrowserServiceImpl implements BrowserService {
                 return By.className(identifiers[1]);
             case "cssSelector":
                 return By.cssSelector(identifiers[1]);
+            case "xpath":
+                return By.xpath(identifiers[1]);
 
             default:
                 return By.id(identifiers[1]);
