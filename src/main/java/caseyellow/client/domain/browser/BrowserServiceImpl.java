@@ -135,7 +135,7 @@ public class BrowserServiceImpl implements BrowserService {
     public void closeBrowser() {
         try {
             logger.warn("Close browser");
-            webDriver.close();
+            webDriver.quit();
 
         } catch (Exception e) {
             logger.info(String.format("Error accrued while closing browser: %s", e.getMessage()));

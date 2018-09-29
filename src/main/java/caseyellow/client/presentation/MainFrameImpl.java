@@ -28,12 +28,10 @@ public class MainFrameImpl implements MainFrame {
 
     private Logger logger = Logger.getLogger(MainFrameImpl.class);
 
-    private static final String TEST_MESSAGE_SCHEMA = " - Test Num %s: ";
     private static final String BOOT_MESSAGE = "Turn on, tune in, drop out";
     private static final String dateFormatter = "HH:mm:ss";
     private static final String LOADING_APP_MESSAGE = "loading app... Please wait";
 
-    private int currentTest;
     private JFrame mainFrame;
     private JButton startButton;
     private JButton stopButton;
@@ -48,7 +46,6 @@ public class MainFrameImpl implements MainFrame {
 
     public MainFrameImpl() throws IOException {
         mainFrame = new JFrame("Servile");
-        currentTest = 0;
         downloadProgressBar = new DownloadProgressBarImpl();
         setIcon();
         buildComponents();
@@ -106,8 +103,7 @@ public class MainFrameImpl implements MainFrame {
 
     @Override
     public void showMessage(String message) {
-        String testMessage = String.format(TEST_MESSAGE_SCHEMA, currentTest);
-        message = new SimpleDateFormat(dateFormatter).format(new Date()) + testMessage + message;
+        message = new SimpleDateFormat(dateFormatter).format(new Date()) + " - " + message;
         showMessageToUser(message);
     }
 
@@ -207,18 +203,16 @@ public class MainFrameImpl implements MainFrame {
 
     @Override
     public void subTestStart() {
-        SwingUtilities.invokeLater(() -> currentTest++);
+       // Do nothing
     }
 
     @Override
     public void testDone() {
-        SwingUtilities.invokeLater(() -> currentTest = 0);
         showMessage("Test Done");
     }
 
     @Override
     public void testStopped() {
-        SwingUtilities.invokeLater(() -> currentTest = 0);
         logger.warn("Test Stopped");
         showMessage("Test Stopped");
     }
