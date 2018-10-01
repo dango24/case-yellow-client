@@ -74,7 +74,6 @@ public class FileDownloadInfo {
 
     public static class FileDownloadInfoBuilder {
 
-        // Fields
         private boolean succeed;
         private String fileURL;
         private String fileName;

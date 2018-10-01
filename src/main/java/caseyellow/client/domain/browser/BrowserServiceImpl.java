@@ -97,12 +97,13 @@ public class BrowserServiceImpl implements BrowserService {
         String log_flag = "--log-net-log=" + logPath;
         prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
 
+
         if (isLinux()) {
             options.addArguments("--ppapi-flash-path=" + getDriverFromResources("flash_29.0.0.113.so"));
         }
 
         options.addArguments("--allow-outdated-plugins");
-        options.setExperimentalOption("prefs", prefs);
+        options.addArguments("--disable-features=EnableEphemeralFlashPermission");
         options.addArguments(log_flag);
         options.addArguments("disable-infobars");
         options.setExperimentalOption("prefs", prefs);
