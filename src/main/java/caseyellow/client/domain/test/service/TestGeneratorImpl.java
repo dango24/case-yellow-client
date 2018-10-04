@@ -70,9 +70,6 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         } catch (WebDriverException e) {
             logger.warn(String.format("Web driver error accrued %s", e.getMessage()), e);
             stopProducingTests();
-        } catch (Exception e) {
-            logger.error(String.format("Produce tests failed: %s", e.getMessage()), e);
-            sleep(30);
         }
     }
 
@@ -101,15 +98,19 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
                 logger.error("Connection with host failed, " + e.getMessage(), e);
                 handleLostConnection();
 
-            } catch (UserInterruptException e) {
-                logger.error("Stop to produce test, user interrupt action" + e.getMessage());
-
             } catch (RequestFailureException e) {
                 logger.error("Request failed with status code: " + e.getErrorCode() + ", error message: " + e.getMessage());
                 handleRequestFailure(e.getErrorCode());
 
-            } catch (TestException e) {
+            } catch (TestException | UserInterruptException e) {
                 logger.error(String.format("Failed to generate test, cause: %s", e.getMessage()), e);
+
+            } catch (WebDriverException e) {
+                throw e; // Throw WebDriverException again for handling it in start method
+
+            } catch (Exception e) {
+                logger.error(String.format("Produce tests failed: %s", e.getMessage()), e);
+                sleep(20);
 
             } finally {
                 cleanRootDir();

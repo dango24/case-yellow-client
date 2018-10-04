@@ -84,6 +84,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         } catch (IOException | FileDownloadInfoException e) {
             String errorMessage = String.format("Failed to download file for identifier: %s, cause: %s", fileDownloadProperties.getIdentifier(), e.getMessage());
             logger.error(errorMessage, e);
+
             return FileDownloadInfo.errorFileDownloadInfo(fileDownloadProperties.getIdentifier(), fileDownloadProperties.getUrl(), errorMessage);
 
         } finally {
