@@ -20,4 +20,5 @@ public interface DataAccessService {
     List<FileDownloadProperties> getNextUrls();
     PreSignedUrl generatePreSignedUrl(String fileKey);
     String getUser();
+    List<String> getChromeOptionsArguments();
 }

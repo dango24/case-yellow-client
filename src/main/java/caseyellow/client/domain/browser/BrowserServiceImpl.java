@@ -11,6 +11,8 @@ import caseyellow.client.domain.website.model.SpeedTestFlashMetaData;
 import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
+import caseyellow.client.sevices.gateway.services.DataAccessService;
+import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
@@ -60,12 +62,18 @@ public class BrowserServiceImpl implements BrowserService {
     private WebDriver webDriver;
     private SystemService systemService;
     private TextAnalyzerService textAnalyzer;
+    private DataAccessService dataAccessService;
     private ImageParsingService imageParsingService;
 
     @Autowired
-    public BrowserServiceImpl(ImageParsingService imageParsingService, TextAnalyzerService textAnalyzer, SystemService systemService) {
+    public BrowserServiceImpl(ImageParsingService imageParsingService,
+                              TextAnalyzerService textAnalyzer,
+                              SystemService systemService,
+                              DataAccessService dataAccessService) {
+
         this.textAnalyzer = textAnalyzer;
         this.systemService = systemService;
+        this.dataAccessService = dataAccessService;
         this.imageParsingService = imageParsingService;
     }
 
@@ -88,24 +96,21 @@ public class BrowserServiceImpl implements BrowserService {
     }
 
     private ChromeOptions generateChromeOptions() throws IOException {
-        Map<String, Object> prefs = new HashMap<>();
+
         ChromeOptions options = new ChromeOptions();
+        List<String> chromeOptionsArguments = dataAccessService.getChromeOptionsArguments();
+        Map<String, Object> prefs = ImmutableMap.of("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
 
-//        FileUtils.deleteFile(logPath);
         logPath = new File(createTmpDir(), "log_net").getAbsolutePath();
-
         String log_flag = "--log-net-log=" + logPath;
-        prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
 
+        options.addArguments(log_flag);
+        chromeOptionsArguments.forEach(options::addArguments);
 
         if (isLinux()) {
             options.addArguments("--ppapi-flash-path=" + getDriverFromResources("flash_29.0.0.113.so"));
         }
 
-        options.addArguments("--allow-outdated-plugins");
-        options.addArguments("--disable-features=EnableEphemeralFlashPermission");
-        options.addArguments(log_flag);
-        options.addArguments("disable-infobars");
         options.setExperimentalOption("prefs", prefs);
 
         return options;

@@ -43,7 +43,7 @@ public interface GatewayRequests {
             "Content-Type: application/json"
     })
     @GET("central/next-urls")
-    Call<List<FileDownloadProperties>> getNextUrls(@HeaderMap Map<String, String> headers );
+    Call<List<FileDownloadProperties>> getNextUrls(@HeaderMap Map<String, String> headers);
 
     @Headers({
             "Accept: application/json",
@@ -138,4 +138,12 @@ public interface GatewayRequests {
                                  @Query("x")int x,
                                  @Query("y")int y,
                                  @Body VisionRequest visionRequest);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET("central/chrome-options-arguments")
+    Call<List<String>> getChromeOptionsArguments(@HeaderMap Map<String, String> headers);
+
 }

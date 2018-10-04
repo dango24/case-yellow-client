@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +116,16 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     @Override
     public String getUser() {
         return user;
+    }
+
+    @Override
+    public List<String> getChromeOptionsArguments() {
+        try {
+            return requestHandler.execute(gatewayRequests.getChromeOptionsArguments(createTokenHeader()));
+
+        } catch (IllegalArgumentException e) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
