@@ -1,5 +1,7 @@
 package caseyellow.client.presentation;
 
+import caseyellow.client.domain.logger.services.CYLogger;
+import caseyellow.client.domain.logger.services.LoggerUploader;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
 import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.domain.test.model.ConnectionDetails;
@@ -7,7 +9,6 @@ import caseyellow.client.exceptions.LoginException;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.LoginDetails;
 import caseyellow.client.sevices.gateway.services.GatewayService;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +27,7 @@ import static com.sun.jna.Platform.isLinux;
  */
 public class MainFrameImpl implements MainFrame {
 
-    private Logger logger = Logger.getLogger(MainFrameImpl.class);
+    private static CYLogger logger = new CYLogger(MainFrameImpl.class);
 
     private static final String BOOT_MESSAGE = "Turn on, tune in, drop out";
     private static final String dateFormatter = "HH:mm:ss";
@@ -40,6 +41,7 @@ public class MainFrameImpl implements MainFrame {
     private StartProducingTestsCommand startProducingTestsCommand;
     private StopProducingTestsCommand stopProducingTestsCommand;
     private LoginForm loginForm;
+    private LoggerUploader loggerUploader;
     private DownloadProgressBar downloadProgressBar;
     private ConnectionDetailsForm connectionDetailsForm;
     private GatewayService gatewayService;
@@ -163,6 +165,10 @@ public class MainFrameImpl implements MainFrame {
         this.stopProducingTestsCommand = stopProducingTestsCommand;
     }
 
+    public void setLoggerUploader(LoggerUploader loggerUploader) {
+        this.loggerUploader = loggerUploader;
+    }
+
     public void setGatewayService(GatewayService gatewayService) {
         this.gatewayService = gatewayService;
     }
@@ -172,6 +178,8 @@ public class MainFrameImpl implements MainFrame {
         LoginDetails loginDetails = gatewayService.login(new AccountCredentials(userName, password));
 
         if (loginDetails.isSucceed()) {
+
+            loggerUploader.uploadLogs();
 
             if (loginDetails.isRegistration()) {
                 mainFrame.setEnabled(false);

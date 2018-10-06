@@ -1,20 +1,22 @@
 package caseyellow.client.common;
 
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.exceptions.InternalFailureException;
-import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * Created by Dan on 6/20/2017.
  */
-@Slf4j
 public class Utils {
+
+    private static CYLogger log = new CYLogger(Utils.class);
 
     private static ReentrantLock mouseEventLock;
 
@@ -62,5 +64,16 @@ public class Utils {
 
     public static void moveMouseToStartingPoint() {
         moveMouseTo(0,0);
+    }
+
+    public static String splitClassName(String className) {
+        String[] classSplitWords = className.split("\\.");
+
+        String classAcronym =
+            IntStream.range(0, classSplitWords.length -1)
+                     .mapToObj(index -> String.valueOf(classSplitWords[index].charAt(0)))
+                     .collect(Collectors.joining("."));
+
+        return classAcronym + "." + classSplitWords[classSplitWords.length -1];
     }
 }

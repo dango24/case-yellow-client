@@ -1,5 +1,6 @@
 package caseyellow.client.domain.system;
 
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.test.model.SnapshotMetadata;
@@ -9,7 +10,6 @@ import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class SystemServiceImpl implements SystemService {
 
-    private Logger log = Logger.getLogger(SystemServiceImpl.class);
+    private static CYLogger log = new CYLogger(SystemServiceImpl.class);
 
     private static final List<String> ETHERNET_IDENTIFIERS = Arrays.asList("eth", "eno", "enp", "ens", "enx");
 

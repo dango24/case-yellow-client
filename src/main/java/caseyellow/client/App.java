@@ -2,6 +2,8 @@ package caseyellow.client;
 
 import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.file.service.DownloadFileServiceImpl;
+import caseyellow.client.domain.logger.services.CYLogger;
+import caseyellow.client.domain.logger.services.LoggerUploader;
 import caseyellow.client.domain.message.CmdLineMessageImpl;
 import caseyellow.client.domain.system.SystemServiceImpl;
 import caseyellow.client.domain.test.model.ConnectionDetails;
@@ -13,8 +15,8 @@ import caseyellow.client.exceptions.LoginException;
 import caseyellow.client.presentation.MainFrameImpl;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.LoginDetails;
+import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.sevices.gateway.services.GatewayService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -30,10 +32,11 @@ import java.io.IOException;
 /**
  * Created by dango on 6/2/17.
  */
-@Slf4j
 @EnableScheduling
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 public class App {
+
+    private static CYLogger log = new CYLogger(App.class);
 
     private static MainFrameImpl mainForm;
 
@@ -63,15 +66,19 @@ public class App {
             TestGeneratorImpl testGenerator = (TestGeneratorImpl) ctx.getBean("testGenerator");
             MessageServiceImp messagesService = (MessageServiceImp) ctx.getBean("messageServiceImp");
             GatewayService gatewayService = (GatewayService) ctx.getBean("gatewayService");
+            LoggerUploader loggerUploader = (LoggerUploader)ctx.getBean("loggerUploaderImpl");
+            DataAccessService dataAccessService = (DataAccessService)ctx.getBean("gatewayService");
+
+            CYLogger.setDataAccessService(dataAccessService);
+            testGenerator.setCorrelationId(String.valueOf(dataAccessService.getTestLifeCycle()));
 
             if (isCmdLineMode(args)) {
                 log.info("Start Case Yellow App in ghost mode");
-                executeCmdLineMode(args[0], ctx, testGenerator, gatewayService);
+                executeCmdLineMode(args[0], ctx, testGenerator, gatewayService, loggerUploader);
             } else {
                 log.info("Start Case Yellow App");
-                executeGUIMode(testGenerator, messagesService, gatewayService);
+                executeGUIMode(testGenerator, messagesService, gatewayService, loggerUploader);
             }
-
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -80,16 +87,27 @@ public class App {
         }
     }
 
-    private static void executeGUIMode(TestGeneratorImpl testGenerator, MessageServiceImp messagesService, GatewayService gatewayService) {
+    private static void executeGUIMode(TestGeneratorImpl testGenerator,
+                                       MessageServiceImp messagesService,
+                                       GatewayService gatewayService,
+                                       LoggerUploader loggerUploader) {
+
         testGenerator.setMainFrame(mainForm);
         messagesService.setPresentationMessagesService(mainForm);
+
         mainForm.setStartProducingTestsCommand(testGenerator);
         mainForm.setStopProducingTestsCommand(testGenerator);
         mainForm.setGatewayService(gatewayService);
+        mainForm.setLoggerUploader(loggerUploader);
+
         mainForm.enableApp();
     }
 
-    private static void executeCmdLineMode(String configPath, ApplicationContext ctx, TestGeneratorImpl testGenerator, GatewayService gatewayService) throws IOException, LoginException {
+    private static void executeCmdLineMode(String configPath,
+                                           ApplicationContext ctx,
+                                           TestGeneratorImpl testGenerator,
+                                           GatewayService gatewayService,
+                                           LoggerUploader loggerUploader) throws IOException, LoginException {
 
         System.setProperty("java.awt.headless", "false");
         injectCmdLineMessageService(ctx);
@@ -98,6 +116,8 @@ public class App {
         LoginDetails loginDetails = gatewayService.login(createAccountCredentials(configPath));
 
         if (loginDetails.isSucceed()) {
+
+            loggerUploader.uploadLogs();
 
             if (loginDetails.isRegistration()) {
                 gatewayService.saveConnectionDetails(createConnectionDetails(configPath));

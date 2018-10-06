@@ -3,12 +3,12 @@ package caseyellow.client.domain.file.service;
 import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.system.URLToFileService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.exceptions.UserInterruptException;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ import static caseyellow.client.common.FileUtils.createTmpDir;
 @Service
 public class DownloadFileServiceImpl implements DownloadFileService {
 
-    private Logger logger = Logger.getLogger(DownloadFileServiceImpl.class);
+    private static CYLogger logger = new CYLogger(DownloadFileServiceImpl.class);
 
     private SystemService systemService;
     private URLToFileService urlToFileService;

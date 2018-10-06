@@ -1,6 +1,7 @@
 package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.file.model.FileDownloadProperties;
+import caseyellow.client.domain.logger.model.LogData;
 import caseyellow.client.domain.test.model.ComparisonInfo;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
@@ -20,5 +21,9 @@ public interface DataAccessService {
     List<FileDownloadProperties> getNextUrls();
     PreSignedUrl generatePreSignedUrl(String fileKey);
     String getUser();
+    String clientVersion();
     List<String> getChromeOptionsArguments();
+    void uploadFileToServer(String key, String fileToUpload);
+    void uploadLogData(LogData logData);
+    int getTestLifeCycle();
 }

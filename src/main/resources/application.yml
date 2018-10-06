@@ -3,11 +3,12 @@ spring.profiles.active: prod
 
 successful_tests_dir: successful-tests/
 failed_tests_dir: failed-tests/
+log_dir_path: logs/
 
 wait-for-test-to-finish-in-sec : 110
 wait-For-Finish-identifier : 10000
 sleep_interval_in_seconds: 10
-client.version: 7.0.6
+client.version: 8.0.0
 
 # Gateway host
 gateway_url : http://servile.live:8008/
@@ -18,6 +19,6 @@ logging:
     org.springframework.web: ERROR
     caseyellow.client: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - [%X{correlation-id}] - %m%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] - %-5p %c{1}:%L - [%X{correlation-id}] - %m%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{correlation-id}] - %-5p %c{1}%m%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{correlation-id}] - %-5p %c{1}%m%n"
   file: logs/client_log

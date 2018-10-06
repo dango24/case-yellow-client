@@ -1,5 +1,6 @@
 target/
 out/
+logs/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

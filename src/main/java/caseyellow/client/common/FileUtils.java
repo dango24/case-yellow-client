@@ -1,7 +1,7 @@
 package caseyellow.client.common;
 
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.exceptions.InternalFailureException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,8 +21,9 @@ import static caseyellow.client.common.Utils.generateUniqueID;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-@Slf4j
 public class FileUtils {
+
+    private static CYLogger log = new CYLogger(FileUtils.class);
 
     private static String tmpDirPath;
     private static String driversDirPath;

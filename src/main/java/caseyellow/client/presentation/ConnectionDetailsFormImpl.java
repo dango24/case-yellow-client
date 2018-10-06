@@ -1,7 +1,7 @@
 package caseyellow.client.presentation;
 
 
-import org.apache.log4j.Logger;
+import caseyellow.client.domain.logger.services.CYLogger;
 
 import javax.swing.*;
 import java.io.File;
@@ -15,7 +15,7 @@ import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 public class ConnectionDetailsFormImpl extends JFrame implements ConnectionDetailsForm {
 
-    private Logger logger = Logger.getLogger(ConnectionDetailsFormImpl.class);
+    private static CYLogger logger = new CYLogger(ConnectionDetailsFormImpl.class);
 
     private JButton saveButton;
     private JButton cancelButton;

@@ -4,6 +4,7 @@ import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.analyze.model.Point;
 import caseyellow.client.domain.analyze.service.TextAnalyzerService;
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.website.model.Command;
 import caseyellow.client.domain.website.model.Role;
@@ -13,7 +14,6 @@ import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import com.google.common.collect.ImmutableMap;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -50,7 +50,7 @@ public class BrowserServiceImpl implements BrowserService {
 
     private static final String GET_HTML_JS = "return document.getElementsByTagName('html')[0].innerHTML";
 
-    private Logger logger = Logger.getLogger(BrowserServiceImpl.class);
+    private static CYLogger logger = new CYLogger(BrowserServiceImpl.class);
 
     @Value("${wait-for-test-to-finish-in-sec}")
     private final int waitForTestToFinishInSec = 120;

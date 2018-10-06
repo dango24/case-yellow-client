@@ -1,10 +1,10 @@
 package caseyellow.client.sevices.infrastrucre;
 
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.exceptions.ConnectionException;
 import caseyellow.client.exceptions.RequestFailureException;
 import caseyellow.client.exceptions.UserInterruptException;
 import okhttp3.Headers;
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -24,7 +24,7 @@ public class RequestHandlerImpl implements RequestHandler {
 
     private static final String TOKEN_EXPIRED = "tokenExpired";
 
-    private Logger logger = Logger.getLogger(RequestHandlerImpl.class);
+    private static CYLogger logger = new CYLogger(RequestHandlerImpl.class);
 
 
     @Override

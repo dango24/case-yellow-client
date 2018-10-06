@@ -5,6 +5,8 @@ import caseyellow.client.domain.analyze.service.TextAnalyzerService;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.analyze.service.ImageParsingService;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
+import caseyellow.client.domain.logger.model.LogData;
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.test.model.*;
 import caseyellow.client.domain.website.model.SpeedTestMetaData;
@@ -15,7 +17,6 @@ import caseyellow.client.sevices.infrastrucre.RequestHandler;
 import caseyellow.client.sevices.infrastrucre.RetrofitBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -37,7 +38,7 @@ import static java.util.stream.Collectors.toList;
 @Service("gatewayService")
 public class GatewayServiceImpl implements GatewayService, DataAccessService, ImageParsingService, TextAnalyzerService {
 
-    private Logger logger = Logger.getLogger(GatewayServiceImpl.class);
+    private static CYLogger logger = new CYLogger(GatewayServiceImpl.class);
 
     private static final String DELIMITER = "-";
     private static final String FILE_EXTENSION = ".png";
@@ -114,8 +115,24 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
+    public void uploadLogData(LogData logData) {
+        requestHandler.execute(gatewayRequests.uploadLogData(createTokenHeader(), logData));
+    }
+
+    @Override
+    public int getTestLifeCycle() {
+        //requestHandler.execute(gatewayRequests.getTestLifeCycle(createTokenHeader()));
+        return 0;
+    }
+
+    @Override
     public String getUser() {
         return user;
+    }
+
+    @Override
+    public String clientVersion() {
+        return clientVersion;
     }
 
     @Override
@@ -223,6 +240,14 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
 
     private boolean isFailedSpeedTestWebSite(ComparisonInfo comparisonInfo) {
         return !comparisonInfo.getSpeedTestWebSite().isSucceed();
+    }
+
+    @Override
+    public void uploadFileToServer(String key, String fileToUpload) {
+        logger.info("upload file to server: " + key);
+
+        PreSignedUrl preSignedUrl = generatePreSignedUrl(key);
+        uploadObject(preSignedUrl.getPreSignedUrl(), fileToUpload);
     }
 
     private FailedTestDetails createFailedTestFromSpeedTestWebSite(SpeedTestWebSite failedSpeedTestWebSite, String clientIP) {

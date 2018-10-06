@@ -1,5 +1,6 @@
 package caseyellow.client.domain.website.service;
 
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
@@ -8,7 +9,6 @@ import caseyellow.client.domain.website.model.SpeedTestResult;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.browser.BrowserService;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ import static caseyellow.client.common.Utils.moveMouseToStartingPoint;
 @Service
 public class WebSiteServiceImpl implements WebSiteService, Closeable {
 
-    private Logger logger = Logger.getLogger(WebSiteServiceImpl.class);
+    private static CYLogger logger = new CYLogger(WebSiteServiceImpl.class);
 
     private SystemService systemService;
     private BrowserService browserService;

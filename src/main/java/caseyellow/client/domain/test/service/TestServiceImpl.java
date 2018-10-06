@@ -4,6 +4,7 @@ import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.file.service.DownloadFileService;
+import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.system.SystemService;
@@ -14,7 +15,6 @@ import caseyellow.client.domain.website.model.SpeedTestMetaData;
 import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.domain.website.service.WebSiteService;
 import caseyellow.client.exceptions.*;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class TestServiceImpl implements TestService {
 
-    private Logger logger = Logger.getLogger(TestServiceImpl.class);
+    private static CYLogger logger = new CYLogger(TestServiceImpl.class);
 
     private SystemService systemService;
     private WebSiteService webSiteService;

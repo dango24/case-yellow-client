@@ -1,6 +1,8 @@
 package caseyellow.client.domain.test.service;
 
 import caseyellow.client.common.FileUtils;
+import caseyellow.client.domain.logger.services.CYLogger;
+import caseyellow.client.domain.logger.services.LoggerUploader;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.system.ResponsiveService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
@@ -8,7 +10,6 @@ import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.presentation.MainFrame;
-import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,14 @@ import static caseyellow.client.common.FileUtils.cleanRootDir;
 @Component("testGenerator")
 public class TestGeneratorImpl implements TestGenerator, StartProducingTestsCommand, StopProducingTestsCommand {
 
-    private Logger logger = Logger.getLogger(TestGeneratorImpl.class);
+    private CYLogger logger = new CYLogger(TestGeneratorImpl.class);
 
     public static final int TOKEN_EXPIRED_CODE = 701;
 
     @Value("${client.version}")
     private String clientVersion;
+
+    private String correlationId;
 
     private MainFrame mainFrame;
     private Future<?> testTask;
@@ -75,12 +78,10 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
     private void produceTests() {
         Test test;
-        String correlationId;
 
         while (toProduceTests.get()) {
 
             try {
-                correlationId = String.format("%s-%s", dataAccessService.getUser(), clientVersion);
                 MDC.put("correlation-id", correlationId);
 
                 long startTest = System.currentTimeMillis();
@@ -176,5 +177,9 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 }

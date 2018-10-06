@@ -2,6 +2,7 @@ package caseyellow.client.sevices.gateway.services;
 
 import caseyellow.client.domain.analyze.model.*;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
+import caseyellow.client.domain.logger.model.LogData;
 import caseyellow.client.domain.test.model.ConnectionDetails;
 import caseyellow.client.domain.test.model.FailedTestDetails;
 import caseyellow.client.domain.test.model.Test;
@@ -93,6 +94,13 @@ public interface GatewayRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @POST("central/upload-log-data")
+    Call<Void> uploadLogData(@HeaderMap Map<String, String> tokenHeader, @Body LogData logData);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @POST("classify-image")
     Call<ImageClassificationResult> classifyImage(@HeaderMap Map<String, String> headers,
                                                   @Query("identifier") String identifier,
@@ -145,5 +153,4 @@ public interface GatewayRequests {
     })
     @GET("central/chrome-options-arguments")
     Call<List<String>> getChromeOptionsArguments(@HeaderMap Map<String, String> headers);
-
 }
