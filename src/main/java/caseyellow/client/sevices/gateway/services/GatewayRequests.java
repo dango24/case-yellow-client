@@ -87,6 +87,13 @@ public interface GatewayRequests {
             "Accept: application/json",
             "Content-Type: application/json"
     })
+    @GET("central/test-life-cycle")
+    Call<Integer> getTestLifeCycle(@HeaderMap Map<String, String> tokenHeader);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
     @POST("central/save-connection-details")
     Call<Void> saveConnectionDetails(@HeaderMap Map<String, String> headers, @Body ConnectionDetails connectionDetails);
 
@@ -96,6 +103,13 @@ public interface GatewayRequests {
     })
     @POST("central/upload-log-data")
     Call<Void> uploadLogData(@HeaderMap Map<String, String> tokenHeader, @Body LogData logData);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @POST("central/update-test-life-cycle")
+    Call<Void> updateTestLifeCycle(@HeaderMap Map<String, String> tokenHeader);
 
     @Headers({
             "Accept: application/json",

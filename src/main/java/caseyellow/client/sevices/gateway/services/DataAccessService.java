@@ -26,4 +26,5 @@ public interface DataAccessService {
     void uploadFileToServer(String key, String fileToUpload);
     void uploadLogData(LogData logData);
     int getTestLifeCycle();
+    void updateTestLifeCycle();
 }

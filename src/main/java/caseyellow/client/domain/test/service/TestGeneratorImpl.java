@@ -5,8 +5,6 @@ import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.system.ResponsiveService;
-import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
-import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.exceptions.*;
 import caseyellow.client.domain.test.model.Test;
 import caseyellow.client.presentation.MainFrame;
@@ -27,7 +25,7 @@ import static caseyellow.client.common.FileUtils.cleanRootDir;
  * Created by dango on 6/3/17.
  */
 @Component("testGenerator")
-public class TestGeneratorImpl implements TestGenerator, StartProducingTestsCommand, StopProducingTestsCommand {
+public class TestGeneratorImpl implements TestGenerator {
 
     private CYLogger logger = new CYLogger(TestGeneratorImpl.class);
 
@@ -35,8 +33,6 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
     @Value("${client.version}")
     private String clientVersion;
-
-    private String correlationId;
 
     private MainFrame mainFrame;
     private Future<?> testTask;
@@ -78,24 +74,15 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         }
     }
 
-    private void report_system_performance() throws IOException {
-        double memoryUsage = systemService.getJvmUsedMemory();
-        double memoryTotal = systemService.getJvmMaxMemory();
-        double memoryFree = memoryTotal - memoryUsage;
-        logger.info("jvm cpu usage (percent): " + systemService.getJvmCpuLoad());
-        logger.info("jvm total memory (Megabytes): " + memoryTotal);
-        logger.info("jvm free memory (Megabytes): " + memoryFree);
-        logger.info("jvm memory usage (Megabytes): " + memoryUsage);
-    }
-
     private void produceTests() {
         Test test;
 
         while (toProduceTests.get()) {
 
             try {
+                int correlationId = dataAccessService.getTestLifeCycle();
                 MDC.put("correlation-id", correlationId);
-                report_system_performance();
+                reportSystemPerformance();
 
                 long startTest = System.currentTimeMillis();
                 test = testService.generateNewTest();
@@ -179,6 +166,11 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         }
     }
 
+    @Override
+    public void updateTestLifeCycle() {
+        dataAccessService.updateTestLifeCycle();
+    }
+
     private void sleep(long timeoutInSec) {
         sleep(timeoutInSec, String.format("Sleep for %s seconds", timeoutInSec));
     }
@@ -192,7 +184,13 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         }
     }
 
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
+    private void reportSystemPerformance() throws IOException {
+        double memoryUsage = systemService.getJvmUsedMemory();
+        double memoryTotal = systemService.getJvmMaxMemory();
+        double memoryFree = memoryTotal - memoryUsage;
+        logger.info("jvm cpu usage (percent): " + systemService.getJvmCpuLoad());
+        logger.info("jvm total memory (Megabytes): " + memoryTotal);
+        logger.info("jvm free memory (Megabytes): " + memoryFree);
+        logger.info("jvm memory usage (Megabytes): " + memoryUsage);
     }
 }

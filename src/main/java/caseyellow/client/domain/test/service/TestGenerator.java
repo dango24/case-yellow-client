@@ -5,4 +5,7 @@ package caseyellow.client.domain.test.service;
  */
 public interface TestGenerator {
     void start();
+    void startProducingTests();
+    void stopProducingTests();
+    void updateTestLifeCycle();
 }

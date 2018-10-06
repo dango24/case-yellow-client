@@ -121,8 +121,12 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
 
     @Override
     public int getTestLifeCycle() {
-        //requestHandler.execute(gatewayRequests.getTestLifeCycle(createTokenHeader()));
-        return 0;
+        return requestHandler.execute(gatewayRequests.getTestLifeCycle(createTokenHeader()));
+    }
+
+    @Override
+    public void updateTestLifeCycle() {
+        requestHandler.execute(gatewayRequests.updateTestLifeCycle(createTokenHeader()));
     }
 
     @Override

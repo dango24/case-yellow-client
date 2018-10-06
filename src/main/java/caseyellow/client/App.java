@@ -67,10 +67,7 @@ public class App {
             MessageServiceImp messagesService = (MessageServiceImp) ctx.getBean("messageServiceImp");
             GatewayService gatewayService = (GatewayService) ctx.getBean("gatewayService");
             LoggerUploader loggerUploader = (LoggerUploader)ctx.getBean("loggerUploaderImpl");
-            DataAccessService dataAccessService = (DataAccessService)ctx.getBean("gatewayService");
-
-            CYLogger.setDataAccessService(dataAccessService);
-            testGenerator.setCorrelationId(String.valueOf(dataAccessService.getTestLifeCycle()));
+            injectCYLoggerDataAccess(ctx);
 
             if (isCmdLineMode(args)) {
                 log.info("Start Case Yellow App in ghost mode");
@@ -79,6 +76,7 @@ public class App {
                 log.info("Start Case Yellow App");
                 executeGUIMode(testGenerator, messagesService, gatewayService, loggerUploader);
             }
+
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -95,8 +93,7 @@ public class App {
         testGenerator.setMainFrame(mainForm);
         messagesService.setPresentationMessagesService(mainForm);
 
-        mainForm.setStartProducingTestsCommand(testGenerator);
-        mainForm.setStopProducingTestsCommand(testGenerator);
+        mainForm.setTestGenerator(testGenerator);
         mainForm.setGatewayService(gatewayService);
         mainForm.setLoggerUploader(loggerUploader);
 
@@ -163,5 +160,10 @@ public class App {
 
     private static boolean isCmdLineMode(String[] args) {
         return args.length > 0;
+    }
+
+    private static void injectCYLoggerDataAccess(ApplicationContext ctx) {
+        DataAccessService dataAccessService = (DataAccessService)ctx.getBean("gatewayService");
+        CYLogger.setDataAccessService(dataAccessService);
     }
 }

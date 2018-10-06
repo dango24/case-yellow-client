@@ -2,9 +2,8 @@ package caseyellow.client.presentation;
 
 import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.domain.logger.services.LoggerUploader;
-import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
-import caseyellow.client.domain.test.commands.StopProducingTestsCommand;
 import caseyellow.client.domain.test.model.ConnectionDetails;
+import caseyellow.client.domain.test.service.TestGenerator;
 import caseyellow.client.exceptions.LoginException;
 import caseyellow.client.sevices.gateway.model.AccountCredentials;
 import caseyellow.client.sevices.gateway.model.LoginDetails;
@@ -38,8 +37,7 @@ public class MainFrameImpl implements MainFrame {
     private JButton stopButton;
     private JEditorPane editorPane;
     private JScrollPane editorScrollPane;
-    private StartProducingTestsCommand startProducingTestsCommand;
-    private StopProducingTestsCommand stopProducingTestsCommand;
+    private TestGenerator testGenerator;
     private LoginForm loginForm;
     private LoggerUploader loggerUploader;
     private DownloadProgressBar downloadProgressBar;
@@ -140,7 +138,7 @@ public class MainFrameImpl implements MainFrame {
         showMessage("Start producing tests");
         SwingUtilities.invokeLater(() -> startButton.setEnabled(false));
         SwingUtilities.invokeLater(() -> stopButton.setEnabled(true));
-        SwingUtilities.invokeLater(startProducingTestsCommand::startProducingTests);
+        SwingUtilities.invokeLater(testGenerator::startProducingTests);
     }
 
     private void stopProducingTests() {
@@ -150,19 +148,11 @@ public class MainFrameImpl implements MainFrame {
         SwingUtilities.invokeLater(() -> startButton.setEnabled(true));
         SwingUtilities.invokeLater(() -> stopButton.setEnabled(false));
         SwingUtilities.invokeLater(() -> downloadProgressBar.stopDownloading());
-        SwingUtilities.invokeLater(stopProducingTestsCommand::stopProducingTests);
+        SwingUtilities.invokeLater(testGenerator::stopProducingTests);
     }
 
     public void terminate() {
         mainFrame.dispose();
-    }
-
-    public void setStartProducingTestsCommand(StartProducingTestsCommand startProducingTestsCommand) {
-        this.startProducingTestsCommand = startProducingTestsCommand;
-    }
-
-    public void setStopProducingTestsCommand(StopProducingTestsCommand stopProducingTestsCommand) {
-        this.stopProducingTestsCommand = stopProducingTestsCommand;
     }
 
     public void setLoggerUploader(LoggerUploader loggerUploader) {
@@ -173,6 +163,10 @@ public class MainFrameImpl implements MainFrame {
         this.gatewayService = gatewayService;
     }
 
+    public void setTestGenerator(TestGenerator testGenerator) {
+        this.testGenerator = testGenerator;
+    }
+
     @Override
     public void login(String userName, String password) throws IOException, LoginException, InterruptedException {
         LoginDetails loginDetails = gatewayService.login(new AccountCredentials(userName, password));
@@ -180,6 +174,7 @@ public class MainFrameImpl implements MainFrame {
         if (loginDetails.isSucceed()) {
 
             loggerUploader.uploadLogs();
+            testGenerator.updateTestLifeCycle();
 
             if (loginDetails.isRegistration()) {
                 mainFrame.setEnabled(false);
