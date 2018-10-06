@@ -13,8 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.management.MBeanServerConnection;
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.net.*;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import com.sun.management.OperatingSystemMXBean;
 
 import static caseyellow.client.common.FileUtils.getSnapshotMetadataFile;
 import static java.lang.StrictMath.toIntExact;
@@ -269,4 +272,25 @@ public class SystemServiceImpl implements SystemService {
     public void setMessagesService(MessagesService messagesService) {
         this.messagesService = messagesService;
     }
+
+    static double calcBytesToMegabytes(double bytes) {
+        return bytes / Math.pow(2, 20); // Transform to Mbps
+    }
+
+    public double getJvmUsedMemory() {
+        return calcBytesToMegabytes(Runtime.getRuntime().totalMemory());
+    }
+
+    public double getJvmMaxMemory() {
+        return calcBytesToMegabytes(Runtime.getRuntime().maxMemory());
+    }
+
+    public double getJvmCpuLoad() throws IOException {
+        MBeanServerConnection mbsc = ManagementFactory.getPlatformMBeanServer();
+
+        OperatingSystemMXBean osMBean = ManagementFactory.newPlatformMXBeanProxy(
+                mbsc, ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
+        return  osMBean.getProcessCpuLoad() < 0 ? 0 : osMBean.getProcessCpuLoad() * 100.0; // cpu usage in percents
+    }
+
 }

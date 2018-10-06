@@ -2,7 +2,7 @@ package caseyellow.client.domain.test.service;
 
 import caseyellow.client.common.FileUtils;
 import caseyellow.client.domain.logger.services.CYLogger;
-import caseyellow.client.domain.logger.services.LoggerUploader;
+import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.sevices.gateway.services.DataAccessService;
 import caseyellow.client.domain.system.ResponsiveService;
 import caseyellow.client.domain.test.commands.StartProducingTestsCommand;
@@ -42,15 +42,17 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
     private Future<?> testTask;
     private AtomicBoolean toProduceTests;
     private TestService testService;
+    private SystemService systemService;
     private DataAccessService dataAccessService;
     private ExecutorService executorTestService;
     private ResponsiveService responsiveService;
 
     @Autowired
-    public TestGeneratorImpl(TestService testService, DataAccessService dataAccessService, ResponsiveService responsiveService) {
+    public TestGeneratorImpl(TestService testService, DataAccessService dataAccessService, ResponsiveService responsiveService, SystemService systemService) {
         this.testService = testService;
         this.dataAccessService = dataAccessService;
         this.responsiveService = responsiveService;
+        this.systemService = systemService;
         this.toProduceTests = new AtomicBoolean(false);
         this.executorTestService = Executors.newSingleThreadExecutor();
     }
@@ -76,6 +78,16 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
         }
     }
 
+    private void report_system_performance() throws IOException {
+        double memoryUsage = systemService.getJvmUsedMemory();
+        double memoryTotal = systemService.getJvmMaxMemory();
+        double memoryFree = memoryTotal - memoryUsage;
+        logger.info("jvm cpu usage (percent): " + systemService.getJvmCpuLoad());
+        logger.info("jvm total memory (Megabytes): " + memoryTotal);
+        logger.info("jvm free memory (Megabytes): " + memoryFree);
+        logger.info("jvm memory usage (Megabytes): " + memoryUsage);
+    }
+
     private void produceTests() {
         Test test;
 
@@ -83,6 +95,7 @@ public class TestGeneratorImpl implements TestGenerator, StartProducingTestsComm
 
             try {
                 MDC.put("correlation-id", correlationId);
+                report_system_performance();
 
                 long startTest = System.currentTimeMillis();
                 test = testService.generateNewTest();
