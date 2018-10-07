@@ -86,7 +86,7 @@ public class CYLogger  {
         String clientVersion = dataAccessService.clientVersion();
 
         LogData logData =
-                LogData.logDataDogBuilder()
+                LogData.logDataBuilder()
                        .user(userName)
                        .version(clientVersion)
                        .date(date)

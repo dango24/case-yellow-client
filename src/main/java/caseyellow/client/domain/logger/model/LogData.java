@@ -21,7 +21,7 @@ public class LogData {
     private String user;
     private String version;
 
-    @Builder(builderMethodName = "logDataDogBuilder")
+    @Builder(builderMethodName = "logDataBuilder")
     public static LogData newLogData(String date, String thread, String level,
                                      String classL, String correlationId, String message,
                                      String user, String version) {
