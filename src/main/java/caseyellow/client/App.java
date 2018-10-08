@@ -80,7 +80,7 @@ public class App {
 
         } catch (Exception e) {
             log.error(e.getMessage());
-            JOptionPane.showMessageDialog(null, "The best app ever failed to initialized, " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Servile failed to initialized, " + e.getMessage());
             mainForm.terminate();
         }
     }
