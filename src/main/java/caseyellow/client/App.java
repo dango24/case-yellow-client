@@ -40,7 +40,7 @@ public class App {
 
     private static MainFrameImpl mainForm;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         try {
             if (args.length == 0) {
