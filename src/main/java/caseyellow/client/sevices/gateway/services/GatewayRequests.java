@@ -39,6 +39,10 @@ public interface GatewayRequests {
     @GET("central/next-web-site")
     Call<SpeedTestMetaData> getNextSpeedTestWebSite(@HeaderMap Map<String, String> headers);
 
+
+    @GET
+    Call<SpeedTestMetaData> profilePicture(@Url String url);
+
     @Headers({
             "Accept: application/json",
             "Content-Type: application/json"
