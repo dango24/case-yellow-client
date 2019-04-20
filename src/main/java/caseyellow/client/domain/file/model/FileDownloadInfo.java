@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Dan on 04/10/2016.
  */
@@ -21,6 +25,7 @@ public class FileDownloadInfo {
     private double fileDownloadRateKBPerSec;
     private long   fileDownloadedDurationTimeInMs;
     private long   startDownloadingTimestamp;
+    private Map<String, List<String>> headers;
 
     @Expose
     private boolean succeed;
@@ -40,6 +45,7 @@ public class FileDownloadInfo {
         fileDownloadRateKBPerSec = fileDownloadInfoBuilder.fileDownloadRateKBPerSec;
         fileDownloadedDurationTimeInMs = fileDownloadInfoBuilder.fileDownloadedDurationTimeInMs;
         startDownloadingTimestamp = fileDownloadInfoBuilder.startDownloadingTimestamp;
+        headers = fileDownloadInfoBuilder.headers;
         succeed = fileDownloadInfoBuilder.succeed;
     }
 
@@ -58,6 +64,7 @@ public class FileDownloadInfo {
                                                                  .addFileDownloadRateKBPerSec(1)
                                                                  .addFileDownloadedDurationTimeInMs(1)
                                                                  .addStartDownloadingTime(1)
+                                                                 .addHeaders(Collections.emptyMap())
                                                                  .build();
     }
 
@@ -69,6 +76,7 @@ public class FileDownloadInfo {
                 ", fileSizeInBytes=" + fileSizeInBytes +
                 ", fileDownloadedDurationTimeInMs=" + fileDownloadedDurationTimeInMs +
                 ", startDownloadingTimestamp=" + startDownloadingTimestamp +
+                ", headers=" + headers +
                 '}';
     }
 
@@ -81,6 +89,7 @@ public class FileDownloadInfo {
         private double fileDownloadRateKBPerSec;
         private long fileDownloadedDurationTimeInMs;
         private long startDownloadingTimestamp;
+        private Map<String, List<String>> headers;
 
         public FileDownloadInfoBuilder(String fileName) {
             this.fileName = fileName;
@@ -98,6 +107,11 @@ public class FileDownloadInfo {
 
         public FileDownloadInfoBuilder addFileSizeInBytes(long fileSizeInBytes) {
             this.fileSizeInBytes = fileSizeInBytes;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addHeaders(Map<String, List<String>> headers) {
+            this.headers = headers;
             return this;
         }
 

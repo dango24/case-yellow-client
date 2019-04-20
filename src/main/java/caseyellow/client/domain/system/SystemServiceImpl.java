@@ -10,6 +10,8 @@ import caseyellow.client.domain.website.model.SpeedTestWebSite;
 import caseyellow.client.exceptions.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,9 +66,9 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public long copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException {
-        long fileDownloadedDurationTimeInMs;
+    public Pair<Long, Map<String, List<String>>> copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException {
         int readTimeOut = toIntExact(TimeUnit.SECONDS.toMillis(10));
+        Pair<Long, Map<String, List<String>>> fileDownloadDurationAndHeaders;
 
         try {
             URLConnection connection = source.openConnection();
@@ -74,11 +76,11 @@ public class SystemServiceImpl implements SystemService {
             connection.connect();
 
             messagesService.startDownloadingFile(fileName);
-            fileDownloadedDurationTimeInMs = downloadFile(destination, connection, fileSize);
+            fileDownloadDurationAndHeaders = downloadFile(destination, connection, fileSize);
 
             log.info("finish downloading file from: " + source.toString());
 
-            return fileDownloadedDurationTimeInMs;
+            return fileDownloadDurationAndHeaders;
 
         } catch (IOException e) {
             messagesService.finishDownloadingFile();
@@ -86,9 +88,11 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
-    private long downloadFile(File destination, URLConnection connection, long fileSize) {
+    private Pair<Long, Map<String, List<String>>> downloadFile(File destination, URLConnection connection, long fileSize) {
         int count;
+        long fileDownloadedDurationTimeInMs;
         final byte[] data = new byte[1024];
+        Map<String, List<String>> headers;
 
         try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
              FileOutputStream out = new FileOutputStream(destination)){
@@ -105,7 +109,10 @@ public class SystemServiceImpl implements SystemService {
                  messagesService.showDownloadFileProgress(out.getChannel().size(), fileSize);
              }
 
-            return System.currentTimeMillis() - startDownloadingTime;
+            headers = connection.getHeaderFields();
+            fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
+
+            return new ImmutablePair<>(fileDownloadedDurationTimeInMs, headers);
 
         } catch (IOException e) {
             throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
