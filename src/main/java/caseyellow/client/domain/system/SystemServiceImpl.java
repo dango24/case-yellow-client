@@ -109,7 +109,14 @@ public class SystemServiceImpl implements SystemService {
                  messagesService.showDownloadFileProgress(out.getChannel().size(), fileSize);
              }
 
-            headers = connection.getHeaderFields();
+            headers = connection.getHeaderFields()
+                                .entrySet()
+                                .stream()
+                                .filter(entry -> nonNull(entry.getKey()))
+                                .filter(entry -> !entry.getKey().equalsIgnoreCase("null"))
+                                .filter(entry -> !entry.getValue().isEmpty())
+                                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+
             fileDownloadedDurationTimeInMs = System.currentTimeMillis() - startDownloadingTime;
 
             return new ImmutablePair<>(fileDownloadedDurationTimeInMs, headers);
