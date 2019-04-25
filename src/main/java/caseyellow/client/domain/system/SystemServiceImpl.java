@@ -1,5 +1,6 @@
 package caseyellow.client.domain.system;
 
+import caseyellow.client.domain.file.model.DownloadedFileDetails;
 import caseyellow.client.domain.logger.services.CYLogger;
 import caseyellow.client.domain.message.MessagesService;
 import caseyellow.client.domain.test.model.ComparisonInfo;
@@ -45,14 +46,17 @@ import static java.util.stream.Collectors.toList;
 public class SystemServiceImpl implements SystemService {
 
     private static CYLogger log = new CYLogger(SystemServiceImpl.class);
+    private static final String TRACE_ROUTE_COMMAND = "tracert %s";
 
     private static final List<String> ETHERNET_IDENTIFIERS = Arrays.asList("eth", "eno", "enp", "ens", "enx");
 
     private MessagesService messagesService;
+    private CommandExecutorService commandExecutorService;
 
     @Autowired
-    public SystemServiceImpl(MessagesService messagesService) {
+    public SystemServiceImpl(MessagesService messagesService, CommandExecutorService commandExecutorService) {
         this.messagesService = messagesService;
+        this.commandExecutorService = commandExecutorService;
     }
 
     @Override
@@ -66,7 +70,13 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public Pair<Long, Map<String, List<String>>> copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException {
+    public DownloadedFileDetails copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException {
+
+        String traceRouteOutputPreviousDownloadFile;
+        String traceRouteOutputAfterDownloadFile;
+        String traceRouteAddress = source.getHost();
+        String command = String.format(TRACE_ROUTE_COMMAND, traceRouteAddress);
+
         int readTimeOut = toIntExact(TimeUnit.SECONDS.toMillis(10));
         Pair<Long, Map<String, List<String>>> fileDownloadDurationAndHeaders;
 
@@ -75,12 +85,20 @@ public class SystemServiceImpl implements SystemService {
             connection.setReadTimeout(readTimeOut);
             connection.connect();
 
+            messagesService.showMessage(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
+            log.info(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
+            traceRouteOutputPreviousDownloadFile = commandExecutorService.executeCommand(command);
+
             messagesService.startDownloadingFile(fileName);
             fileDownloadDurationAndHeaders = downloadFile(destination, connection, fileSize);
 
+            log.info(String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
+            messagesService.showMessage(String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
+            traceRouteOutputAfterDownloadFile = commandExecutorService.executeCommand(command);
+
             log.info("finish downloading file from: " + source.toString());
 
-            return fileDownloadDurationAndHeaders;
+            return new DownloadedFileDetails(fileDownloadDurationAndHeaders.getLeft(), traceRouteOutputPreviousDownloadFile, traceRouteOutputAfterDownloadFile, fileDownloadDurationAndHeaders.getRight());
 
         } catch (IOException e) {
             messagesService.finishDownloadingFile();

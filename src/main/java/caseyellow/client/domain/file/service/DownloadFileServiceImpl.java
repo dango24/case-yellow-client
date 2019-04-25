@@ -1,6 +1,7 @@
 package caseyellow.client.domain.file.service;
 
 import caseyellow.client.common.FileUtils;
+import caseyellow.client.domain.file.model.DownloadedFileDetails;
 import caseyellow.client.domain.file.model.FileDownloadInfo;
 import caseyellow.client.domain.file.model.FileDownloadProperties;
 import caseyellow.client.domain.logger.services.CYLogger;
@@ -9,15 +10,12 @@ import caseyellow.client.domain.system.SystemService;
 import caseyellow.client.domain.system.URLToFileService;
 import caseyellow.client.exceptions.FileDownloadInfoException;
 import caseyellow.client.exceptions.UserInterruptException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 import static caseyellow.client.common.FileUtils.createTmpDir;
 
@@ -55,7 +53,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
         File tmpFile = null;
         long fileSizeInBytes;
         long startDownloadingTime;
-        Pair<Long, Map<String, List<String>>> fileDownloadedDurationTimeInMsAndHeaders;
+        DownloadedFileDetails downloadedFileDetails;
         double fileDownloadRateKBPerSec;
 
         displayMessage("Downloading file: " + fileDownloadProperties.getIdentifier() + ", from url: " + fileDownloadProperties.getUrl());
@@ -65,13 +63,13 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             tmpFile = new File(createTmpDir(), fileDownloadProperties.getIdentifier());
 
             startDownloadingTime = System.currentTimeMillis();
-            fileDownloadedDurationTimeInMsAndHeaders = urlToFileService.copyURLToFile(fileDownloadProperties.getIdentifier(), url, tmpFile, fileDownloadProperties.getSize());
+            downloadedFileDetails = urlToFileService.copyURLToFile(fileDownloadProperties.getIdentifier(), url, tmpFile, fileDownloadProperties.getSize());
             fileSizeInBytes = tmpFile.length();
             md5 = systemService.convertToMD5(tmpFile);
 
             validateFile(fileDownloadProperties, fileSizeInBytes, md5);
 
-            fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(fileDownloadedDurationTimeInMsAndHeaders.getKey(), fileSizeInBytes);
+            fileDownloadRateKBPerSec = calculateDownloadRateKBPerSec(downloadedFileDetails.getFileDownloadedDurationTimeInMs(), fileSizeInBytes);
 
             displayMessage(fileDownloadProperties.getIdentifier() + " finish download, rate: " + fileDownloadRateKBPerSec + "KB per sec");
 
@@ -80,9 +78,11 @@ public class DownloadFileServiceImpl implements DownloadFileService {
                                        .addFileURL(url.toString())
                                        .addFileSizeInBytes(fileSizeInBytes)
                                        .addFileDownloadRateKBPerSec(fileDownloadRateKBPerSec)
-                                       .addFileDownloadedDurationTimeInMs(fileDownloadedDurationTimeInMsAndHeaders.getKey())
+                                       .addFileDownloadedDurationTimeInMs(downloadedFileDetails.getFileDownloadedDurationTimeInMs())
                                        .addStartDownloadingTime(startDownloadingTime)
-                                       .addHeaders(fileDownloadedDurationTimeInMsAndHeaders.getRight())
+                                       .addTraceRouteOutputPreviousDownloadFile(downloadedFileDetails.getTraceRouteOutputPreviousDownloadFile())
+                                       .addTraceRouteOutputAfterDownloadFile(downloadedFileDetails.getTraceRouteOutputAfterDownloadFile())
+                                       .addHeaders(downloadedFileDetails.getHeaders())
                                        .build();
 
         } catch (IOException | FileDownloadInfoException e) {

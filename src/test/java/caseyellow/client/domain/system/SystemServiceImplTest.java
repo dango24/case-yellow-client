@@ -13,7 +13,7 @@ public class SystemServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        systemService = new SystemServiceImpl(null);
+        systemService = new SystemServiceImpl(null, null);
     }
 
 //    @Test

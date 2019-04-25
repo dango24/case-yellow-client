@@ -25,6 +25,8 @@ public class FileDownloadInfo {
     private double fileDownloadRateKBPerSec;
     private long   fileDownloadedDurationTimeInMs;
     private long   startDownloadingTimestamp;
+    private String traceRouteOutputPreviousDownloadFile;
+    private String traceRouteOutputAfterDownloadFile;
     private Map<String, List<String>> headers;
 
     @Expose
@@ -45,6 +47,8 @@ public class FileDownloadInfo {
         fileDownloadRateKBPerSec = fileDownloadInfoBuilder.fileDownloadRateKBPerSec;
         fileDownloadedDurationTimeInMs = fileDownloadInfoBuilder.fileDownloadedDurationTimeInMs;
         startDownloadingTimestamp = fileDownloadInfoBuilder.startDownloadingTimestamp;
+        traceRouteOutputPreviousDownloadFile = fileDownloadInfoBuilder.traceRouteOutputPreviousDownloadFile;
+        traceRouteOutputAfterDownloadFile = fileDownloadInfoBuilder.traceRouteOutputAfterDownloadFile;
         headers = fileDownloadInfoBuilder.headers;
         succeed = fileDownloadInfoBuilder.succeed;
     }
@@ -89,6 +93,8 @@ public class FileDownloadInfo {
         private double fileDownloadRateKBPerSec;
         private long fileDownloadedDurationTimeInMs;
         private long startDownloadingTimestamp;
+        private String traceRouteOutputPreviousDownloadFile;
+        private String traceRouteOutputAfterDownloadFile;
         private Map<String, List<String>> headers;
 
         public FileDownloadInfoBuilder(String fileName) {
@@ -132,6 +138,16 @@ public class FileDownloadInfo {
 
         public FileDownloadInfoBuilder setSucceed() {
             this.succeed = true;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addTraceRouteOutputPreviousDownloadFile(String traceRouteOutputPreviousDownloadFile) {
+            this.traceRouteOutputPreviousDownloadFile = traceRouteOutputPreviousDownloadFile;
+            return this;
+        }
+
+        public FileDownloadInfoBuilder addTraceRouteOutputAfterDownloadFile(String traceRouteOutputAfterDownloadFile) {
+            this.traceRouteOutputAfterDownloadFile = traceRouteOutputAfterDownloadFile;
             return this;
         }
 
