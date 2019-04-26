@@ -27,4 +27,5 @@ public interface DataAccessService {
     void uploadLogData(LogData logData);
     int getTestLifeCycle();
     void updateTestLifeCycle();
+    boolean runClassicTest();
 }

@@ -32,4 +32,11 @@ public class ComparisonInfo {
     public boolean failed() {
         return !success;
     }
+
+    public static ComparisonInfo buildComparisonInfoFileDownloadInfo(FileDownloadInfo fileDownloadInfo) {
+        ComparisonInfo comparisonInfo = new ComparisonInfo(null, fileDownloadInfo);
+        comparisonInfo.success = fileDownloadInfo.isSucceed();
+
+        return comparisonInfo;
+    }
 }

@@ -70,10 +70,10 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public DownloadedFileDetails copyURLToFile(String fileName, URL source, File destination, long fileSize) throws FileDownloadInfoException, UserInterruptException {
+    public DownloadedFileDetails copyURLToFile(String fileName, URL source, File destination, long fileSize, boolean runTraceRoute) throws FileDownloadInfoException, UserInterruptException {
 
-        String traceRouteOutputPreviousDownloadFile;
-        String traceRouteOutputAfterDownloadFile;
+        String traceRouteOutputPreviousDownloadFile = null;
+        String traceRouteOutputAfterDownloadFile = null;
         String traceRouteAddress = source.getHost();
         String command = String.format(TRACE_ROUTE_COMMAND, traceRouteAddress);
 
@@ -85,16 +85,20 @@ public class SystemServiceImpl implements SystemService {
             connection.setReadTimeout(readTimeOut);
             connection.connect();
 
-            messagesService.showMessage(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
-            log.info(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
-            traceRouteOutputPreviousDownloadFile = commandExecutorService.executeCommand(command);
+            if (runTraceRoute) {
+                messagesService.showMessage(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
+                log.info(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
+                traceRouteOutputPreviousDownloadFile = commandExecutorService.executeCommand(command);
+            }
 
             messagesService.startDownloadingFile(fileName);
             fileDownloadDurationAndHeaders = downloadFile(destination, connection, fileSize);
 
-            log.info(String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
-            messagesService.showMessage(String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
-            traceRouteOutputAfterDownloadFile = commandExecutorService.executeCommand(command);
+            if (runTraceRoute) {
+                log.info(String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
+                messagesService.showMessage(String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
+                traceRouteOutputAfterDownloadFile = commandExecutorService.executeCommand(command);
+            }
 
             log.info("finish downloading file from: " + source.toString());
 

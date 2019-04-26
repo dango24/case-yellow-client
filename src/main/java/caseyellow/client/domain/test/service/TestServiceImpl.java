@@ -49,6 +49,7 @@ public class TestServiceImpl implements TestService {
     public Test generateNewTest() throws UserInterruptException, FileDownloadInfoException, RequestFailureException {
         String isp;
         SystemInfo systemInfo;
+        boolean runClassicTest;
         SpeedTestMetaData speedTestWebSite;
         List<ComparisonInfo> comparisonInfoList;
         List<FileDownloadProperties> fileDownloadProperties;
@@ -59,12 +60,13 @@ public class TestServiceImpl implements TestService {
 
         speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
         fileDownloadProperties = dataAccessService.getNextUrls();
+        runClassicTest = dataAccessService.runClassicTest();
         dataAccessService.startTest(speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(toList()));
         logger.info(String.format("Start producing test with speed-test: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
 
         comparisonInfoList =
                 fileDownloadProperties.stream()
-                                      .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData))
+                                      .map(fileDownloadMetaData -> generateComparisonInfo(speedTestWebSite, fileDownloadMetaData, runClassicTest))
                                       .peek(comparisonInfo -> checkFailedTest(comparisonInfo, systemInfo.getPublicIP()))
                                       .collect(toList());
 
@@ -83,18 +85,33 @@ public class TestServiceImpl implements TestService {
         webSiteService.close();
     }
 
+    private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestMetaData, FileDownloadProperties fileDownloadProperties, boolean runClassicTest) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
+
+        if (runClassicTest) {
+            return generateComparisonInfo(speedTestMetaData, fileDownloadProperties);
+        } else {
+            return generateFileDownloadInfoComparisonInfo(fileDownloadProperties);
+        }
+    }
+
     private ComparisonInfo generateComparisonInfo(SpeedTestMetaData speedTestMetaData, FileDownloadProperties fileDownloadProperties) throws FileDownloadInfoException, WebSiteDownloadInfoException, UserInterruptException, ConnectionException {
         FileDownloadInfo fileDownloadInfo;
         messagesService.subTestStart();
         SpeedTestWebSite speedTestWebSiteDownloadInfo = webSiteService.produceSpeedTestWebSite(speedTestMetaData);
 
         if (speedTestWebSiteDownloadInfo.isSucceed()) {
-            fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadProperties);
+            fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadProperties , false);
         } else {
             fileDownloadInfo = FileDownloadInfo.emptyFileDownloadInfo();
         }
 
         return new ComparisonInfo(speedTestWebSiteDownloadInfo, fileDownloadInfo);
+    }
+
+    private ComparisonInfo generateFileDownloadInfoComparisonInfo(FileDownloadProperties fileDownloadProperties) {
+        FileDownloadInfo fileDownloadInfo = downloadFileService.generateFileDownloadInfo(fileDownloadProperties , true);
+
+        return ComparisonInfo.buildComparisonInfoFileDownloadInfo(fileDownloadInfo);
     }
 
     private void checkFailedTest(ComparisonInfo comparisonInfo, String clientIP) {

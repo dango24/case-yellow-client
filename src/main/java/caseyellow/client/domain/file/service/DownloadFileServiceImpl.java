@@ -47,7 +47,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     }
 
     @Override
-    public FileDownloadInfo generateFileDownloadInfo(FileDownloadProperties fileDownloadProperties) throws UserInterruptException {
+    public FileDownloadInfo generateFileDownloadInfo(FileDownloadProperties fileDownloadProperties, boolean runTraceRoute) throws UserInterruptException {
         URL url;
         String md5;
         File tmpFile = null;
@@ -63,7 +63,7 @@ public class DownloadFileServiceImpl implements DownloadFileService {
             tmpFile = new File(createTmpDir(), fileDownloadProperties.getIdentifier());
 
             startDownloadingTime = System.currentTimeMillis();
-            downloadedFileDetails = urlToFileService.copyURLToFile(fileDownloadProperties.getIdentifier(), url, tmpFile, fileDownloadProperties.getSize());
+            downloadedFileDetails = urlToFileService.copyURLToFile(fileDownloadProperties.getIdentifier(), url, tmpFile, fileDownloadProperties.getSize(), runTraceRoute);
             fileSizeInBytes = tmpFile.length();
             md5 = systemService.convertToMD5(tmpFile);
 

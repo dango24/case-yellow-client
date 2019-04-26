@@ -130,6 +130,11 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     @Override
+    public boolean runClassicTest() {
+        return requestHandler.execute(gatewayRequests.runClassicTest(createTokenHeader()));
+    }
+
+    @Override
     public String getUser() {
         return user;
     }
@@ -198,11 +203,19 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     public void saveTest(Test test) throws RequestFailureException {
         try {
             if (nonNull(test)) {
-                generateSnapshotPath(test);
-                systemService.saveSnapshotHashToDisk(test);
+
+                if (test.isClassicTest()) {
+                    generateSnapshotPath(test);
+                    systemService.saveSnapshotHashToDisk(test);
+                }
+
                 test.setClientVersion(clientVersion);
                 requestHandler.execute(gatewayRequests.saveTest(createTokenHeader(), test));
-                uploadSnapshotImages(test);
+
+                if (test.isClassicTest()) {
+                    uploadSnapshotImages(test);
+                }
+
                 logger.info(String.format("Save test succeed: %s", test));
             }
         } catch (Exception e) {

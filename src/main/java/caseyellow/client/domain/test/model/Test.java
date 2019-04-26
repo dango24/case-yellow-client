@@ -22,6 +22,7 @@ public class Test {
     private String computerIdentifier;
     private long startTime;
     private long endTime;
+    private boolean classicTest;
     private SystemInfo systemInfo;
     private String speedTestWebsiteIdentifier;
     private List<ComparisonInfo> comparisonInfoTests;
@@ -29,6 +30,7 @@ public class Test {
     private Test(TestBuilder testBuilder) {
         this.testID = testBuilder.testID;
         this.isp = testBuilder.isp;
+        this.classicTest = testBuilder.classicTest;
         this.systemInfo = testBuilder.systemInfo;
         this.speedTestWebsiteIdentifier = testBuilder.speedTestWebsite;
         this.comparisonInfoTests = testBuilder.comparisonInfoTests;
@@ -42,6 +44,7 @@ public class Test {
         private String isp;
         private SystemInfo systemInfo;
         private String speedTestWebsite;
+        private boolean classicTest;
         private List<ComparisonInfo> comparisonInfoTests;
 
         public TestBuilder(String testID) {
@@ -65,6 +68,11 @@ public class Test {
 
         public TestBuilder addISP(String isp) {
             this.isp = isp;
+            return this;
+        }
+
+        public TestBuilder isClassicTest(boolean classicTest) {
+            this.classicTest = classicTest;
             return this;
         }
 

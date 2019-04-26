@@ -171,4 +171,11 @@ public interface GatewayRequests {
     })
     @GET("central/chrome-options-arguments")
     Call<List<String>> getChromeOptionsArguments(@HeaderMap Map<String, String> headers);
+
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET("central/run-classic-test")
+    Call<Boolean> runClassicTest(Map<String, String> tokenHeader);
 }
