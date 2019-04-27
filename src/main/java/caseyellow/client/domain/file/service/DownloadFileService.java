@@ -9,4 +9,5 @@ import caseyellow.client.domain.file.model.FileDownloadInfo;
  */
 public interface DownloadFileService {
     FileDownloadInfo generateFileDownloadInfo(FileDownloadProperties fileDownloadProperties, boolean runTraceRoute) throws FileDownloadInfoException;
+    FileDownloadInfo generateFileDownloadInfo(FileDownloadProperties fileDownloadProperties) throws FileDownloadInfoException;
 }

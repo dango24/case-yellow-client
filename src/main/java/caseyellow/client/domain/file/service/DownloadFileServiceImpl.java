@@ -47,6 +47,11 @@ public class DownloadFileServiceImpl implements DownloadFileService {
     }
 
     @Override
+    public FileDownloadInfo generateFileDownloadInfo(FileDownloadProperties fileDownloadProperties) throws UserInterruptException {
+        return generateFileDownloadInfo(fileDownloadProperties, true);
+    }
+
+    @Override
     public FileDownloadInfo generateFileDownloadInfo(FileDownloadProperties fileDownloadProperties, boolean runTraceRoute) throws UserInterruptException {
         URL url;
         String md5;

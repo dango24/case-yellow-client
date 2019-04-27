@@ -177,5 +177,5 @@ public interface GatewayRequests {
             "Content-Type: application/json"
     })
     @GET("central/run-classic-test")
-    Call<Boolean> runClassicTest(Map<String, String> tokenHeader);
+    Call<Boolean> runClassicTest(@HeaderMap Map<String, String> tokenHeader);
 }
