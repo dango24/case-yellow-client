@@ -34,7 +34,8 @@ public class ComparisonInfo {
     }
 
     public static ComparisonInfo buildComparisonInfoFileDownloadInfo(FileDownloadInfo fileDownloadInfo) {
-        ComparisonInfo comparisonInfo = new ComparisonInfo(null, fileDownloadInfo);
+        ComparisonInfo comparisonInfo = new ComparisonInfo();
+        comparisonInfo.setFileDownloadInfo(fileDownloadInfo);
         comparisonInfo.success = fileDownloadInfo.isSucceed();
 
         return comparisonInfo;
