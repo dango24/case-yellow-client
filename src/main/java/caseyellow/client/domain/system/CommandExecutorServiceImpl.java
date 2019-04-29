@@ -7,16 +7,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 public class CommandExecutorServiceImpl implements CommandExecutorService {
 
+    public static final String TIMEOUT_ERROR = "TIMEOUT_ERROR";
     private static CYLogger log = new CYLogger(CommandExecutorServiceImpl.class);
 
     private ExecutorService executorService;
@@ -26,11 +24,16 @@ public class CommandExecutorServiceImpl implements CommandExecutorService {
     }
 
     @Override
-    public String executeCommand(String command) {
+    public String executeCommand(String command, int timeoutInMin) {
         try {
+            log.info(String.format("Execute command: %s, with timeout of: %d minutes", command, timeoutInMin));
             Future<String> output = executorService.submit(() -> invokeExecuteCommand(command));
 
-            return output.get(10, TimeUnit.MINUTES);
+            return output.get(timeoutInMin, TimeUnit.MINUTES);
+
+        }catch (TimeoutException e) {
+            log.error(String.format("Reach time out, Failed to execute command: %s", e.getMessage()), e);
+            return TIMEOUT_ERROR;
 
         } catch (Exception e) {
             log.error(String.format("Failed to execute command: %s", e.getMessage()), e);

@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import com.sun.management.OperatingSystemMXBean;
 
 import static caseyellow.client.common.FileUtils.getSnapshotMetadataFile;
+import static caseyellow.client.domain.system.CommandExecutorServiceImpl.TIMEOUT_ERROR;
 import static java.lang.StrictMath.toIntExact;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
@@ -70,7 +71,8 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public DownloadedFileDetails copyURLToFile(String fileName, URL source, File destination, long fileSize, boolean runTraceRoute) throws FileDownloadInfoException, UserInterruptException {
+    public DownloadedFileDetails copyURLToFile(String fileName, URL source, File destination,
+                                               long fileSize, boolean runTraceRoute, int timeoutInMin) throws FileDownloadInfoException, UserInterruptException {
 
         String traceRouteOutputPreviousDownloadFile = null;
         String traceRouteOutputAfterDownloadFile = null;
@@ -86,9 +88,7 @@ public class SystemServiceImpl implements SystemService {
             connection.connect();
 
             if (runTraceRoute) {
-                messagesService.showMessage(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
-                log.info(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
-                traceRouteOutputPreviousDownloadFile = commandExecutorService.executeCommand(command);
+                traceRouteOutputPreviousDownloadFile = runTraceRouteCommand(command, traceRouteAddress, timeoutInMin, String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
             }
 
             messagesService.startDownloadingFile(fileName);
@@ -96,9 +96,7 @@ public class SystemServiceImpl implements SystemService {
             log.info("finish downloading file from: " + source.toString());
 
             if (runTraceRoute) {
-                log.info(String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
-                messagesService.showMessage(String.format("Execute trace route: %s after downloading file", traceRouteAddress));
-                traceRouteOutputAfterDownloadFile = commandExecutorService.executeCommand(command);
+                traceRouteOutputPreviousDownloadFile = runTraceRouteCommand(command, traceRouteAddress, timeoutInMin, String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
             }
 
             return new DownloadedFileDetails(fileDownloadDurationAndHeaders.getLeft(), traceRouteOutputPreviousDownloadFile, traceRouteOutputAfterDownloadFile, fileDownloadDurationAndHeaders.getRight());
@@ -107,6 +105,18 @@ public class SystemServiceImpl implements SystemService {
             messagesService.finishDownloadingFile();
             throw new FileDownloadInfoException("Failed to download file, " + e.getMessage(), e);
         }
+    }
+
+    private String runTraceRouteCommand(String command, String traceRouteAddress, int timeoutInMin, String stateMessage) {
+        messagesService.showMessage(stateMessage);
+        log.info(String.format("Execute trace route: %s previously to downloading file", traceRouteAddress));
+        String traceRouteOutput = commandExecutorService.executeCommand(command, timeoutInMin);
+
+        if (TIMEOUT_ERROR.equals(traceRouteOutput)) {
+            throw new FileDownloadInfoException("Reach file download timeout");
+        }
+
+        return traceRouteOutput;
     }
 
     private Pair<Long, Map<String, List<String>>> downloadFile(File destination, URLConnection connection, long fileSize) {

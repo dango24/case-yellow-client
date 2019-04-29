@@ -256,7 +256,7 @@ public class GatewayServiceImpl implements GatewayService, DataAccessService, Im
     }
 
     private boolean isFailedSpeedTestWebSite(ComparisonInfo comparisonInfo) {
-        return !comparisonInfo.getSpeedTestWebSite().isSucceed();
+        return nonNull(comparisonInfo.getSpeedTestWebSite()) && !comparisonInfo.getSpeedTestWebSite().isSucceed();
     }
 
     @Override

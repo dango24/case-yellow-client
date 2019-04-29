@@ -11,9 +11,13 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FileDownloadProperties {
 
-    private int size;
-    private String url;
-    private String md5;
     private String identifier;
+    private String url;
+    private int size;
+    private String md5;
     private int timeoutInMin;
+
+    public FileDownloadProperties(String identifier, String url) {
+        this(identifier, url, 0, null, 0);
+    }
 }
