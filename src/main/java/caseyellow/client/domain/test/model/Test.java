@@ -71,7 +71,7 @@ public class Test {
             return this;
         }
 
-        public TestBuilder isClassicTest(boolean classicTest) {
+        public TestBuilder addClassicTest(boolean classicTest) {
             this.classicTest = classicTest;
             return this;
         }

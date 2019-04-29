@@ -77,6 +77,7 @@ public class TestServiceImpl implements TestService {
                        .addComparisonInfoTests(comparisonInfoList)
                        .addSystemInfo(systemInfo)
                        .addISP(isp)
+                       .addClassicTest(runClassicTest)
                        .build();
     }
 
