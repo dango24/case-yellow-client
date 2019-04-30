@@ -32,6 +32,6 @@ public class DownloadFileServiceImplTest {
         MessagesService presentationMessageService = mock(MessagesService.class);
         messagesService.setPresentationMessagesService(presentationMessageService);
         downloadFileService.setMessagesService(messagesService);
-        downloadFileService.generateFileDownloadInfo(new FileDownloadProperties("amazon", "https://d2td7dqidlhjx7.cloudfront.net/prod/global/windows/Amazon+WorkSpaces.msi"));
+        downloadFileService.generateFileDownloadInfo(new FileDownloadProperties("amazon", "https://d2td7dqidlhjx7.cloudfront.net/prod/global/windows/Amazon+WorkSpaces.msi"), false);
     }
 }
