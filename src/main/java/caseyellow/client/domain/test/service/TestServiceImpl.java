@@ -58,9 +58,18 @@ public class TestServiceImpl implements TestService {
         systemInfo = systemService.getSystemInfo();
         logger.info(String.format("System info is: %s. ISP is: %s", systemInfo,isp));
 
-        speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
-        fileDownloadProperties = dataAccessService.getNextUrls();
         runClassicTest = dataAccessService.runClassicTest();
+
+        if (runClassicTest) {
+            messagesService.showMessage("Run Classic Test");
+        }
+
+        messagesService.showMessage("Fetch speed test webSite");
+        speedTestWebSite = dataAccessService.getNextSpeedTestWebSite();
+
+        messagesService.showMessage("Fetch file download properties");
+        fileDownloadProperties = dataAccessService.getNextUrls();
+
         dataAccessService.startTest(speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(toList()));
         logger.info(String.format("Start producing test with speed-test: %s, urls: %s", speedTestWebSite.getIdentifier(), fileDownloadProperties.stream().map(FileDownloadProperties::getIdentifier).collect(joining(", "))));
 

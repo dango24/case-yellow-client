@@ -96,7 +96,7 @@ public class SystemServiceImpl implements SystemService {
             log.info("finish downloading file from: " + source.toString());
 
             if (runTraceRoute) {
-                traceRouteOutputPreviousDownloadFile = runTraceRouteCommand(command, traceRouteAddress, timeoutInMin, String.format("Execute trace route: %s after to downloading file", traceRouteAddress));
+                traceRouteOutputAfterDownloadFile = runTraceRouteCommand(command, traceRouteAddress, timeoutInMin, String.format("Execute trace route: %s after downloading file", traceRouteAddress));
             }
 
             return new DownloadedFileDetails(fileDownloadDurationAndHeaders.getLeft(), traceRouteOutputPreviousDownloadFile, traceRouteOutputAfterDownloadFile, fileDownloadDurationAndHeaders.getRight());
